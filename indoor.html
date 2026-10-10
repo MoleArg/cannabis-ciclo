@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi indoor 3D · Cultivarg 80×80×160</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="/src/indoor/style.css" />
+</head>
+<body>
+  <canvas id="scene"></canvas>
+  <div id="labels"></div>
+
+  <div id="loader">
+    <div class="loader-mark">
+      <svg viewBox="0 0 64 64" width="64" height="64"><path d="M32 6 C20 22 14 32 14 40 a18 18 0 0 0 36 0 C50 32 44 22 32 6Z" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M32 52 V30 M32 40 l-8 -8 M32 36 l8 -8" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+    </div>
+    <div class="loader-text">Armando el indoor…</div>
+  </div>
+
+  <div id="title" class="hidden">
+    <div class="title-kicker">Cultivarg · 80 × 80 × 160</div>
+    <h1 id="titleText">MI INDOOR</h1>
+    <div class="title-sub">Tocá cualquier equipo · arrastrá para girar · rueda para acercar</div>
+  </div>
+
+  <div class="letterbox top"></div>
+  <div class="letterbox bottom"></div>
+  <div id="caption"></div>
+  <button id="cineExit" class="hidden">Salir del modo cine ✕</button>
+
+  <header id="topbar" class="ui">
+    <div class="brand">
+      <span class="dot"></span>
+      <div>
+        <strong>Mi indoor</strong>
+        <small>Cultivarg 80 × 80 × 160 cm</small>
+      </div>
+    </div>
+    <div id="clock">
+      <div class="clock-time" id="clockTime">--:--</div>
+      <div class="clock-sub"><span id="lightBadge" class="badge">LUZ</span> <span id="stageLabel">—</span> · día <span id="dayLabel">0</span></div>
+    </div>
+    <div class="top-right">
+      <div class="views" id="views">
+        <button data-view="exterior" class="active" title="1">Exterior</button>
+        <button data-view="frente" title="2">Frente</button>
+        <button data-view="cenital" title="3">Cenital</button>
+        <button data-view="techo" title="4">Techo</button>
+        <button data-view="plantas" title="5">Plantas</button>
+      </div>
+      <div class="views quick">
+        <button id="cineBtn" title="C · Modo cine">🎬</button>
+        <button id="thermalBtn" title="T · Cámara térmica">🌡️</button>
+        <button id="soundBtn" title="M · Sonido">🔇</button>
+        <button id="helpBtn" title="? · Atajos">⌨️</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="cycle" class="ui">
+    <div class="cycle-track" id="cycleTrack">
+      <div class="seg s-plantula" id="segPlantula"><span>Plántula</span></div>
+      <div class="seg s-vege" id="segVege"><span>Vegetativo 18/6</span></div>
+      <div class="seg s-flora" id="segFlora"><span>Floración 12/12</span></div>
+      <div class="seg s-final" id="segFinal"><span>Maduración</span></div>
+      <div class="seg s-post" id="segPost"></div>
+      <div class="flip-handle" id="flipHandle" title="Arrastrá para cambiar el día del paso a 12/12"><b>12/12</b></div>
+      <div class="harvest-mark" id="harvestMark" title="Cosecha estimada">✂</div>
+      <div class="cursor" id="cycleCursor"><i></i></div>
+    </div>
+  </div>
+
+  <aside id="panel" class="ui">
+    <button id="panelToggle" title="Mostrar/ocultar panel">☰</button>
+    <div class="panel-inner">
+      <section class="sec">
+        <h3>Tiempo</h3>
+        <label class="row">Velocidad
+          <select id="speed">
+            <option value="1">1× (real)</option>
+            <option value="60" selected>60× (1 min/s)</option>
+            <option value="600">600×</option>
+            <option value="3600">3600× (1 h/s)</option>
+          </select>
+        </label>
+        <label class="row check"><input type="checkbox" id="autoGrow" /> Avanzar días con el reloj</label>
+        <label class="row col">Día del ciclo <output id="dayOut">10</output>
+          <input type="range" id="day" min="0" max="120" step="0.25" value="10" />
+        </label>
+        <label class="row col">Pasar a floración (12/12) el día <output id="flipOut">50</output>
+          <input type="range" id="flip" min="20" max="80" step="1" value="50" />
+        </label>
+        <div class="btns">
+          <button id="timelapse">▶ Timelapse</button>
+          <button id="water">💧 Regar</button>
+        </div>
+      </section>
+
+      <section class="sec">
+        <h3>Iluminación LED</h3>
+        <label class="row">Fotoperiodo
+          <select id="photoperiod">
+            <option value="auto" selected>Auto (18/6 → 12/12)</option>
+            <option value="18">18/6</option>
+            <option value="20">20/4</option>
+            <option value="12">12/12</option>
+            <option value="24">24/0</option>
+          </select>
+        </label>
+        <label class="row">Espectro
+          <select id="spectrum">
+            <option value="full" selected>Full spectrum 3500K</option>
+            <option value="cool">Frío 6500K (vege)</option>
+            <option value="warm">Cálido 2700K (flora)</option>
+            <option value="blurple">Blurple rojo+azul</option>
+          </select>
+        </label>
+        <label class="row col">Encendido a las <output id="onHourOut">06:00</output>
+          <input type="range" id="onHour" min="0" max="23" step="1" value="6" />
+        </label>
+        <label class="row col">Altura sobre la tierra <output id="heightOut">90 cm</output>
+          <input type="range" id="lightHeight" min="35" max="115" step="1" value="90" />
+        </label>
+        <label class="row col">Dimmer <output id="dimOut">60%</output>
+          <input type="range" id="dim" min="10" max="100" step="1" value="60" />
+        </label>
+        <label class="row col">Potencia nominal <output id="wattOut">150 W</output>
+          <input type="range" id="watt" min="60" max="300" step="10" value="150" />
+        </label>
+        <label class="row check"><input type="checkbox" id="parMap" /> Mapa de PPFD en la copa</label>
+        <label class="row check"><input type="checkbox" id="beam" checked /> Haz de luz y polvo en el aire</label>
+      </section>
+
+      <section class="sec">
+        <h3>Clima y aire</h3>
+        <label class="row col">Extractor <output id="extOut">50%</output>
+          <input type="range" id="extractor" min="0" max="100" step="1" value="50" />
+        </label>
+        <label class="row check"><input type="checkbox" id="clipFan" checked /> Ventilador de clip</label>
+        <label class="row check"><input type="checkbox" id="oscillate" checked /> Oscilación</label>
+        <label class="row check"><input type="checkbox" id="pcFans" checked /> Coolers de entrada (80 mm)</label>
+        <label class="row check"><input type="checkbox" id="humidifier" checked /> Humidificador</label>
+        <label class="row check"><input type="checkbox" id="airflow" /> Ver flujo de aire</label>
+        <label class="row col">Temperatura de la habitación <output id="roomTOut">20 °C</output>
+          <input type="range" id="roomT" min="10" max="32" step="0.5" value="20" />
+        </label>
+      </section>
+
+      <section class="sec">
+        <h3>Vista</h3>
+        <label class="row check"><input type="checkbox" id="xray" checked /> Paredes transparentes desde afuera</label>
+        <label class="row check"><input type="checkbox" id="labelsToggle" checked /> Etiquetas de equipos</label>
+        <label class="row">Luz de la habitación
+          <select id="roomLight">
+            <option value="auto" selected>Según la hora</option>
+            <option value="on">Encendida</option>
+            <option value="off">Apagada</option>
+          </select>
+        </label>
+        <label class="row check"><input type="checkbox" id="film" checked /> Look cinematográfico</label>
+        <div class="btns">
+          <button id="doorBtn">🚪 Abrir puerta</button>
+          <button id="intro">↺ Rearmar</button>
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <section id="hud" class="ui">
+    <div class="stat" id="stT"><span>Temp.</span><b id="vT">--</b><i>°C</i></div>
+    <div class="stat" id="stRH"><span>Humedad</span><b id="vRH">--</b><i>%</i></div>
+    <div class="stat" id="stVPD"><span>VPD</span><b id="vVPD">--</b><i>kPa</i></div>
+    <div class="stat" id="stPPFD"><span>PPFD medio</span><b id="vPPFD">--</b><i>µmol</i></div>
+    <div class="stat" id="stDLI"><span>DLI</span><b id="vDLI">--</b><i>mol/d</i></div>
+    <div class="stat" id="stDist"><span>Luz → copa</span><b id="vDist">--</b><i>cm</i></div>
+    <div class="stat" id="stSoil"><span>Sustrato</span><b id="vSoil">--</b><i>%</i><em class="bar"><u id="soilBar"></u></em></div>
+  </section>
+
+  <div id="chartBox" class="ui">
+    <div class="chart-head"><span>Últimas 24 h</span><span><i class="lg t"></i>Temp <i class="lg h"></i>HR <i class="lg l"></i>Luz</span></div>
+    <canvas id="chart" width="560" height="170"></canvas>
+  </div>
+  <div id="alerts" class="ui"></div>
+
+  <div id="parLegend" class="hidden">
+    <span>PPFD µmol/m²/s</span>
+    <div class="grad"></div>
+    <div class="ticks"><i>0</i><i>300</i><i>600</i><i>900</i><i>1200+</i></div>
+  </div>
+  <div id="thermalLegend" class="hidden">
+    <span>Cámara térmica · °C</span>
+    <div class="grad"></div>
+    <div class="ticks"><i>16</i><i>21</i><i>26</i><i>31</i><i>36</i></div>
+  </div>
+
+  <article id="card" class="hidden">
+    <button class="close" id="cardClose">×</button>
+    <div class="card-kind" id="cardKind"></div>
+    <h2 id="cardTitle"></h2>
+    <p id="cardText"></p>
+    <dl id="cardSpecs"></dl>
+    <div id="cardLive"></div>
+  </article>
+
+  <div id="toast" class="hidden"></div>
+
+  <div id="help" class="hidden">
+    <div class="help-inner">
+      <h3>Atajos de teclado</h3>
+      <dl>
+        <dt>1 – 5</dt><dd>Vistas de cámara</dd>
+        <dt>Espacio</dt><dd>Abrir / cerrar la puerta</dd>
+        <dt>C</dt><dd>Modo cine</dd>
+        <dt>T</dt><dd>Cámara térmica</dd>
+        <dt>M</dt><dd>Sonido</dd>
+        <dt>R</dt><dd>Regar</dd>
+        <dt>P</dt><dd>Timelapse</dd>
+        <dt>H</dt><dd>Ocultar la interfaz</dd>
+        <dt>Esc</dt><dd>Cerrar ficha / salir</dd>
+      </dl>
+      <button id="helpClose">Entendido</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/indoor/main.js"></script>
+</body>
+</html>
