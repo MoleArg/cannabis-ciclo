@@ -1,24 +1,39 @@
-# Ciclo de vida del cannabis — simulador y guía interactiva
+# Ciclo de vida del cannabis — simulador, guía e indoor 3D
 
-Página web autocontenida (un solo HTML, sin dependencias ni internet) para aprender el ciclo de vida
+Plataforma web para aprender el ciclo de vida
 del cannabis jugando con las variables: luz, aire, agua, humedad, nutrientes, pH, podas, plagas,
-enfermedades, productos y químicos. La planta reacciona en tiempo real.
+enfermedades, productos y químicos. La planta reacciona en tiempo real y se ve también dentro de una carpa en 3D.
 
 **▶ Usar online:** https://molearg.github.io/cannabis-ciclo/
+
+## Desarrollo
+
+```sh
+corepack pnpm install
+corepack pnpm dev                                   # desarrollo
+corepack pnpm build && corepack pnpm preview        # versión compilada (puerto 4640)
+```
+
+GitHub Pages publica `dist/` con `.github/workflows/pages.yml` (en *Settings → Pages* la fuente tiene
+que ser **GitHub Actions**).
 
 ## Archivos
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | Versión legible. Es la que sirve GitHub Pages. Se abre también con doble clic en cualquier navegador. |
-| `index.min.html` | La misma, minificada. |
-| `canvas.html` | Cargador comprimido (gzip + base64, < 200 000 caracteres) para incrustar donde hay límite de tamaño, como una ventana del canvas de Paseo. |
+| `index.html` | La plataforma: simulador (con su escena en 2D o en 3D) y guía. El simulador sigue siendo un script en línea, sin dependencias. |
+| `indoor.html`, `src/indoor/` | La carpa Cultivarg 80 × 80 × 160 en 3D (Three.js + Anime.js). Abierta sola funciona como antes; con `?embed` es la vista 3D de la escena del simulador. |
+| `index.min.html` | El simulador solo (sin 3D), minificado y autocontenido. |
+| `canvas.html` | El simulador solo, comprimido (gzip + base64, < 200 000 caracteres) para incrustar donde hay límite de tamaño, como una ventana del canvas de Paseo. |
 
 ## Qué tiene
 
 | Pestaña | Contenido |
 |---|---|
 | Simulador | Planta dibujada en canvas, paso de 1 hora simulada, controles con bandas de valores ideales por etapa, piloto automático por variable, diagnóstico en vivo, factores limitantes (ley de Liebig), historial, bitácora, cosecha, secado y curado, 17 escenarios. |
+| Escena 2D | La planta dibujada con la lógica de síntomas, plagas y raíces, compuesta en la GPU (WebGL2): mylar, haz de luz que se corta con las hojas, polvo en suspensión, sombras, bloom, cielo con nubes, sol y lluvia en exterior, humedad, calor y noche. Animaciones con anime.js: encendido del LED, riego, cambio de etapa, planta nueva. A muchos días por segundo el día y la noche se promedian (timelapse) en vez de parpadear. Sin WebGL2 (o con `?legacy2d`) vuelve al dibujo anterior. |
+| Escena 3D | El interruptor **2D / 3D** (tecla V) muestra la misma planta en la carpa Cultivarg 80 × 80 × 160, o en un patio si el simulador está en exterior (sol por hora y latitud, nubes, lluvia, techo). Comparten reloj, barra de tiempo y Ajustes; riegos, cambios de etapa y cosecha se actúan en 3D. Brillo de la imagen, vistas, cine, térmica, mapa de PPFD y flujo de aire. |
+| Microscopio (🔬 o tecla Z en 3D) | Zoom continuo del cogollo al átomo: cálices, pistilos y miles de tricomas → bosque de tricomas capitados → resina con THC/CBD/CBN → la molécula real (coordenadas 3D de PubChem) → un átomo de carbono con núcleo y orbitales. Los colores de tricomas, pistilos y la molécula salen del estado del simulador. |
 | Ciclo de vida | Etapas con duración, necesidades, riesgos y consejos; línea de tiempo por genética; fotoperíodo y fitocromo; sexo; autoflorecientes. |
 | Laboratorio | Barril de Liebig, tabla de VPD (clic = aplicar al simulador), pH vs. disponibilidad de nutrientes, luz/CO₂/DLI, temperatura (fotosíntesis vs. respiración). |
 | Productos y químicos | Fertilizantes, aditivos, enmiendas, microorganismos, fitosanitarios, PGR y prohibidos, con semáforo de seguridad; cómo actúan los químicos; orden de mezcla; mitos. |
