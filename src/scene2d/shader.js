@@ -1,14 +1,14 @@
-// Compositor de la escena 2D. Toda la luz y la atmósfera se calculan acá; la
-// planta llega como textura (uPlant) pintada por el pintor 2D. Coordenadas en
-// píxeles con y hacia abajo, igual que el canvas.
+// Compositor de la escena 2D en dos pasadas. La planta llega como textura
+// (uPlant) pintada por el pintor 2D. La pasada de luz, que es la cara, corre a
+// media resolución; la final solo compone. Coordenadas en píxeles con y hacia
+// abajo, igual que el canvas.
 
 export const VERT = `#version 300 es
 in vec2 aPos;
 out vec2 vUv;
 void main(){ vUv = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }`;
 
-export const FRAG = `#version 300 es
-precision highp float;
+const COMMON = `precision highp float;
 uniform sampler2D uPlant;
 uniform vec2 uRes;
 uniform float uTime, uDpr;
@@ -20,13 +20,12 @@ uniform vec3 uSun;       // x, y, sobre el horizonte (0..1)
 uniform vec4 uHover;     // x, y, radio, intensidad
 uniform vec3 uPulse;     // x, y, fase 0..1
 uniform float uProx;     // lámpara muy cerca de la copa
-in vec2 vUv;
-out vec4 o;
+uniform sampler2D uLightTex; // pasada de luz a media resolución
 
 float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float n2(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
   return mix(mix(h21(i), h21(i + vec2(1, 0)), f.x), mix(h21(i + vec2(0, 1)), h21(i + vec2(1, 1)), f.x), f.y); }
-float fbm(vec2 p){ float a = 0.5, s = 0.0; for (int i = 0; i < 5; i++){ s += a * n2(p); p = p * 2.03 + 17.1; a *= 0.5; } return s; }
+float fbm(vec2 p){ float a = 0.5, s = 0.0; for (int i = 0; i < 4; i++){ s += a * n2(p); p = p * 2.03 + 17.1; a *= 0.5; } return s; }
 
 vec4 plantAt(vec2 p){ return texture(uPlant, p / uRes); }
 float alphaAt(vec2 p){ return texture(uPlant, p / uRes).a; }
@@ -109,84 +108,92 @@ vec3 outdoorBg(vec2 p, out float lit){
   return c;
 }
 
+`;
+
+export const FRAG_LIGHT = `#version 300 es
+${COMMON}
+in vec2 vUv;
+out vec4 o;
+// Pasada 1 (media resolución): fondo, sombra en la pared, haz de luz con polvo,
+// rayos de sol y niebla. En alfa guarda cuánta luz le llega a la planta.
 void main(){
   vec2 p = vec2(vUv.x, 1.0 - vUv.y) * uRes;
   float U = uRes.y;
-  vec2 px = vec2(1.0) * uDpr;
-
-  // pulso de cambio de etapa: la planta "respira" desde su centro
-  float pulse = uPulse.z;
-  float bump = sin(pulse * 3.14159) * (1.0 - pulse);
-  vec2 pp = uPulse.xy + (p - uPulse.xy) / (1.0 + 0.025 * bump);
-  // calor: el aire ondula
-  pp.x += sin(p.y * 0.05 / uDpr + uTime * 6.0) * uHeat * 1.6 * uDpr * smoothstep(0.7, 0.1, p.y / U);
-
   float lit;
-  vec3 bg = uOut > 0.5 ? outdoorBg(p, lit) : indoorBg(p, lit);
-
-  // sombra de la planta proyectada en la pared, lejos de la lámpara
+  vec3 col = uOut > 0.5 ? outdoorBg(p, lit) : indoorBg(p, lit);
   vec2 lc = uOut > 0.5 ? uSun.xy : vec2((uLamp.x + uLamp.y) * 0.5, uLamp.z);
   vec2 away = normalize(p - lc + 0.0001) * U * 0.03;
   float sh = textureLod(uPlant, (p - away) / uRes, 3.5).a;
-  bg *= 1.0 - sh * 0.32 * clamp(lit * 2.5, 0.0, 1.0);
-
-  vec4 pl = plantAt(pp);
-  vec3 col = bg;
-
-  // luz volumétrica de la lámpara, cortada por las hojas
-  float shadow = 1.0;
-  if (uOut < 0.5 && uLamp.w > 0.5 && p.y > uLamp.z){
-    float t = (p.y - uLamp.z) / max(1.0, uFloorY - uLamp.z);
-    float hw0 = (uLamp.y - uLamp.x) * 0.5;
-    float hw = mix(hw0, hw0 * 1.7 + uRes.x * 0.1, t);
-    float cx = (uLamp.x + uLamp.y) * 0.5;
-    float cone = (1.0 - smoothstep(hw * 0.55, hw * 1.08, abs(p.x - cx))) * (1.0 - 0.55 * clamp(t, 0.0, 1.0));
-    if (cone > 0.001){
-      vec2 L = vec2(clamp(p.x, uLamp.x, uLamp.y), uLamp.z);
-      shadow = occlusion(p, L);
-      float vol = cone * shadow * uLight * (0.06 + 0.2 * uPPFD);
-      // polvo en suspensión que brilla en el haz
-      vec2 g = p / (10.0 * uDpr) + vec2(sin(uTime * 0.2) * 0.5, uTime * 0.35);
-      vec2 id = floor(g), f = fract(g) - 0.5;
-      float hh = h21(id);
-      vec2 off = (vec2(h21(id + 3.1), h21(id + 7.7)) - 0.5) * 0.6;
-      float mote = step(0.94, hh) * smoothstep(0.14, 0.0, length(f - off)) * (0.5 + 0.5 * sin(uTime * 2.0 + hh * 40.0));
-      col += uLampCol * vol * (1.0 + mote * 6.0 * (1.0 - pl.a));
-      if (uUV > 0.5) col += vec3(0.35, 0.12, 0.75) * vol * 0.4;
+  col *= 1.0 - sh * 0.32 * clamp(lit * 2.5, 0.0, 1.0);
+  float pa = textureLod(uPlant, p / uRes, 1.0).a;
+  float plantLight = lit;
+  if (uOut < 0.5){
+    vec2 L = vec2(clamp(p.x, uLamp.x, uLamp.y), uLamp.z);
+    float occ = p.y > uLamp.z && uLamp.w > 0.5 ? occlusion(p, L) : 1.0;
+    float dd = length(p - L) / U;
+    plantLight = uLight * uLamp.w * (0.35 + 0.65 * uPPFD) * exp(-dd * 1.1) * (p.y > uLamp.z ? occ * 0.6 + 0.4 : 0.3);
+    if (uLamp.w > 0.5 && p.y > uLamp.z){
+      float t = (p.y - uLamp.z) / max(1.0, uFloorY - uLamp.z);
+      float hw0 = (uLamp.y - uLamp.x) * 0.5;
+      float hw = mix(hw0, hw0 * 1.7 + uRes.x * 0.1, t);
+      float cx = (uLamp.x + uLamp.y) * 0.5;
+      float cone = (1.0 - smoothstep(hw * 0.55, hw * 1.08, abs(p.x - cx))) * (1.0 - 0.55 * clamp(t, 0.0, 1.0));
+      if (cone > 0.001){
+        float vol = cone * occ * uLight * (0.06 + 0.2 * uPPFD);
+        vec2 g = p / (10.0 * uDpr) + vec2(sin(uTime * 0.2) * 0.5, uTime * 0.35);
+        vec2 id = floor(g), f = fract(g) - 0.5;
+        float hh = h21(id);
+        vec2 off = (vec2(h21(id + 3.1), h21(id + 7.7)) - 0.5) * 0.6;
+        float mote = step(0.94, hh) * smoothstep(0.2, 0.0, length(f - off)) * (0.5 + 0.5 * sin(uTime * 2.0 + hh * 40.0));
+        col += uLampCol * vol * (1.0 + mote * 6.0 * (1.0 - pa));
+        if (uUV > 0.5) col += vec3(0.35, 0.12, 0.75) * vol * 0.4;
+      }
     }
-  }
-  // rayos de sol entre las hojas
-  if (uOut > 0.5 && uSun.z > 0.0){
+  } else if (uSun.z > 0.0){
     float acc = 0.0;
-    for (int i = 0; i < 18; i++){ float t = float(i) / 18.0; vec2 s = mix(p, uSun.xy, t * 0.6); acc += (1.0 - alphaAt(s)) * exp(-length(s - uSun.xy) / U * 2.4); }
-    col += vec3(1.0, 0.85, 0.6) * acc / 18.0 * 0.35 * uSun.z * uCloud;
+    for (int i = 0; i < 10; i++){ float t = float(i) / 10.0; vec2 s = mix(p, uSun.xy, t * 0.6); acc += (1.0 - textureLod(uPlant, s / uRes, 2.0).a) * exp(-length(s - uSun.xy) / U * 2.4); }
+    col += vec3(1.0, 0.85, 0.6) * acc / 10.0 * 0.35 * uSun.z * uCloud;
   }
+  float fog = fbm(p / U * vec2(2.5, 1.5) + vec2(uTime * 0.03, 0.0));
+  col = mix(col, vec3(0.62, 0.68, 0.74) * (0.35 + 0.65 * max(lit, 0.25)), uRH * (uOut > 0.5 ? 0.12 : 0.28) * fog);
+  o = vec4(col, clamp(plantLight, 0.0, 1.0));
+}`;
 
-  // la planta: iluminada por la lámpara, con borde brillante y translucidez
+export const FRAG_FINAL = `#version 300 es
+${COMMON}
+in vec2 vUv;
+out vec4 o;
+// Pasada 2 (resolución completa): la planta sobre la luz ya calculada, bloom y
+// el acabado. Sin ruido ni bucles, para que sea liviana.
+void main(){
+  vec2 p = vec2(vUv.x, 1.0 - vUv.y) * uRes;
+  float U = uRes.y;
+  vec2 px = vec2(uDpr);
+  float pulse = uPulse.z;
+  float bump = sin(pulse * 3.14159) * (1.0 - pulse);
+  vec2 pp = uPulse.xy + (p - uPulse.xy) / (1.0 + 0.025 * bump);
+  pp.x += sin(p.y * 0.05 / uDpr + uTime * 6.0) * uHeat * 1.6 * uDpr * smoothstep(0.7, 0.1, p.y / U);
+  vec4 L = texture(uLightTex, vUv);
+  vec3 col = L.rgb;
+  vec4 pl = plantAt(pp);
   if (pl.a > 0.001){
     float ex = alphaAt(pp + vec2(px.x * 2.0, 0.0)) - alphaAt(pp - vec2(px.x * 2.0, 0.0));
     float ey = alphaAt(pp + vec2(0.0, px.y * 2.0)) - alphaAt(pp - vec2(0.0, px.y * 2.0));
     float edge = clamp(length(vec2(ex, ey)), 0.0, 1.0);
-    vec2 toL = normalize(lc - p);
-    float facing = clamp(dot(vec2(-ex, -ey), toL) * 2.0, 0.0, 1.0);
-    float light;
-    if (uOut > 0.5) light = lit;
-    else {
-      vec2 L = vec2(clamp(p.x, uLamp.x, uLamp.y), uLamp.z);
-      float dd = length(p - L) / U;
-      light = uLight * uLamp.w * (0.35 + 0.65 * uPPFD) * exp(-dd * 1.1) * (p.y > uLamp.z ? occlusion(p, L) * 0.6 + 0.4 : 0.3);
-    }
-    float amb = uOut > 0.5 ? 0.38 + 0.12 * lit : 0.42;
+    vec2 lc = uOut > 0.5 ? uSun.xy : vec2((uLamp.x + uLamp.y) * 0.5, uLamp.z);
+    float facing = clamp(dot(vec2(-ex, -ey), normalize(lc - p)) * 2.0, 0.0, 1.0);
+    float light = L.a;
+    float amb = uOut > 0.5 ? 0.38 + 0.12 * light : 0.42;
     vec3 lc3 = uOut > 0.5 ? vec3(1.0, 0.95, 0.85) : uLampCol;
     vec3 c = pl.rgb * (amb + (uOut > 0.5 ? 0.45 : 0.9) * light * lc3);
     float green = clamp((pl.g - max(pl.r, pl.b)) * 3.5, 0.0, 1.0);
-    c += pl.rgb * green * lc3 * light * 0.35;           // la luz atraviesa la hoja
-    c += lc3 * edge * facing * light * 0.55;             // borde iluminado
+    c += pl.rgb * green * lc3 * light * 0.35;
+    c += lc3 * edge * facing * light * 0.55;
+    c = mix(c, vec3(0.62, 0.68, 0.74) * 0.5, uRH * 0.1);
     col = mix(col, c, pl.a);
   }
-
-  // bloom: lo brillante de la planta (escarcha, pistilos) y la barra LED
-  vec3 bl = textureLod(uPlant, pp / uRes, 4.0).rgb * textureLod(uPlant, pp / uRes, 4.0).a;
+  vec4 b4 = textureLod(uPlant, pp / uRes, 4.0);
+  vec3 bl = b4.rgb * b4.a;
   float lum = dot(bl, vec3(0.3, 0.59, 0.11));
   col += bl * max(0.0, lum - 0.74) * 1.2 * (0.4 + uLight);
   if (uOut < 0.5 && uLamp.w > 0.5){
@@ -194,41 +201,25 @@ void main(){
     col += uLampCol * uLight * (exp(-bd * 55.0) * 0.9 + exp(-bd * 9.0) * 0.18) * (0.5 + uPPFD);
     if (uProx > 0.0) col += vec3(1.0, 0.35, 0.1) * uProx * uLight * 0.25 * exp(-bd * 6.0);
   }
-
-  // humedad: neblina suave que se mueve
-  float fog = fbm(p / U * vec2(2.5, 1.5) + vec2(uTime * 0.03, 0.0));
-  col = mix(col, vec3(0.62, 0.68, 0.74) * (0.35 + 0.65 * max(lit, 0.25)), uRH * (uOut > 0.5 ? 0.12 : 0.28) * fog);
-  // calor desde arriba
   col += vec3(0.32, 0.08, 0.0) * uHeat * smoothstep(0.65, 0.0, p.y / U) * 0.5;
-  // lluvia
   if (uRain > 0.5){
     vec2 rp = vec2(p.x + p.y * 0.18, p.y) / uDpr;
     float r = step(0.985, h21(vec2(floor(rp.x / 3.0), floor((rp.y + uTime * 900.0 + h21(vec2(floor(rp.x / 3.0))) * 300.0) / 34.0))));
     col += vec3(0.6, 0.7, 0.8) * r * 0.22;
     col *= 0.92;
   }
-  // fuga de luz nocturna
   if (uLeak > 0.0){ float ld = length(p - vec2(uRes.x - 30.0 * uDpr, 60.0 * uDpr)) / U; col += vec3(1.0, 0.92, 0.65) * exp(-ld * 4.0) * 0.5 * uLeak; }
-  // noche: frío y oscuro
   col *= mix(vec3(1.0), vec3(0.42, 0.48, 0.72), uNight * 0.75);
-
-  // anillo al pasar el puntero
   if (uHover.w > 0.001){
     float d = length(p - uHover.xy);
     float ring = exp(-pow((d - uHover.z) / (2.2 * uDpr), 2.0));
     col += vec3(0.55, 0.95, 0.62) * (ring * 0.7 + exp(-d / max(1.0, uHover.z)) * 0.08) * uHover.w;
   }
-  // onda del cambio de etapa
   if (pulse > 0.0 && pulse < 1.0){
     float d = length(p - uPulse.xy) / U;
-    float r = pulse * 1.3;
-    col += vec3(0.6, 1.0, 0.65) * exp(-pow((d - r) * 28.0, 2.0)) * (1.0 - pulse) * 0.45;
+    col += vec3(0.6, 1.0, 0.65) * exp(-pow((d - pulse * 1.3) * 28.0, 2.0)) * (1.0 - pulse) * 0.45;
   }
-
-  // revelado de una planta nueva
-  col *= mix(0.0, 1.0, smoothstep(0.0, 1.0, uIntro * 1.4 - length(p / U - vec2(0.5 * uRes.x / U, 0.6)) * 0.6 + 0.3));
-
-  // tono, viñeta, grano y aberración cromática leve
+  col *= smoothstep(0.0, 1.0, uIntro * 1.4 - length(p / U - vec2(0.5 * uRes.x / U, 0.6)) * 0.6 + 0.3);
   col = aces(col * 1.08);
   vec2 v = vUv - 0.5;
   col *= 1.0 - dot(v, v) * 0.55;
