@@ -1,5 +1,5 @@
 import { animate, createTimeline, stagger } from 'animejs';
-import { VERT, FRAG } from './shader.js';
+import { VERT, FRAG_LIGHT, FRAG_FINAL } from './shader.js';
 
 // Escena 2D nueva: un pintor 2D dibuja la planta (con la misma lógica de
 // síntomas, plagas, raíces y zonas para los tooltips del renderer anterior)
@@ -26,8 +26,16 @@ export function makeScene2D(Base, D) {
       const off = document.createElement('canvas');
       super(off);
       this.vis = visible;
-      this.gl = visible.getContext('webgl2', { alpha: false, antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: false });
-      if (!this.gl) throw new Error('WebGL2 no disponible');
+      // sin GPU real (WebGL por software) esto sería lentísimo: mejor el dibujo anterior
+      this.gl = visible.getContext('webgl2', { alpha: false, antialias: false, premultipliedAlpha: false, preserveDrawingBuffer: false, failIfMajorPerformanceCaveat: true, powerPreference: 'high-performance' });
+      if (!this.gl) throw new Error('WebGL2 con aceleración no disponible');
+      const dbg = this.gl.getExtension('WEBGL_debug_renderer_info');
+      const gpu = dbg ? String(this.gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
+      if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(gpu)) throw new Error('WebGL por software: ' + gpu);
+      // en pantallas de alta densidad la escena se dibuja a 1,5× como máximo y la calidad se adapta a los fps
+      this.baseDpr = Math.min(1.5, window.devicePixelRatio || 1);
+      this.dpr = this.baseDpr;
+      this.q = { scale: 1, light: 0.5, frame: 16, slow: 0, fast: 0 };
       // capa de arriba para la regla y la lupa: no pasan por la luz
       this.ov = document.createElement('canvas');
       Object.assign(this.ov.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', pointerEvents: 'none' });
@@ -49,28 +57,80 @@ export function makeScene2D(Base, D) {
     /* ---------------- WebGL ---------------- */
     initGL() {
       const gl = this.gl;
-      const pr = gl.createProgram();
-      gl.attachShader(pr, compile(gl, gl.VERTEX_SHADER, VERT));
-      gl.attachShader(pr, compile(gl, gl.FRAGMENT_SHADER, FRAG));
-      gl.linkProgram(pr);
-      if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
-      this.prog = pr;
+      const program = (frag, names) => {
+        const pr = gl.createProgram();
+        gl.attachShader(pr, compile(gl, gl.VERTEX_SHADER, VERT));
+        gl.attachShader(pr, compile(gl, gl.FRAGMENT_SHADER, frag));
+        gl.bindAttribLocation(pr, 0, 'aPos');
+        gl.linkProgram(pr);
+        if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(pr));
+        const u = {};
+        for (const n of names) u[n] = gl.getUniformLocation(pr, n);
+        return { pr, u };
+      };
+      const names = ['uPlant', 'uLightTex', 'uRes', 'uTime', 'uDpr', 'uOut', 'uLight', 'uPPFD', 'uNight', 'uRH', 'uHeat', 'uRain', 'uCloud', 'uDay', 'uUV', 'uLeak', 'uIntro', 'uLampCol', 'uLamp', 'uFloorY', 'uSun', 'uHover', 'uPulse', 'uProx'];
+      this.pLight = program(FRAG_LIGHT, names);
+      this.pFinal = program(FRAG_FINAL, names);
       const buf = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
-      const loc = gl.getAttribLocation(pr, 'aPos');
       this.vao = gl.createVertexArray();
       gl.bindVertexArray(this.vao);
-      gl.enableVertexAttribArray(loc);
-      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-      this.tex = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, this.tex);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      this.u = {};
-      for (const n of ['uPlant', 'uRes', 'uTime', 'uDpr', 'uOut', 'uLight', 'uPPFD', 'uNight', 'uRH', 'uHeat', 'uRain', 'uCloud', 'uDay', 'uUV', 'uLeak', 'uIntro', 'uLampCol', 'uLamp', 'uFloorY', 'uSun', 'uHover', 'uPulse', 'uProx']) this.u[n] = gl.getUniformLocation(pr, n);
+      gl.enableVertexAttribArray(0);
+      gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+      const tex = (mip) => {
+        const t = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, t);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        return t;
+      };
+      this.tex = tex(true);
+      this.lightTex = tex(false);
+      this.fbo = gl.createFramebuffer();
+      this.lightSize = [0, 0];
+      // si la GPU se reinicia, se reconstruye todo
+      this.vis.addEventListener('webglcontextlost', (e) => { e.preventDefault(); this.lost = true; });
+      this.vis.addEventListener('webglcontextrestored', () => { this.lost = false; this.initGL(); });
+    }
+    sizeLight(w, h) {
+      const gl = this.gl;
+      const lw = Math.max(64, Math.round(w * this.q.light)), lh = Math.max(64, Math.round(h * this.q.light));
+      if (lw === this.lightSize[0] && lh === this.lightSize[1]) return;
+      this.lightSize = [lw, lh];
+      gl.bindTexture(gl.TEXTURE_2D, this.lightTex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, lw, lh, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+      gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.lightTex, 0);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    }
+
+    /* calidad según el tiempo real entre cuadros (incluye la GPU, no solo el dibujo) */
+    adapt() {
+      const now = performance.now();
+      if (this._lastFrame) {
+        const ms = now - this._lastFrame;
+        if (ms > 150) { this._lastFrame = now; return; } // pestaña oculta o vista 3D: no cuenta
+        const q = this.q;
+        q.frame = q.frame * 0.92 + ms * 0.08;
+        if (q.frame > 24) { q.slow++; q.fast = 0; } else if (q.frame < 15) { q.fast++; q.slow = 0; } else { q.slow = 0; q.fast = 0; }
+        if (q.slow > 20 && (q.scale > 0.5 || q.light > 0.3)) {
+          if (q.light > 0.3) q.light = Math.max(0.3, q.light - 0.1);
+          else q.scale = Math.max(0.5, q.scale - 0.15);
+          q.slow = 0; q.frame = 18; this.applyScale();
+        } else if (q.fast > 90 && (q.scale < 1 || q.light < 0.5)) {
+          if (q.scale < 1) q.scale = Math.min(1, q.scale + 0.15); else q.light = Math.min(0.5, q.light + 0.1);
+          q.fast = 0; this.applyScale();
+        }
+      }
+      this._lastFrame = now;
+    }
+    applyScale() {
+      const want = Math.max(0.75, this.baseDpr * this.q.scale);
+      if (Math.abs(want - this.dpr) > 0.01) { this.dpr = want; this.resize(); this.view.init = false; }
+      this.lightSize = [0, 0];
     }
 
     resize() {
@@ -569,19 +629,39 @@ export function makeScene2D(Base, D) {
 
     /* ---------------- composición en la GPU ---------------- */
     composite(sim, E, t) {
-      const gl = this.gl, u = this.u, w = this.vis.width, h = this.vis.height;
-      gl.viewport(0, 0, w, h);
-      gl.useProgram(this.prog);
-      gl.bindVertexArray(this.vao);
+      const gl = this.gl, w = this.vis.width, h = this.vis.height;
+      if (this.lost || gl.isContextLost()) return;
+      this.sizeLight(w, h); // antes de enganchar texturas: re-crea la de luz en la unidad activa
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, this.tex);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this.cv);
       gl.generateMipmap(gl.TEXTURE_2D);
-      const out = sim.o.mode === 'exterior';
-      const lg = this.lampGeo, e = sim.env;
+      gl.bindVertexArray(this.vao);
+      // pasada 1: luz a media resolución (sin la textura de luz enganchada: se escribe en ella)
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, this.fbo);
+      gl.viewport(0, 0, this.lightSize[0], this.lightSize[1]);
+      gl.useProgram(this.pLight.pr);
+      this.uniforms(this.pLight.u, sim, E, t, w, h);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      // pasada 2: la planta y el acabado
+      gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+      gl.viewport(0, 0, w, h);
+      gl.useProgram(this.pFinal.pr);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, this.lightTex);
+      gl.activeTexture(gl.TEXTURE0);
+      this.uniforms(this.pFinal.u, sim, E, t, w, h);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    uniforms(u, sim, E, t, w, h) {
+      const gl = this.gl, out = sim.o.mode === 'exterior', lg = this.lampGeo, e = sim.env;
       gl.uniform1i(u.uPlant, 0);
+      gl.uniform1i(u.uLightTex, 1);
       gl.uniform2f(u.uRes, w, h);
       gl.uniform1f(u.uTime, t);
       gl.uniform1f(u.uDpr, this.dpr);
@@ -605,7 +685,6 @@ export function makeScene2D(Base, D) {
       const pc = this.pulseAt || [w / 2, h / 2];
       gl.uniform3f(u.uPulse, pc[0], pc[1], this.fx.pulse);
       gl.uniform1f(u.uProx, E.prox || 0);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
   };
 }

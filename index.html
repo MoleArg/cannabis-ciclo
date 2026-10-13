@@ -5359,6 +5359,7 @@ function setView(v3, user) {
   for (const b of seg.querySelectorAll('button')) b.classList.toggle('on', b.dataset.v === (v3 ? '3d' : '2d'));
   seg._sync && seg._sync();
   $('#tip').classList.add('hidden');
+  if (v3 && Indoor.broken) { toast('La vista 3D necesita WebGL: activá la aceleración por hardware del navegador.', 'warn'); setTimeout(() => { for (const b of seg.querySelectorAll('button')) b.classList.toggle('on', b.dataset.v === '2d'); seg._sync && seg._sync(); }, 0); return; }
   if (v3) {
     if (!Indoor.frame) { Indoor.frame = $('#indoorFrame'); Indoor.frame.src = 'indoor.html?embed'; }
     App.view3d = true;
@@ -5399,6 +5400,13 @@ function indoorMessage(e) {
   const m = e.data;
   if (!m || m.source !== 'indoor3d' || !Indoor.frame || e.source !== Indoor.frame.contentWindow) return;
   const s = App.sim;
+  if (m.type === 'unsupported') {
+    Indoor.broken = true;
+    setView(false);
+    toast('Tu navegador no tiene WebGL activado: la vista 3D no está disponible. Activá la aceleración por hardware en la configuración del navegador.', 'warn', 9000);
+    return;
+  }
+  if (m.type === 'slow') { toast('Tu navegador está dibujando el 3D sin la placa de video: va a ir lento. Activá la aceleración por hardware en la configuración del navegador.', 'warn', 9000); return; }
   if (m.type === 'ready') {
     Indoor.ready = true;
     indoorSend();

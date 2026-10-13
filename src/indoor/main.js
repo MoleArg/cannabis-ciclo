@@ -21,8 +21,23 @@ const smoothstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t
 
 // ───────── renderer / scene ─────────
 const canvas = $('scene');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// sin WebGL no hay carpa: se avisa en pantalla y a la plataforma, que vuelve al 2D
+const tellParent = (msg) => { if (window.parent !== window) window.parent.postMessage(Object.assign({ source: 'indoor3d' }, msg), '*'); };
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: window.devicePixelRatio < 1.5, powerPreference: 'high-performance' });
+} catch (e) {
+  document.querySelector('.loader-text').textContent = 'Este navegador no tiene WebGL activado: activá la aceleración por hardware para ver la carpa en 3D.';
+  tellParent({ type: 'unsupported', reason: String(e.message || e) });
+  throw e;
+}
+{
+  // WebGL por software: anda, pero muy lento
+  const gl = renderer.getContext(), dbg = gl.getExtension('WEBGL_debug_renderer_info');
+  const gpu = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : '';
+  if (/swiftshader|llvmpipe|softpipe|software|basic render/i.test(gpu)) tellParent({ type: 'slow', gpu });
+}
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -55,7 +70,7 @@ const film = new ShaderPass(FilmShader);
 composer.addPass(film);
 
 const macro = createMacro({ renderer, root: document.body, onExit: () => closeMacro() });
-macro.resize(window.innerWidth, window.innerHeight, Math.min(window.devicePixelRatio, 2));
+macro.resize(window.innerWidth, window.innerHeight, Math.min(window.devicePixelRatio, 1.5));
 const refs = buildScene(scene);
 // lo que forma la habitación y la carpa, para sacarlo cuando la planta está afuera
 const indoorSet = scene.children.slice();
@@ -102,7 +117,7 @@ scene.add(lampFixture);
 // sun through the window
 const sun = new THREE.DirectionalLight(0xfff4e0, 0);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.mapSize.set(1024, 1024);
 Object.assign(sun.shadow.camera, { left: -3, right: 3, top: 3, bottom: -3, near: 0.5, far: 12 });
 sun.shadow.bias = -0.0008;
 sun.target.position.set(0.9, 0, 0.6);
@@ -111,7 +126,7 @@ scene.add(sun, sun.target);
 // the LED: a shadowed spot plus a short-range bounce from the mylar
 const spot = new THREE.SpotLight(0xfff3e4, 0, 3, Math.PI * 0.38, 0.9, 1.4);
 spot.castShadow = true;
-spot.shadow.mapSize.set(2048, 2048);
+spot.shadow.mapSize.set(1024, 1024);
 spot.shadow.bias = -0.0006;
 spot.shadow.normalBias = 0.01;
 spot.shadow.camera.near = 0.02;
@@ -1087,7 +1102,7 @@ function stepSim(dtMin) {
 }
 
 // adaptive quality: drop the render resolution on slow machines, raise it back when there is headroom
-const MAX_PR = Math.min(window.devicePixelRatio, 2);
+const MAX_PR = Math.min(window.devicePixelRatio, 1.5);
 const quality = { pr: MAX_PR, acc: 0, n: 0, good: 0 };
 function setPixelRatio(pr) {
   quality.pr = pr;
@@ -1102,9 +1117,9 @@ function adaptQuality(realDt) {
   const avg = quality.acc / quality.n;
   quality.acc = 0;
   quality.n = 0;
-  if (avg > 0.045 && quality.pr > 0.6) { setPixelRatio(Math.max(0.6, quality.pr - 0.35)); quality.good = 0; }
-  else if (avg > 0.045 && bloom.enabled && !state.thermal) bloom.enabled = false;
-  else if (avg < 0.02 && quality.pr < MAX_PR && ++quality.good >= 3) { setPixelRatio(Math.min(MAX_PR, quality.pr + 0.25)); quality.good = 0; }
+  if (avg > 0.03 && quality.pr > 0.6) { setPixelRatio(Math.max(0.6, quality.pr - 0.35)); quality.good = 0; }
+  else if (avg > 0.03 && bloom.enabled && !state.thermal) bloom.enabled = false;
+  else if (avg < 0.018 && quality.pr < MAX_PR && ++quality.good >= 3) { setPixelRatio(Math.min(MAX_PR, quality.pr + 0.25)); quality.good = 0; }
 }
 
 function frame() {
