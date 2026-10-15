@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cannabis · ciclo de vida interactivo</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101a14'/%3E%3Cg fill='%2379d68b'%3E%3Cpath d='M32 6c3 9 3 20 0 30-3-10-3-21 0-30z'/%3E%3Cpath d='M32 36c-7-5-14-13-17-21 9 3 15 11 17 21z'/%3E%3Cpath d='M32 36c7-5 14-13 17-21-9 3-15 11-17 21z'/%3E%3Cpath d='M32 37c-9 0-18-4-23-9 9-1 18 2 23 9z'/%3E%3Cpath d='M32 37c9 0 18-4 23-9-9-1-18 2-23 9z'/%3E%3C/g%3E%3Cpath d='M32 36v22' stroke='%2379d68b' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#090d0b">
 <meta name="description" content="Simulador educativo del ciclo de vida del cannabis: luz, aire, agua, nutrientes, podas, plagas, productos y químicos.">
 <style>:root{--bg:#090d0b;--bg2:#0f1512;--panel:#121a16;--panel2:#18221d;--panel3:#1e2a24;--line:rgba(255,255,255,.07);--line2:rgba(255,255,255,.12);--txt:#e9f0eb;--txt2:#c3cfc8;--mut:#8b9c92;--acc:#8be39c;--acc2:#4cc46a;--warn:#f2c14e;--bad:#ff6b6b;--info:#6cb6ff;--r:16px;--r2:12px;--r3:9px;
 --ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.32,.72,0,1);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 30px -12px rgba(0,0,0,.6);--glow:0 0 0 1px rgba(139,227,156,.35),0 8px 24px -8px rgba(76,196,106,.45)}
@@ -416,6 +418,77 @@ details.more[open]>summary::before{transform:rotate(45deg)}
 .canvas-wrap .tent-note button{border:0;border-radius:999px;background:rgba(242,193,78,.18);color:var(--warn);font-weight:650;font-size:12px;padding:4px 10px;cursor:pointer}
 body.stage-max .canvas-wrap{height:calc(100dvh - 210px)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+.pest-ph{margin:-16px -18px 12px;position:relative;border-radius:var(--r) var(--r) 0 0;overflow:hidden;background:#0b100d}
+.pest-ph img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover}
+.pest-ph figcaption{position:absolute;right:0;bottom:0;font-size:10.5px;color:#d8e2dc;background:rgba(0,0,0,.55);padding:3px 8px;border-top-left-radius:8px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pest-ph figcaption a{color:inherit}
+/* animaciones de técnicas */
+.tec-anim{margin:-16px -18px 12px;border-radius:var(--r) var(--r) 0 0;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,#1d2a22,#0c120e 70%);border-bottom:1px solid var(--line)}
+.tec-anim svg{display:block;width:100%;height:auto;aspect-ratio:240/145}
+.tec-anim *{transform-box:view-box}
+#taLeaf ellipse,.tec-anim use{fill:#5aa957;stroke:#2f6b32;stroke-width:.7}
+.ta-stem{stroke:#7cb46a;stroke-linecap:round}
+.ta-pot{fill:#4a3426;stroke:#2c1e15}.ta-cup{fill:rgba(220,230,235,.18);stroke:rgba(220,230,235,.4)}
+.ta-soil{fill:#2b1d14}
+.ta-bud{fill:#b9d68f;stroke:#7e9a55;stroke-width:.8}
+.ta-cutline{stroke:#ff6b6b;stroke-width:1.4;stroke-dasharray:3 2;animation:taFlash 6s infinite}
+.ta-tool{animation:taTool 6s infinite}
+.ta-fall{transform-origin:120px 45px;animation:taFall 6s infinite}
+.ta-new{transform-origin:120px 62px;animation:taGrow 6s infinite}
+.ta-fim .ta-new{transform-origin:120px 47px}
+.ta-bend{animation:taBend 6s infinite}.ta-unbend{animation:taUnbend 6s infinite}
+.ta-tie{stroke:#e8d9a8;stroke-width:1.2;animation:taShow 6s infinite}
+.ta-crop{animation:taCrop 6s infinite}.ta-knuckle{fill:#9cc47f;animation:taLate 6s infinite;transform-origin:120px 46px}
+.ta-tuck{animation:taTuck 6s infinite}.ta-net line{stroke:#d9e6dd;stroke-width:1;opacity:.55}
+.ta-up{animation:taUp 6s infinite}.ta-late{animation:taLate 6s infinite;transform-origin:center;transform-box:fill-box}
+.ta-drop{animation:taDrop 6s infinite;transform-origin:120px 70px}
+.ta-glow{animation:taGlow 6s infinite}
+.ta-rays line{stroke:rgba(255,236,170,.5);stroke-width:5;stroke-linecap:round;filter:blur(2px);animation:taGlow 6s infinite}
+.ta-move{animation:taMove 6s infinite}
+.ta-roots line,.ta-ball line{stroke:#e9dcc0;stroke-width:1.2;stroke-linecap:round}
+.ta-roots{animation:taLate 6s infinite;transform-origin:176px 114px}
+.ta-dome{fill:rgba(200,230,255,.08);stroke:rgba(200,230,255,.45);animation:taShow 6s infinite}
+.ta-ball ellipse{fill:#3a281c}
+.ta-lift{animation:taLift 6s infinite}
+.ta-transplant .ta-roots{transform-origin:170px 126px}
+@keyframes taTool{0%{opacity:0;transform:translate(26px,-6px)}15%{opacity:1;transform:none}27%{transform:scale(.8)}32%{transform:none}45%{opacity:1}55%,100%{opacity:0}}
+@keyframes taFlash{0%,12%{opacity:0}18%,30%{opacity:1}36%,100%{opacity:0}}
+@keyframes taFall{0%,30%{opacity:1;transform:none}52%{opacity:0;transform:translate(18px,46px) rotate(80deg)}90%{opacity:0;transform:none}100%{opacity:1;transform:none}}
+@keyframes taGrow{0%,45%{opacity:0;transform:scale(.2)}75%,90%{opacity:1;transform:none}100%{opacity:0;transform:none}}
+@keyframes taBend{0%,12%{transform:none}45%,88%{transform:rotate(-62deg)}100%{transform:none}}
+@keyframes taUnbend{0%,12%{transform:none}45%{transform:rotate(62deg) scale(.9)}70%,88%{transform:rotate(62deg) scale(1.15)}100%{transform:none}}
+@keyframes taShow{0%,40%{opacity:0}52%,88%{opacity:1}100%{opacity:0}}
+@keyframes taCrop{0%,32%{transform:none}48%,88%{transform:rotate(78deg)}100%{transform:none}}
+@keyframes taLate{0%,50%{opacity:0;transform:scale(.3)}72%,90%{opacity:1;transform:none}100%{opacity:0;transform:none}}
+@keyframes taTuck{0%{transform:scaleY(.55)}28%{transform:none}38%{transform:none}55%,88%{transform:rotate(84deg)}100%{transform:scaleY(.55)}}
+@keyframes taUp{0%{transform:scaleY(.25)}65%,90%{transform:none}100%{transform:scaleY(.25)}}
+@keyframes taDrop{0%,22%{opacity:1;transform:none}45%{opacity:0;transform:translate(6px,34px) rotate(30deg)}90%{opacity:0;transform:none}100%{opacity:1;transform:none}}
+@keyframes taGlow{0%,30%{opacity:.25}55%,88%{opacity:1}100%{opacity:.25}}
+@keyframes taMove{0%,30%{transform:none}50%{transform:translate(40px,-14px) rotate(8deg)}68%,90%{transform:translate(72px,48px)}100%{transform:none;opacity:1}}
+@keyframes taLift{0%,12%{transform:none}32%{transform:translate(0,-36px)}52%{transform:translate(104px,-36px)}68%,90%{transform:translate(104px,-12px)}100%{transform:none}}
+/* botón de plantar: la simulación no corre hasta tocarlo */
+.plant-go{position:absolute;z-index:4;left:50%;bottom:64px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;max-width:min(420px,86%);animation:fadeUp .4s var(--ease)}
+.plant-go .btn{font-size:17px;padding:12px 30px;border-radius:999px;box-shadow:0 10px 30px -8px rgba(123,216,143,.75)}
+.plant-go small{font-size:12px;color:#cfd8d3;background:rgba(8,12,10,.62);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:10px;padding:5px 10px}
+.btn.prim.pending{animation:pendPulse 1.6s ease-in-out infinite}
+@keyframes pendPulse{0%,100%{box-shadow:0 6px 18px -8px rgba(123,216,143,.7)}50%{box-shadow:0 0 0 4px rgba(139,227,156,.28),0 6px 22px -6px rgba(123,216,143,.9)}}
+.hint.pending{color:var(--warn);background:rgba(242,193,78,.07);border:1px solid rgba(242,193,78,.25);border-radius:10px;padding:7px 10px}
+/* aprovechar la pantalla: más ancho y la escena a la altura de la ventana */
+.wrap{max-width:min(1880px,100%);padding:10px clamp(16px,2.4vw,40px) 60px}
+.sim-grid{max-width:1880px}
+.canvas-wrap{height:clamp(340px,calc(100dvh - 200px),1100px)}
+@media (min-width:1600px){.sim-grid{grid-template-columns:minmax(0,1fr) 420px}}
+@media (min-width:1500px){.lab-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.labcv{height:300px}}
+/* cosecha */
+.cols+.cards,.cols+#harvestCards{margin-top:16px}
+#dryCtl .chk{margin:6px 0 12px}
+#tab-cosecha .cols>.card{display:flex;flex-direction:column}
+#trCv{flex:1;min-height:270px}
+#trDayV{display:inline-block;min-width:2.6ch;text-align:right;font-variant-numeric:tabular-nums}
+.row-inline label{white-space:nowrap}
+@media (max-width:1100px){.canvas-wrap{height:clamp(300px,58dvh,720px)}}
+@media (max-width:760px){.canvas-wrap{height:clamp(280px,50dvh,560px)}.plant-go{bottom:56px}}
 </style>
 <script type="module" src="/src/scene2d/index.js"></script>
 </head>
@@ -442,7 +515,7 @@ body.stage-max .canvas-wrap{height:calc(100dvh - 210px)}
       <div class="stage-col">
         <div id="quick" class="quick hidden">
           <h4>👋 Empezá acá</h4>
-          <div class="qs"><i>1</i><div><b>Mirá crecer la planta</b>El tiempo corre solo. Pasá el mouse por hojas, cogollos o la maceta para ver qué les pasa.</div></div>
+          <div class="qs"><i>1</i><div><b>Plantá y mirá crecer</b>El tiempo empieza cuando tocás <b>Plantar</b>. Pasá el mouse por hojas, cogollos o la maceta para ver qué les pasa.</div></div>
           <div class="qs"><i>2</i><div><b>Cambiá una variable</b>En <b>Ajustes</b> movés luz, clima, riego o nutrientes. El piloto automático cuida el resto.</div></div>
           <div class="qs"><i>3</i><div><b>Probá un escenario</b>"Escenarios para aprender" arma problemas reales: carencias, plagas, exceso de riego.</div></div>
           <button class="x" id="quickX" aria-label="Cerrar">✕</button>
@@ -457,12 +530,13 @@ body.stage-max .canvas-wrap{height:calc(100dvh - 210px)}
             <button id="btnLoupe" class="mini only2d" title="Lupa de tricomas (en floración)">🔍 Lupa</button>
             <button id="btnRoots" class="mini on only2d" title="Mostrar raíces dentro de la maceta">🪴 Raíces</button>
             <button id="btnMax" class="mini only3d" title="Agrandar la escena">⤢</button>
-            <div class="segc" id="viewSeg" role="radiogroup" aria-label="Vista de la escena"><span class="ind"></span><button data-v="2d" class="on" title="Dibujo de la planta (tecla V)">🌿 2D</button><button data-v="3d" title="La misma planta dentro de la carpa en 3D (tecla V)">🏠 3D</button></div>
+            <div class="segc hidden" id="viewSeg" role="radiogroup" aria-label="Vista de la escena"><span class="ind"></span><button data-v="2d" class="on" title="Dibujo de la planta (tecla V)">🌿 2D</button><button data-v="3d" title="La misma planta dentro de la carpa en 3D (tecla V)">🏠 3D</button></div>
           </div>
           <iframe id="indoorFrame" class="cv3d" title="La planta dentro de la carpa en 3D" allow="autoplay; fullscreen" tabindex="-1"></iframe>
           <div id="tentNote" class="tent-note only3d hidden"></div>
           <div id="tip" class="tip hidden"></div>
           <div id="paused" class="paused hidden">En pausa · los cambios se ven al avanzar el tiempo</div>
+          <div id="plantGo" class="plant-go"><button class="btn prim">🌱 Plantar</button><small>Elegí la planta y el lugar en <b>Ajustes</b>; el tiempo empieza a correr cuando plantes.</small></div>
         </div>
         <div class="timebar">
           <button id="btnPlay" class="tb play" title="Pausa / seguir" aria-label="Pausa / seguir"></button>
@@ -1139,7 +1213,7 @@ class Sim {
     this.feed = Object.assign({}, O.feed || DEFAULT_FEED[O.substrate]);
     this.autopilot = O.autopilot !== false;
     this.manual = new Set(O.manual || []);
-    this.hour = 0;
+    this.hour = O.startHour || 0;
     this.stage = O.start === 'esqueje' ? 'esqueje' : 'germinacion';
     this.dead = null;
     this.germ = 0; this.rooting = 0; this.seedRot = 0;
@@ -2836,7 +2910,8 @@ function setupScenario(sc, seed) {
 
 /* ---------------------------------------------------------------------
    SECADO Y CURADO
-   h: resultado de cosecha · p: { tDry, rhDry, air (0-2), method, dark, cureWeeks, burp (0-2) }
+   h: resultado de cosecha · p: { tDry, rhDry, air (0-2), method, dark, cureWeeks,
+      burpEvery (días entre aperturas, 0 = nunca), burpMin (minutos abiertos), burpWeeks (semanas que se abren) }
    --------------------------------------------------------------------- */
 function dryCure(h, p) {
   const vpd = svp(p.tDry) * (1 - p.rhDry / 100);
@@ -2858,12 +2933,17 @@ function dryCure(h, p) {
   let thc = h.thc, cbn = h.cbn;
   if (light) { const conv = thc * 0.004 * dryDays; thc -= conv; cbn += conv * 0.7; }
   // curado
-  // abrir los frascos deja escapar humedad la primera semana
-  const rhJar = clamp(60 * Math.pow(mcFinal / 0.12, 1 / 1.5) - [0, 2.5, 5][p.burp] * clamp(p.cureWeeks), 20, 95);
   const w = p.cureWeeks;
-  let jarMold = rhJar > 68 ? clamp((rhJar - 68) / 10) * clamp(w / 2) * (p.burp === 2 ? 0.35 : p.burp === 1 ? 0.7 : 1) : 0;
+  // abrir los frascos deja escapar humedad: cada apertura renueva parte del aire
+  // (casi todo en ~15 min); el efecto se suma por cada vez que se abren
+  const burpDays = Math.min(p.burpWeeks, w) * 7;
+  const opens = p.burpEvery > 0 && p.burpMin > 0 ? Math.floor(burpDays / p.burpEvery) : 0;
+  const vent = opens * (1 - Math.exp(-p.burpMin / 12));
+  const rhJar = clamp(60 * Math.pow(mcFinal / 0.12, 1 / 1.5) - Math.min(18, vent) * clamp(w), 20, 95);
+  let jarMold = rhJar > 68 ? clamp((rhJar - 68) / 10) * clamp(w / 2) * Math.exp(-vent * 0.21) : 0;
   const smooth = clamp(0.35 + 0.65 * (1 - Math.exp(-w / 2.5)) - 0.4 * hay * Math.exp(-w / 3));
-  terpKeep *= Math.exp(-w * 0.008 * (p.burp === 2 ? 1.3 : 1)) * (rhJar < 50 ? 0.9 : 1);
+  // cada apertura también deja ir aroma, más cuanto más tiempo queda abierto
+  terpKeep *= Math.exp(-w * 0.008 * (1 + 0.06 * vent) - opens * 0.0006 * Math.max(0, p.burpMin - 20)) * (rhJar < 50 ? 0.9 : 1);
   if (w > 10) { const conv = thc * 0.003 * (w - 10); thc -= conv; cbn += conv * 0.7; }
   mold = clamp(Math.max(mold, jarMold));
   const terp = h.terp * terpKeep;
@@ -2874,12 +2954,15 @@ function dryCure(h, p) {
   if (p.tDry > 22) bad(`A ${p.tDry} °C los terpenos se evaporan más rápido (se conservó el ${Math.round(terpKeep * 100)} %).`);
   if (p.rhDry > 66) bad(`HR ${p.rhDry} %: el cogollo no termina de secarse${mcFinal > 0.15 ? ` (queda con ${Math.round(mcFinal * 100)} % de humedad)` : ''}.`);
   if (light) bad('Secado con luz: la luz degrada THC a CBN.');
-  if (rhJar > 70) bad(`Frascos con HR ~${Math.round(rhJar)} %: demasiado húmedo para curar${p.burp === 2 ? ' (abrirlos a diario ayuda)' : ''}.`);
+  if (rhJar > 70) bad(`Frascos con HR ~${Math.round(rhJar)} %: demasiado húmedo para curar${vent < 5 ? ' (abrirlos más seguido o más tiempo ayuda)' : ''}.`);
   else if (rhJar < 52) bad(`Frascos con HR ~${Math.round(rhJar)} %: muy seco, cogollo quebradizo y el curado casi no avanza.`);
   else if (rhJar > 63 || rhJar < 57) good(`Frascos con HR ~${Math.round(rhJar)} %: aceptable (lo ideal es 58-62 %).`);
   else good(`Frascos con HR ~${Math.round(rhJar)} %: rango ideal de curado (58-62 %).`);
   if (w >= 2 && w <= 8) good(`${w} semanas de curado: más suave (se degradan clorofila y almidones).`);
   if (w < 2) bad('Curado corto: el humo es más áspero.');
+  if (w > 0 && !opens) bad('Frascos sin abrir nunca: la humedad que queda en el cogollo no tiene por dónde salir.');
+  else if (p.burpMin > 30 && opens) bad(`Abrirlos ${p.burpMin} min cada vez: se escapa aroma de más (con 10-15 min alcanza).`);
+  else if (opens && p.burpEvery <= 2 && p.burpWeeks <= 2) good(`Frascos abiertos cada ${p.burpEvery === 1 ? 'día' : p.burpEvery + ' días'} ${p.burpMin} min ${p.burpWeeks === 1 ? 'la primera semana' : `las primeras ${p.burpWeeks} semanas`}: el ritmo clásico.`);
   if (mold > 0.3) bad('Riesgo alto de moho: lo mohoso no se consume (toxinas, alergias).');
   const quality = clamp(0.25 * smooth + 0.35 * clamp(terp / 20) + 0.25 * clamp(thc / (CHEMOTYPES[h.chemo].thc || 1)) + 0.15 - 0.6 * mold);
   return { days: dryDays, mcFinal, rhJar, terp, terpKeep, thc, cbn, cbd: h.cbd, smooth, hay, mold, notes, quality, weight: h.usable * (1 - 0.5 * mold * (mold > 0.5 ? 1 : 0)) };
@@ -3831,8 +3914,10 @@ const store = {
 };
 
 const App = {
-  opts: { genetics: 'hibrida', chemo: 'thc', seedType: 'fem', start: 'semilla', mode: 'interior', substrate: 'tierra', seed: 7 },
-  sim: null, rend: null, running: true, speed: 1, acc: 0, lastT: 0, uiT: 0, ctls: [], groups: [],
+  opts: { genetics: 'hibrida', chemo: 'thc', seedType: 'fem', start: 'semilla', mode: 'exterior', substrate: 'tierra', seed: 7, env: { sowMonth: new Date().getMonth() } },
+  // draft: cambios de "Planta y modo de cultivo" que esperan al botón de plantar · started: ya se tocó "Plantar"
+  draft: null, started: false,
+  sim: null, rend: null, running: false, speed: 1, acc: 0, lastT: 0, uiT: 0, ctls: [], groups: [],
   series: store.get('series', { h: true, hp: true, f: true, th: false, ec: false, ph: false, vpd: false, tl: false }),
   harvests: store.get('harvests', []), lastHarvest: null, dragging: false
 };
@@ -3888,18 +3973,44 @@ function bandOf(r, min, max) {
 function statusOf(v, r) { if (!r) return ''; return v >= r[0] && v <= r[1] ? 'ok' : v >= r[2] && v <= r[3] ? 'warn' : 'bad'; }
 const ST_ICON = { ok: '✓', warn: '⚠', bad: '✖', '': '' };
 
+/* valor efectivo de una opción de la planta: el del borrador si hay, si no el actual */
+function draftOpt(k) { return App.draft && k in App.draft ? App.draft[k] : App.opts[k]; }
+function draftEnv(k) { const d = App.draft && App.draft.env; return d && k in d ? d[k] : App.sim.env[k]; }
+function draftList() {
+  const names = { genetics: 'genética', chemo: 'quimiotipo', seedType: 'semilla', start: 'inicio', substrate: 'sustrato', mode: 'dónde', location: 'ubicación', sowMonth: 'mes de siembra' };
+  const d = App.draft || {};
+  return [...Object.keys(d).filter((k) => k !== 'env'), ...Object.keys(d.env || {})].map((k) => names[k] || k).join(', ');
+}
+/* guarda un cambio de la planta; antes de plantar se ve enseguida (en pausa) */
+function setDraft(key, v, env) {
+  if (!App.started) {
+    if (env) App.opts.env = Object.assign({}, App.opts.env, { [key]: v }); else App.opts[key] = v;
+    newPlant(undefined, false);
+    return;
+  }
+  const d = App.draft || {};
+  if (env) d.env = Object.assign({}, d.env, { [key]: v }); else d[key] = v;
+  // si se volvió al valor actual, deja de ser un cambio
+  if (env ? App.sim.env[key] === v : App.opts[key] === v) { if (env) { delete d.env[key]; if (!Object.keys(d.env).length) delete d.env; } else delete d[key]; }
+  App.draft = Object.keys(d).length ? d : null;
+  refreshControls(true);
+}
+
 function controlGroups() {
   const S = () => App.sim;
   const optSel = (key, label, options, hint) => ({ type: 'opt', key, label, options, hint });
   return [
     { id: 'planta', title: '🧬 Planta y modo de cultivo', sum: (s) => `${s.G.short} · ${s.S.name} · ${isOut(s) ? 'exterior' : 'interior'}`, items: [
-      optSel('genetics', 'Genética', Object.entries(GENETICS).map(([k, g]) => [k, g.name]), (s) => s.G.desc),
+      optSel('genetics', 'Genética', Object.entries(GENETICS).map(([k, g]) => [k, g.name]), () => GENETICS[draftOpt('genetics')].desc),
       optSel('chemo', 'Quimiotipo', Object.entries(CHEMOTYPES).map(([k, c]) => [k, c.name])),
       optSel('seedType', 'Semilla', [['fem', 'Feminizada (siempre hembra)'], ['regular', 'Regular (50 % macho)']]),
       optSel('start', 'Empezar desde', [['semilla', 'Semilla'], ['esqueje', 'Esqueje (clon de una madre)']]),
-      optSel('substrate', 'Sustrato', Object.entries(SUBSTRATES).map(([k, x]) => [k, x.name]), (s) => s.S.desc),
+      optSel('substrate', 'Sustrato', Object.entries(SUBSTRATES).map(([k, x]) => [k, x.name]), () => SUBSTRATES[draftOpt('substrate')].desc),
       optSel('mode', 'Dónde', [['interior', 'Interior (carpa con lámpara)'], ['exterior', 'Exterior (sol y clima real)']]),
-      { type: 'button', label: '🌱 Plantar de nuevo con esta configuración', cls: 'prim', act: () => newPlant() }
+      { type: 'sel', key: 'location', label: 'Ubicación', options: Object.entries(LOCATIONS).map(([k, l]) => [k, l.name]), show: () => draftOpt('mode') === 'exterior', needsReset: true },
+      { type: 'sel', key: 'sowMonth', label: 'Mes de siembra', num: true, options: MONTHS.map((m, i) => [i, m]), show: () => draftOpt('mode') === 'exterior', needsReset: true },
+      { type: 'read', show: () => !!App.draft, cls: 'pending', text: () => `Cambios sin aplicar: ${draftList()}. Se aplican al plantar de nuevo; la planta actual sigue igual.` },
+      { type: 'button', id: 'replant', label: '🌱 Plantar de nuevo con esta configuración', cls: 'prim', act: () => newPlant(undefined, true) }
     ] },
     { id: 'luz', title: '💡 Luz', sum: (s) => (isOut(s) ? `${nf(s.lastE.photo, 1)} h de día (sol)` : `${Math.min(s.env.ppfd, LAMPS[s.env.lamp].maxPPFD)} µmol · ${s.env.photo} h · ${LAMPS[s.env.lamp].name.split(' ')[0]}`), items: [
       { type: 'sel', key: 'lamp', label: 'Lámpara', options: Object.entries(LAMPS).map(([k, l]) => [k, l.name]), show: indoor, after: (s) => { s.env.blue = LAMPS[s.env.lamp].blue; }, hint: (s) => `Eficiencia ~${LAMPS[s.env.lamp].eff} µmol/J. ${s.env.lamp === 'hps' ? 'El sodio irradia calor: la hoja queda 1-3 °C más caliente que el aire.' : s.env.lamp === 'led' ? 'El LED casi no irradia calor: la hoja queda más fresca que el aire.' : ''}` },
@@ -3912,8 +4023,6 @@ function controlGroups() {
       { type: 'check', key: 'lightLeak', label: 'Fuga de luz durante la noche', show: indoor, hint: 'Una luz que se cuela 2 h en medio de la noche.' },
       { type: 'sel', key: 'tent', label: 'Superficie de la carpa', num: true, options: [[0.36, '60 × 60 cm'], [0.64, '80 × 80 cm'], [1, '100 × 100 cm'], [1.44, '120 × 120 cm']], show: indoor },
       { type: 'sel', key: 'tentH', label: 'Altura de la carpa', num: true, options: [[140, '140 cm'], [160, '160 cm'], [180, '180 cm'], [200, '200 cm']], show: indoor },
-      { type: 'sel', key: 'location', label: 'Ubicación', options: Object.entries(LOCATIONS).map(([k, l]) => [k, l.name]), show: isOut, needsReset: true },
-      { type: 'sel', key: 'sowMonth', label: 'Mes de siembra', num: true, options: MONTHS.map((m, i) => [i, m]), show: isOut, needsReset: true },
       { type: 'check', key: 'rainCover', label: 'Techo contra la lluvia', show: isOut, hint: 'Evita que la lluvia moje cogollos y maceta (menos botrytis).' },
       { type: 'read', show: isOut, text: (s) => `Día de ${nf(s.wx.dl, 1)} h (+ crepúsculo) · ${s.wx.rain ? '🌧 lluvia' : s.wx.cloud < 0.9 ? '⛅ nublado' : '☀ despejado'} · ${nf(s.wx.tMean, 0)} °C de media · DLI de ayer ${nf(s.prevDay.dli, 0)} mol/m²` }
     ] },
@@ -3971,13 +4080,10 @@ function buildControls() {
   const root = $('#controls');
   root.innerHTML = '';
   App.ctls = []; App.groups = [];
-  const openIds = store.get('open', ['luz']);
   for (const g of controlGroups()) {
     const body = el('div', { class: 'grp-body' });
     const sum = el('span', { class: 'sum' });
     const det = el('details', { class: 'grp', 'data-id': g.id }, el('summary', null, g.title, sum), body);
-    if (openIds.includes(g.id)) det.open = true;
-    det.addEventListener('toggle', () => store.set('open', $$('details.grp').filter((d) => d.open).map((d) => d.dataset.id)));
     animateDetails(det, '.grp-body');
     App.groups.push({ g, sum });
     for (const it of g.items) body.append(buildItem(it));
@@ -4030,19 +4136,7 @@ function buildItem(it) {
     const row = el('div', { class: 'ctl' }, el('div', { class: 'ctl-h' }, el('label', null, lab(App.sim)), chip), sel, hint);
     sel.addEventListener('change', () => {
       const s = App.sim, v = it.num ? +sel.value : sel.value;
-      if (it.type === 'opt') {
-        const prev = App.opts[it.key];
-        const go = () => { App.opts[it.key] = v; newPlant(); toast('Planta nueva con la configuración elegida.', 'good'); };
-        if (s.hour < 24 * 5) go();
-        else askConfirm('Cambiar esto empieza una planta nueva y se pierde la actual.', '🌱 Plantar de nuevo', go, () => { sel.value = prev; });
-        return;
-      }
-      if (it.needsReset) {
-        const go = () => { App.opts.env = Object.assign({}, App.opts.env, { [it.key]: v }); newPlant(); toast('Planta nueva con la ubicación y fecha elegidas.', 'good'); };
-        if (s.hour < 24 * 5) go();
-        else askConfirm('Cambiar la ubicación o la fecha de siembra empieza una planta nueva.', '🌱 Plantar de nuevo', go, () => { sel.value = s.env[it.key]; });
-        return;
-      }
+      if (it.type === 'opt' || it.needsReset) { setDraft(it.key, v, !!it.needsReset); return; }
       s.env[it.key] = v;
       if (it.after) it.after(s);
       if (it.auto) s.manual.add(it.auto);
@@ -4051,14 +4145,14 @@ function buildItem(it) {
     Object.assign(ctl, { row, sel, hint, chip });
   } else if (it.type === 'button') {
     const b = el('button', { class: 'btn ' + (it.cls || ''), onclick: it.act }, it.label);
-    Object.assign(ctl, { row: b });
+    Object.assign(ctl, { row: b, btn: b });
   } else if (it.type === 'buttons') {
     const box = el('div', { class: 'btns' }, ...it.list().map((x) => el('button', { class: 'btn ' + (x.cls || ''), title: x.title || '', onclick: x.act }, x.label)));
     Object.assign(ctl, { row: box });
   } else if (it.type === 'sub') {
     Object.assign(ctl, { row: el('div', { class: 'sub' }, it.label) });
   } else if (it.type === 'read') {
-    const d = el('div', { class: 'hint' });
+    const d = el('div', { class: 'hint ' + (it.cls || '') });
     Object.assign(ctl, { row: d, read: d });
   } else if (it.type === 'solution') {
     const d = el('div', { class: 'sol' });
@@ -4096,7 +4190,8 @@ function refreshControls(force) {
       c.st.title = r ? `Ideal ${r[0]}–${r[1]} ${it.unit}` : '';
     }
     if (it.type === 'check') c.inp.checked = it.get ? !!it.get(s) : !!s.env[it.key];
-    if (c.sel) { const v = it.type === 'opt' ? App.opts[it.key] : s.env[it.key]; if (document.activeElement !== c.sel) c.sel.value = v; }
+    if (c.sel) { const v = it.type === 'opt' ? draftOpt(it.key) : it.needsReset ? draftEnv(it.key) : s.env[it.key]; if (document.activeElement !== c.sel) c.sel.value = v; }
+    if (c.btn && it.id === 'replant') c.btn.classList.toggle('pending', !!App.draft);
     if (c.chip) {
       const key = it.type === 'feed' ? 'feed' : it.auto;
       const managed = !!key && (key !== 'potL' || (s.finalPotL && !hydro(s)));
@@ -4187,7 +4282,7 @@ function updatePanels() {
   setText($('#hudDay'), `Día ${day} · semana ${Math.floor(day / 7) + 1}${s.stage === 'flor' ? ` · flor día ${Math.floor(s.fd)}` : ''}${isOut(s) ? ' · ' + dateStr(s) : ''}`);
   const hod = s.hour % 24;
   setText($('#hudClock'), `${E.light ? '☀' : '🌙'} ${String(hod).padStart(2, '0')}:00${indoor(s) ? ` · luz ${s.env.photo}/${24 - s.env.photo}` : ''}`);
-  $('#paused').classList.toggle('hidden', App.running || s.dead || s.stage === 'cosechada');
+  $('#paused').classList.toggle('hidden', App.running || !App.started || s.dead || s.stage === 'cosechada');
   const pb = $('#btnPlay'), playing = App.running && !s.dead && s.stage !== 'cosechada';
   if (pb._st !== playing) { pb._st = playing; pb.innerHTML = playing ? PAUSE_SVG : PLAY_SVG; }
   // indicadores principales
@@ -4469,12 +4564,32 @@ function describeHit(h, s) {
 }
 
 /* ---------------- acciones generales ---------------- */
-function newPlant(sim) {
-  App.sim = sim || new Sim(Object.assign({}, App.opts, { autopilot: $('#autopilot').checked, env: App.opts.env ? Object.assign({}, App.opts.env) : undefined }));
+// La vista 3D queda oculta hasta arreglar su render (ver PENDIENTES.md)
+const SHOW_3D = false;
+/* primer "Plantar": la simulación recién empieza acá */
+function plantGo() {
+  if (App.draft) { newPlant(undefined, true); return; }
+  App.started = true; App.running = true;
+  $('#plantGo').classList.add('hidden');
+  updatePanels();
+}
+function newPlant(sim, run = true) {
+  if (sim) App.draft = null;
+  else if (App.draft) {
+    const d = App.draft;
+    App.draft = null;
+    App.opts = Object.assign({}, App.opts, d, { env: Object.assign({}, App.opts.env, d.env) });
+  }
+  // la planta nueva arranca a la hora real: el cielo de exterior coincide con el del momento
+  App.sim = sim || new Sim(Object.assign({}, App.opts, { startHour: new Date().getHours(), autopilot: $('#autopilot').checked, env: App.opts.env ? Object.assign({}, App.opts.env) : undefined }));
   App.rend.setSim(App.sim);
   App.acc = 0; App.logKey = null;
-  App.running = true;
+  if (run) App.started = true;
+  App.running = run;
+  $('#plantGo').classList.toggle('hidden', App.started);
+  const open = $$('details.grp').filter((d) => d.open).map((d) => d.dataset.id);
   buildControls();
+  for (const d of $$('details.grp')) if (open.includes(d.dataset.id)) d.open = true;
   refreshControls(true);
   updatePanels();
 }
@@ -4537,7 +4652,7 @@ function showHarvest(h) {
 function closeModal() { hideModal(); saveHarvestRecord(); }
 
 function dryControls(ctlBox, outBox, h, save) {
-  const p = { tDry: 18, rhDry: 60, air: 1, method: 'ramas', dark: true, cureWeeks: 4, burp: 2 };
+  const p = { tDry: 18, rhDry: 60, air: 1, method: 'ramas', dark: true, cureWeeks: 4, burpEvery: 1, burpMin: 15, burpWeeks: 1 };
   const defs = [
     ['range', 'tDry', 'Temperatura de secado', 8, 32, 0.5, '°C', [15, 21, 12, 24]],
     ['range', 'rhDry', 'Humedad de secado', 25, 90, 1, '%', [55, 62, 48, 66]],
@@ -4545,7 +4660,10 @@ function dryControls(ctlBox, outBox, h, save) {
     ['sel', 'method', 'Cómo colgar', [['entera', 'Planta entera'], ['ramas', 'Ramas'], ['rejilla', 'Cogollos manicurados en rejilla']]],
     ['chk', 'dark', 'Secar a oscuras'],
     ['range', 'cureWeeks', 'Curado en frascos', 0, 16, 1, 'semanas', [2, 8, 1, 12]],
-    ['sel', 'burp', 'Abrir los frascos', [[0, 'Nunca'], [1, 'De vez en cuando'], [2, 'A diario la 1ª semana']]]
+    ['sub', 'Abrir los frascos ("eructar")'],
+    ['range', 'burpEvery', 'Abrirlos cada', 0, 14, 1, (v) => (v === 0 ? 'nunca' : v === 1 ? 'día' : 'días'), [1, 3, 1, 7]],
+    ['range', 'burpMin', 'Tiempo abiertos cada vez', 0, 60, 1, 'min', [10, 20, 5, 30]],
+    ['range', 'burpWeeks', 'Abrirlos durante', 0, 8, 1, (v) => (v === 1 ? 'semana' : 'semanas'), [1, 2, 1, 4]]
   ];
   const render = () => {
     const r = dryCure(h, p);
@@ -4560,10 +4678,13 @@ function dryControls(ctlBox, outBox, h, save) {
     if (d[0] === 'range') {
       const v = el('b'), inp = el('input', { type: 'range', min: d[3], max: d[4], step: d[5], value: p[d[1]] });
       inp.style.setProperty('--track', bandOf(d[7], d[3], d[4]));
-      const upd = () => { p[d[1]] = +inp.value; v.textContent = `${nf(+inp.value, d[5] < 1 ? 1 : 0)} ${d[6]}`; render(); };
+      const txt = (x) => (typeof d[6] === 'function' && d[6](x) === 'nunca' ? 'nunca' : `${nf(x, d[5] < 1 ? 1 : 0)} ${typeof d[6] === 'function' ? d[6](x) : d[6]}`);
+      const upd = () => { p[d[1]] = +inp.value; v.textContent = txt(+inp.value); render(); };
       inp.addEventListener('input', upd);
       ctlBox.append(el('div', { class: 'ctl' }, el('div', { class: 'ctl-h' }, el('label', null, d[2]), v), inp));
-      v.textContent = `${nf(p[d[1]], d[5] < 1 ? 1 : 0)} ${d[6]}`;
+      v.textContent = txt(p[d[1]]);
+    } else if (d[0] === 'sub') {
+      ctlBox.append(el('div', { class: 'sub' }, d[1]));
     } else if (d[0] === 'sel') {
       const sel = el('select', null, ...d[3].map(([a, b]) => el('option', { value: a }, b)));
       sel.value = p[d[1]];
@@ -5047,8 +5168,21 @@ function buildDiag() {
   const disScn = { botrytis: 'botrytis', pythium: 'encharcada', hlvd: 'hlvd' };
   for (const [k, p] of Object.entries(DISEASES)) $('#disCards').append(pestCard(k, p, disScn[k]));
 }
+/* Fotos reales de cada plaga (Wikimedia Commons, licencias libres; el crédito va al pie) */
+const PEST_PHOTOS = {
+  mites: { src: 'plagas/mites.jpg', author: "Gilles San Martin", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:Tetranychus_urticae_with_silk_threads.jpg" },
+  thrips: { src: 'plagas/thrips.jpg', author: "Frank Peairs, Colorado State University, Bugwood.org", license: "CC BY 3.0", page: "https://commons.wikimedia.org/wiki/File:Frankliniella_occidentalis_5364132-LGPT.jpg" },
+  aphids: { src: 'plagas/aphids.jpg', author: "Sanjay ach", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Sa_aphid_colony_highres.jpg" },
+  whitefly: { src: 'plagas/whitefly.jpg', author: "NobbiP", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Gew%C3%A4chshaus-Wei%C3%9Fe_Fliege_Trialeurodes_vaporariorum_5226.jpg" },
+  gnats: { src: 'plagas/gnats.jpg', author: "AfroBrazilian", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Bradysia_sp._01.JPG" },
+  caterpillars: { src: 'plagas/caterpillars.jpg', author: "Gyorgy Csoka, Hungary Forest Research Institute, Bugwood.org", license: "CC BY 3.0 us", page: "https://commons.wikimedia.org/wiki/File:Helicoverpa_armigera_larva.jpg" }
+};
 function pestCard(k, p, scn) {
-  return el('div', { class: 'card' }, el('h3', null, `${p.icon} ${p.name}`), el('div', { class: 'meta' }, p.sci),
+  const ph = PEST_PHOTOS[k];
+  return el('div', { class: 'card' },
+    ph ? el('figure', { class: 'pest-ph' }, el('img', { src: ph.src, alt: `${p.name} (${p.sci})`, loading: 'lazy', decoding: 'async' }),
+      el('figcaption', null, 'Foto: ', el('a', { href: ph.page, target: '_blank', rel: 'noopener' }, ph.author), ` · ${ph.license}`)) : null,
+    el('h3', null, `${p.icon} ${p.name}`), el('div', { class: 'meta' }, p.sci),
     el('table', null, el('tr', null, el('td', null, 'La favorece'), el('td', null, p.favor)), el('tr', null, el('td', null, 'Síntomas'), el('td', null, p.symptoms)), el('tr', null, el('td', null, 'Prevención'), el('td', null, p.prevent)), el('tr', null, el('td', null, 'Control'), el('td', null, p.control))),
     el('div', { class: 'act btns' },
       el('button', { class: 'btn', onclick: () => { const m = App.sim.introduce(k); switchTab('sim'); toast(m || `${p.name} introducida en la planta del simulador.`, 'warn'); } }, '▶ Introducir en mi planta'),
@@ -5056,10 +5190,92 @@ function pestCard(k, p, scn) {
 }
 function drawLeafIcons() { for (const cv of $$('canvas[data-leaf]')) drawLeafIcon(cv, LEAF_ICONS[cv.dataset.leaf] || {}); }
 
+/* ---------------- TÉCNICAS: dibujos animados de cada corte ----------------
+   SVG con animaciones CSS (ciclo de 6 s). Las piezas comunes (hoja, maceta,
+   tallo) se arman con estas funciones; el <symbol> de la hoja vive una sola
+   vez en la página. */
+const TA = {
+  leaf: (x, y, r = 0, s = 1, cls = '') => `<use href="#taLeaf" class="${cls}" transform="translate(${x} ${y}) rotate(${r}) scale(${s})"/>`,
+  pot: (x, w = 44, h = 26, y = 112) => `<path class="ta-pot" d="M${x - w / 2} ${y}h${w}l-${w * 0.09} ${h}h-${w * 0.82}z"/><rect class="ta-soil" x="${x - w / 2 + 1}" y="${y}" width="${w - 2}" height="4" rx="1.5"/>`,
+  stem: (x1, y1, x2, y2, w = 3) => `<line class="ta-stem" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${w}"/>`,
+  tool: (x, y, ch, cls = 'ta-tool') => `<text class="${cls}" x="${x}" y="${y}" font-size="20" text-anchor="middle">${ch}</text>`,
+  // nudo con un par de hojas
+  node: (x, y, s = 1) => TA.leaf(x - 2, y, -62, s) + TA.leaf(x + 2, y, 62, s),
+  // brote de punta (hojitas nuevas)
+  tip: (x, y, s = 1) => TA.leaf(x, y, -18, 0.55 * s) + TA.leaf(x, y, 18, 0.55 * s) + TA.leaf(x, y, 0, 0.7 * s),
+  bud: (x, y, s = 1, cls = '') => `<ellipse class="ta-bud ${cls}" cx="${x}" cy="${y}" rx="${4.5 * s}" ry="${8 * s}"/>`,
+  // planta tipo pino: tallo con n nudos desde (x, base) hacia arriba
+  plant: (x, base, n = 4, gap = 17, s = 1) => {
+    let o = TA.stem(x, base, x, base - gap * n - 6);
+    for (let i = 1; i <= n; i++) o += TA.node(x, base - gap * i, s * (1.15 - i * 0.1));
+    return o;
+  }
+};
+const TEC_ANIM = {
+  topping: () => TA.pot(120) + TA.stem(120, 112, 120, 44) +
+    TA.node(120, 96, 1.05) + TA.node(120, 79, 0.95) +
+    `<g class="ta-new">${TA.stem(120, 62, 106, 36, 2.4)}${TA.tip(106, 36)}${TA.stem(120, 62, 134, 36, 2.4)}${TA.tip(134, 36)}</g>` +
+    TA.node(120, 62, 0.85) +
+    `<g class="ta-fall">${TA.stem(120, 58, 120, 30, 2.6)}${TA.node(120, 44, 0.7)}${TA.tip(120, 30)}</g>` +
+    `<line class="ta-cutline" x1="108" y1="57" x2="132" y2="57"/>` + TA.tool(146, 62, '✂️'),
+  fim: () => TA.pot(120) + TA.stem(120, 112, 120, 50) +
+    TA.node(120, 96, 1.05) + TA.node(120, 79, 0.95) + TA.node(120, 62, 0.85) +
+    `<g class="ta-new">${[-26, -9, 9, 26].map((a) => `<g transform="rotate(${a} 120 47)">${TA.stem(120, 47, 120, 28, 2)}${TA.tip(120, 28, 0.85)}</g>`).join('')}</g>` +
+    TA.tip(120, 47, 0.8) +
+    `<g class="ta-fall">${TA.leaf(120, 42, 0, 0.75)}${TA.leaf(120, 42, -16, 0.55)}${TA.leaf(120, 42, 16, 0.55)}</g>` +
+    `<line class="ta-cutline" x1="108" y1="40" x2="132" y2="40"/>` + TA.tool(146, 45, '✂️'),
+  lst: () => TA.pot(120) +
+    `<line class="ta-tie" x1="98" y1="113" x2="86" y2="86"/>` +
+    `<g class="ta-bend" style="transform-origin:120px 112px">${TA.stem(120, 112, 120, 30)}${TA.tip(120, 30)}` +
+    [96, 80, 64, 48].map((y) => `${TA.leaf(120, y, 62, 0.75)}<g class="ta-unbend" style="transform-origin:120px ${y}px">${TA.stem(120, y, 120, y - 26, 2.4)}${TA.tip(120, y - 26, 0.85)}</g>`).join('') + '</g>',
+  super: () => TA.pot(120) + TA.plant(120, 112, 3, 17, 0.95) +
+    TA.stem(120, 112, 120, 46) +
+    `<g class="ta-crop" style="transform-origin:120px 46px">${TA.stem(120, 46, 120, 20, 2.6)}${TA.tip(120, 20)}${TA.node(120, 34, 0.6)}</g>` +
+    `<circle class="ta-knuckle" cx="120" cy="46" r="4"/>` + TA.tool(140, 52, '🤏'),
+  scrog: () => TA.pot(120, 52) + TA.stem(120, 112, 120, 84, 3.4) +
+    [-30, 0, 30].map((dx, i) => `<g class="ta-tuck" style="transform-origin:${120 + dx}px 60px;animation-delay:${-i * 0.25}s">${TA.stem(120 + dx * 0.4, 84, 120 + dx, 60, 2.4)}${TA.stem(120 + dx, 60, 120 + dx, 34, 2.2)}${TA.tip(120 + dx, 34, 0.85)}</g>`).join('') +
+    TA.node(120, 96, 1) + `<g class="ta-net">${[60, 80, 100, 120, 140, 160, 180].map((x) => `<line x1="${x}" y1="56" x2="${x + 8}" y2="64"/>`).join('')}<line x1="52" y1="60" x2="190" y2="60"/></g>`,
+  sog: () => [40, 72, 104, 136, 168, 200].map((x, i) => TA.pot(x, 24, 16, 122) +
+    `<g class="ta-up" style="transform-origin:${x}px 122px;animation-delay:${-i * 0.08}s">${TA.stem(x, 122, x, 62, 2.2)}${TA.node(x, 108, 0.55)}${TA.node(x, 94, 0.5)}${TA.bud(x, 68, 1.1, 'ta-late')}</g>`).join(''),
+  defol: () => TA.pot(120) + TA.stem(120, 112, 120, 26) +
+    [96, 78, 60, 42].map((y, i) => TA.bud(120 + (i % 2 ? 12 : -12), y - 6, 0.6, 'ta-glow') + `<g class="ta-drop" style="animation-delay:${-i * 0.15}s">${TA.leaf(118, y, -62, 1.15 - i * 0.12)}</g>` + `<g class="ta-drop" style="animation-delay:${-i * 0.15 - 0.3}s">${TA.leaf(122, y, 62, 1.15 - i * 0.12)}</g>`).join('') +
+    TA.tip(120, 26) + TA.bud(120, 30, 0.8, 'ta-glow') + `<g class="ta-rays">${[95, 120, 145].map((x) => `<line x1="${x}" y1="4" x2="${x + (x - 120) * 0.3}" y2="70"/>`).join('')}</g>`,
+  lollipop: () => TA.pot(120) + TA.stem(120, 112, 120, 22) +
+    `<g class="ta-drop">${TA.stem(120, 100, 96, 88, 2)}${TA.leaf(96, 88, -40, 0.7)}${TA.stem(120, 100, 144, 88, 2)}${TA.leaf(144, 88, 40, 0.7)}${TA.node(120, 100, 0.8)}</g>` +
+    `<g class="ta-drop" style="animation-delay:-.3s">${TA.stem(120, 84, 100, 72, 2)}${TA.bud(100, 72, 0.45)}${TA.stem(120, 84, 140, 72, 2)}${TA.bud(140, 72, 0.45)}${TA.node(120, 84, 0.75)}</g>` +
+    TA.stem(120, 62, 98, 40, 2.2) + TA.stem(120, 62, 142, 40, 2.2) + TA.node(120, 62, 0.85) +
+    TA.bud(98, 38, 0.95, 'ta-glow') + TA.bud(142, 38, 0.95, 'ta-glow') + TA.bud(120, 26, 1.1, 'ta-glow') +
+    `<g class="ta-rays">${[98, 120, 142].map((x) => `<line x1="${x}" y1="2" x2="${x}" y2="26"/>`).join('')}</g>`,
+  clone: () => TA.pot(78) + TA.stem(78, 112, 78, 34) + TA.node(78, 96, 1) + TA.node(78, 78, 0.9) + TA.tip(78, 34) +
+    TA.stem(78, 62, 96, 50, 2.2) +
+    `<g class="ta-move">${TA.stem(96, 50, 104, 36, 2.2)}${TA.leaf(100, 43, 50, 0.6)}${TA.tip(104, 36, 0.85)}</g>` +
+    `<line class="ta-cutline" x1="90" y1="56" x2="104" y2="46"/>` + TA.tool(112, 58, '✂️') +
+    `<path class="ta-cup" d="M162 108h28l-3 30h-22z"/><rect class="ta-soil" x="163" y="108" width="26" height="4" rx="1.5"/>` +
+    `<g class="ta-roots">${[-6, -2, 2, 6].map((dx) => `<line x1="${176 + dx * 0.3}" y1="114" x2="${176 + dx}" y2="${128 + Math.abs(dx)}"/>`).join('')}</g>` +
+    `<path class="ta-dome" d="M159 108a17 22 0 0 1 34 0"/>`,
+  transplant: () => TA.pot(66, 36, 22, 116) + TA.pot(170, 64, 34, 104) +
+    `<g class="ta-lift"><g class="ta-ball"><ellipse cx="66" cy="126" rx="14" ry="11"/>${[-8, -3, 3, 8].map((dx) => `<line x1="${66 + dx}" y1="${118}" x2="${66 + dx * 1.2}" y2="${135}"/>`).join('')}</g>${TA.stem(66, 116, 66, 70, 2.4)}${TA.node(66, 100, 0.75)}${TA.node(66, 84, 0.65)}${TA.tip(66, 70, 0.8)}</g>` +
+    `<g class="ta-roots" style="transform-origin:170px 126px">${[-22, -12, 12, 22].map((dx) => `<line x1="170" y1="126" x2="${170 + dx}" y2="${132 + Math.abs(dx) * 0.15}"/>`).join('')}</g>`
+};
+function tecFigure(id) {
+  const f = TEC_ANIM[id];
+  if (!f) return null;
+  const wrap = el('figure', { class: 'tec-anim ta-' + id });
+  wrap.innerHTML = `<svg viewBox="0 0 240 145" role="img" aria-label="Animación de la técnica">${f()}</svg>`;
+  return wrap;
+}
+function taDefs() {
+  if ($('#taDefs')) return;
+  const d = document.createElement('div');
+  d.innerHTML = `<svg id="taDefs" width="0" height="0" style="position:absolute" aria-hidden="true"><defs><symbol id="taLeaf" overflow="visible">${[[-62, 13], [-31, 18], [0, 22], [31, 18], [62, 13]].map(([a, l]) => `<ellipse cx="0" cy="${-l / 2}" rx="2.6" ry="${l / 2}" transform="rotate(${a})"/>`).join('')}</symbol></defs></svg>`;
+  document.body.append(d.firstChild);
+}
+
 /* ---------------- TÉCNICAS ---------------- */
 function buildTec() {
+  taDefs();
   for (const t of TECHNIQUES) {
-    $('#tecCards').append(el('div', { class: 'card' }, el('h3', null, `${t.icon} ${t.name}`),
+    $('#tecCards').append(el('div', { class: 'card' }, tecFigure(t.id), el('h3', null, `${t.icon} ${t.name}`),
       el('table', null, el('tr', null, el('td', null, 'Cuándo'), el('td', null, t.when)), el('tr', null, el('td', null, 'Cómo'), el('td', null, t.how)), el('tr', null, el('td', null, 'Efecto'), el('td', null, t.effect)), el('tr', null, el('td', null, 'Riesgo'), el('td', null, t.risk))),
       t.action ? el('div', { class: 'act' }, el('button', { class: 'btn', onclick: () => tryTechnique(t) }, '▶ Probar en el simulador')) : null));
   }
@@ -5213,15 +5429,16 @@ function init() {
   if (!App.rend) App.rend = new Renderer($('#cv'));
   App.rend.resize();
   for (const b of $$('.tabs button')) b.addEventListener('click', () => switchTab(b.dataset.tab));
-  $('#btnPlay').addEventListener('click', () => { const s = App.sim; if (s.dead || s.stage === 'cosechada') { newPlant(); return; } App.running = !App.running; updatePanels(); });
-  $('#btnStep').addEventListener('click', () => { const s = App.sim; for (let i = 0; i < 24; i++) s.step(); updatePanels(); });
+  $('#btnPlay').addEventListener('click', () => { const s = App.sim; if (!App.started) { plantGo(); return; } if (s.dead || s.stage === 'cosechada') { newPlant(); return; } App.running = !App.running; updatePanels(); });
+  $('#btnStep').addEventListener('click', () => { const s = App.sim; if (!App.started) { App.started = true; $('#plantGo').classList.add('hidden'); } for (let i = 0; i < 24; i++) s.step(); updatePanels(); });
   $('#btnReset').addEventListener('click', () => newPlant());
+  $('#plantGo button').addEventListener('click', plantGo);
   segmented($('#speedSeg'), (b) => { App.speed = +b.dataset.v; });
   segmented($('#viewSeg'), (b, user) => { if (user) setView(b.dataset.v === '3d', true); });
   $('#btnMax').addEventListener('click', () => { document.body.classList.toggle('stage-max'); $('#cvwrap').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
   document.addEventListener('keydown', (e) => {
     if (App.tab !== 'sim' || e.metaKey || e.ctrlKey || e.altKey || e.target.matches('input, select, textarea')) return;
-    if (e.key === 'v' || e.key === 'V') setView(!App.view3d, true);
+    if ((e.key === 'v' || e.key === 'V') && SHOW_3D) setView(!App.view3d, true);
   });
 
   const pickPane = segmented($('#insSeg'), (b) => {
@@ -5297,9 +5514,8 @@ function init() {
   buildSeries();
   buildCiclo(); buildLab(); buildProducts(); buildDiag(); buildTec(); buildCosecha(); buildFuentes();
   buildSubbars();
-  newPlant();
+  newPlant(undefined, false);
   App.tab = 'sim';
-  if (store.get('view', '2d') === '3d') setView(true);
   requestAnimationFrame(() => { moveInd($('.tabs'), $('.tabs button.on')); for (const b of $$('.segc')) b._sync && b._sync(); });
   if (document.fonts) document.fonts.ready.then(() => { moveInd($('.tabs'), $('.tabs button.on')); for (const b of $$('.segc')) b._sync && b._sync(); });
   requestAnimationFrame(frame);

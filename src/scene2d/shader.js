@@ -44,25 +44,111 @@ float occlusion(vec2 p, vec2 L){
   return exp(-occ * 0.5);
 }
 
+// distancia de p al segmento ab
+float segD(vec2 p, vec2 a, vec2 b){ vec2 pa = p - a, ba = b - a; float t = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0); return length(pa - ba * t); }
+// un parante de la carpa: tubo gris con brillo en el centro
+vec3 pole(vec3 c, float d, float w, float lit){
+  float k = smoothstep(w, w * 0.45, d);
+  vec3 col = vec3(0.16, 0.17, 0.18) + vec3(0.22) * smoothstep(w * 0.5, 0.0, d) * (0.25 + lit * 1.5);
+  return mix(c, col, k);
+}
+// mylar arrugado: u corre a lo largo de los pliegues
+vec3 mylar(vec2 q, float u, float lit){
+  float warp = fbm(q * vec2(1.6, 3.0)) * 1.6;
+  float folds = sin(u + warp) * 0.5 + 0.5;
+  float crinkle = fbm(q * vec2(30.0, 14.0) + 3.1);
+  vec3 base = vec3(0.075, 0.08, 0.088) + vec3(0.01) * folds;
+  return base + uLampCol * lit * (0.12 + 0.24 * pow(folds, 4.0) + 0.18 * pow(crinkle, 3.0));
+}
+
+// interior: una carpa vista desde la puerta abierta. Pared del fondo, paredes
+// laterales y techo de mylar en perspectiva, parantes, piso, ventilador de
+// pinza en el parante izquierdo y filtro de carbón colgado del techo.
 vec3 indoorBg(vec2 p, out float lit){
-  float U = uRes.y;
+  float U = uRes.y, W = uRes.x, H = uRes.y;
   vec2 q = p / U;
   vec2 lc = vec2((uLamp.x + uLamp.y) * 0.5, uLamp.z);
-  // mylar: pliegues verticales y arrugas que agarran la luz
-  float warp = fbm(q * vec2(1.6, 3.0)) * 1.6;
-  float folds = sin(q.x * 52.0 + warp) * 0.5 + 0.5;
-  float crinkle = fbm(q * vec2(30.0, 14.0) + 3.1);
   float d = length((p - lc) / U * vec2(0.85, 1.0));
   lit = uLight * (0.2 + 0.8 * uPPFD) * exp(-d * 2.1);
-  vec3 base = vec3(0.07, 0.078, 0.086) + vec3(0.008) * folds;
-  vec3 c = base + uLampCol * lit * (0.1 + 0.2 * pow(folds, 4.0) + 0.16 * pow(crinkle, 3.0));
-  c *= 1.0 - 0.35 * smoothstep(0.25, 0.75, abs(p.x / uRes.x - 0.5));
-  // piso con reflejo de la luz
-  if (p.y > uFloorY){
-    float k = (p.y - uFloorY) / U;
-    c = vec3(0.05, 0.055, 0.06) * (1.0 - k * 0.6) + uLampCol * lit * 0.12 * exp(-k * 6.0);
+  float bx0 = W * 0.5 - min(W * 0.37, U * 0.62), bx1 = W - bx0, bt = U * 0.05, fy = uFloorY;
+  vec3 c;
+  float tl = (bx0 - p.x) / bx0, tr = (p.x - bx1) / bx0;
+  float tc = (bt - p.y) / bt, tf = (p.y - fy) / max(1.0, H - fy);
+  bool left = tl > 0.0 && p.y > bt * (1.0 - tl) && p.y < fy + (H - fy) * tl;
+  bool right = tr > 0.0 && p.y > bt * (1.0 - tr) && p.y < fy + (H - fy) * tr;
+  if (left || right){
+    float t = left ? tl : tr;
+    // la pared lateral recibe la luz de costado: más oscura y con pliegues verticales
+    float lw = lit * (0.55 + 0.3 * (1.0 - t));
+    c = mylar(q * vec2(0.6, 1.0) + (left ? 0.0 : 7.0), t * 26.0, lw) * (0.78 - 0.18 * t);
+  } else if (p.y < bt){
+    // techo
+    c = mylar(q * vec2(1.0, 0.4) + 3.0, q.x * 40.0, lit * 0.5) * (0.6 - 0.15 * tc);
+  } else if (p.y > fy){
+    // piso de la carpa: lona oscura con costuras que fugan al fondo
+    float k = tf;
+    vec2 fq = vec2((p.x - W * 0.5) / mix(bx1 - bx0, W * 1.6, k), k);
+    c = vec3(0.05, 0.055, 0.06) * (1.0 - k * 0.5) + uLampCol * lit * 0.14 * exp(-k * 5.0);
+    c += vec3(0.015) * smoothstep(0.012, 0.0, abs(fract(fq.x * 4.0) - 0.5) - 0.48);
     c += vec3(0.02) * n2(p * 0.05);
+  } else {
+    // pared del fondo
+    c = mylar(q, q.x * 52.0, lit);
+    // cierre (zipper) de la ventana de ventilación arriba a la derecha
+    vec2 vc = vec2(bx1 - (bx1 - bx0) * 0.16, bt + U * 0.11);
+    float vr = length((p - vc) / U);
+    c = mix(c, vec3(0.03), smoothstep(0.052, 0.048, vr) * 0.85);
+    c += vec3(0.1) * smoothstep(0.004, 0.0, abs(vr - 0.053));
   }
+  // parantes: el marco del fondo y las aristas hacia adelante
+  float pw = U * 0.006;
+  float eb = min(min(segD(p, vec2(bx0, bt), vec2(bx1, bt)), segD(p, vec2(bx0, fy), vec2(bx1, fy))),
+                 min(segD(p, vec2(bx0, bt), vec2(bx0, fy)), segD(p, vec2(bx1, bt), vec2(bx1, fy))));
+  c = pole(c, eb, pw, lit);
+  float tt = clamp(min(tl, tr) < 0.0 ? max(tl, tr) : 0.0, 0.0, 1.0);
+  float ed = min(min(segD(p, vec2(bx0, bt), vec2(0.0, 0.0)), segD(p, vec2(bx1, bt), vec2(W, 0.0))),
+                 min(segD(p, vec2(bx0, fy), vec2(0.0, H)), segD(p, vec2(bx1, fy), vec2(W, H))));
+  c = pole(c, ed, pw * (1.0 + 2.2 * tt), lit);
+  // esquineros
+  for (int i = 0; i < 4; i++){
+    vec2 k = vec2(i < 2 ? bx0 : bx1, (i == 0 || i == 2) ? bt : fy);
+    vec2 dd = abs(p - k);
+    c = mix(c, vec3(0.06), smoothstep(pw * 2.4, pw * 2.0, max(dd.x, dd.y)));
+  }
+  // barra del techo (la lámpara cuelga de acá)
+  float by = bt * 0.55;
+  c = pole(c, segD(p, vec2(bx0 * 0.45, by), vec2(W - bx0 * 0.45, by)), pw * 1.2, lit);
+  // filtro de carbón colgado del techo, con la manguera hacia la ventana
+  vec2 fc = vec2(bx1 - (bx1 - bx0) * 0.16, bt + U * 0.11);
+  vec2 fsz = vec2(U * 0.1, U * 0.038);
+  vec2 fd = (p - (fc + vec2(-U * 0.13, U * 0.0))) ;
+  vec2 fb = abs(fd) - fsz;
+  float fbox = length(max(fb, 0.0)) + min(max(fb.x, fb.y), 0.0) - U * 0.012;
+  if (fbox < 0.0){
+    vec2 hg = fract(p / (5.0 * uDpr)) - 0.5;
+    float holes = 1.0 - 0.55 * smoothstep(0.28, 0.16, length(hg));   // chapa perforada
+    float shade = 0.7 + 0.3 * cos(fd.y / fsz.y * 1.5);
+    c = vec3(0.13, 0.14, 0.15) * holes * shade + uLampCol * lit * 0.08;
+    if (abs(fd.x) > fsz.x - U * 0.006) c = vec3(0.05) * shade; // tapas
+  }
+  float hose = segD(p, fc + vec2(-U * 0.02, 0.0), fc + vec2(-U * 0.006, 0.0));
+  c = mix(c, vec3(0.1, 0.105, 0.11) * (0.8 + 0.4 * sin(p.x * 0.8 / uDpr)), smoothstep(U * 0.024, U * 0.02, hose));
+  // ventilador de pinza en el parante izquierdo: las aspas giran
+  vec2 fanC = vec2(bx0 + U * 0.02, fy - (fy - bt) * 0.62);
+  vec2 fv = (p - fanC) / U;
+  float fr = length(fv);
+  if (fr < 0.068){
+    float ang = atan(fv.y, fv.x) + uTime * 9.0;
+    float blades = smoothstep(0.25, 0.6, sin(ang * 3.0) * 0.5 + 0.5) * smoothstep(0.012, 0.018, fr);
+    vec3 fcol = vec3(0.07, 0.075, 0.08) + vec3(0.05) * blades * 0.6;   // aspas borrosas
+    float grill = smoothstep(0.004, 0.0, abs(fract(fr * 90.0) - 0.5) * 0.02);
+    fcol += vec3(0.1) * grill * 0.35 + uLampCol * lit * 0.06;
+    fcol = mix(fcol, vec3(0.18), smoothstep(0.0035, 0.0, abs(fr - 0.064)));  // aro
+    fcol = mix(fcol, vec3(0.2), smoothstep(0.014, 0.011, fr));            // centro
+    c = fcol;
+  }
+  c = pole(c, segD(p, fanC, vec2(bx0, fanC.y + U * 0.07)), pw * 1.4, lit);   // pinza
+  c *= 1.0 - 0.25 * smoothstep(0.3, 0.75, abs(p.x / W - 0.5));
   return c;
 }
 

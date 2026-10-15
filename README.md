@@ -22,6 +22,8 @@ que ser **GitHub Actions**).
 | Archivo | Para qué sirve |
 |---|---|
 | `index.html` | La plataforma: simulador (con su escena en 2D o en 3D) y guía. El simulador sigue siendo un script en línea, sin dependencias. |
+| `public/plagas/` | Fotos de plagas (Wikimedia Commons; autor y licencia en `PEST_PHOTOS`, dentro de `index.html`). |
+| `PENDIENTES.md` | Lo que queda anotado: el 3D que no renderiza y la idea de equipamiento de interior. |
 | `indoor.html`, `src/indoor/` | La carpa Cultivarg 80 × 80 × 160 en 3D (Three.js + Anime.js). Abierta sola funciona como antes; con `?embed` es la vista 3D de la escena del simulador. |
 | `index.min.html` | El simulador solo (sin 3D), minificado y autocontenido. |
 | `canvas.html` | El simulador solo, comprimido (gzip + base64, < 200 000 caracteres) para incrustar donde hay límite de tamaño, como una ventana del canvas de Paseo. |
@@ -30,16 +32,16 @@ que ser **GitHub Actions**).
 
 | Pestaña | Contenido |
 |---|---|
-| Simulador | Planta dibujada en canvas, paso de 1 hora simulada, controles con bandas de valores ideales por etapa, piloto automático por variable, diagnóstico en vivo, factores limitantes (ley de Liebig), historial, bitácora, cosecha, secado y curado, 17 escenarios. |
+| Simulador | Arranca en pausa, en exterior y con la hora real: el tiempo corre al tocar **Plantar**. Los cambios de "Planta y modo de cultivo" se juntan y se aplican con "Plantar de nuevo con esta configuración". Planta dibujada en canvas, paso de 1 hora simulada, controles con bandas de valores ideales por etapa, piloto automático por variable, diagnóstico en vivo, factores limitantes (ley de Liebig), historial, bitácora, cosecha, secado y curado, 17 escenarios. |
 | Escena 2D | La planta dibujada con la lógica de síntomas, plagas y raíces, compuesta en la GPU (WebGL2): mylar, haz de luz que se corta con las hojas, polvo en suspensión, sombras, bloom, cielo con nubes, sol y lluvia en exterior, humedad, calor y noche. Animaciones con anime.js: encendido del LED, riego, cambio de etapa, planta nueva. A muchos días por segundo el día y la noche se promedian (timelapse) en vez de parpadear. Sin WebGL2 (o con `?legacy2d`) vuelve al dibujo anterior. |
-| Escena 3D | El interruptor **2D / 3D** (tecla V) muestra la misma planta en la carpa Cultivarg 80 × 80 × 160, o en un patio si el simulador está en exterior (sol por hora y latitud, nubes, lluvia, techo). Comparten reloj, barra de tiempo y Ajustes; riegos, cambios de etapa y cosecha se actúan en 3D. Brillo de la imagen, vistas, cine, térmica, mapa de PPFD y flujo de aire. |
+| Escena 3D | **Oculta por ahora** (no se ve el render; ver `PENDIENTES.md`). El interruptor 2D / 3D muestra la misma planta en la carpa Cultivarg 80 × 80 × 160 o en un patio. |
 | Microscopio (🔬 o tecla Z en 3D) | Zoom continuo del cogollo al átomo: cálices, pistilos y miles de tricomas → bosque de tricomas capitados → resina con THC/CBD/CBN → la molécula real (coordenadas 3D de PubChem) → un átomo de carbono con núcleo y orbitales. Los colores de tricomas, pistilos y la molécula salen del estado del simulador. |
 | Ciclo de vida | Etapas con duración, necesidades, riesgos y consejos; línea de tiempo por genética; fotoperíodo y fitocromo; sexo; autoflorecientes. |
 | Laboratorio | Barril de Liebig, tabla de VPD (clic = aplicar al simulador), pH vs. disponibilidad de nutrientes, luz/CO₂/DLI, temperatura (fotosíntesis vs. respiración). |
 | Productos y químicos | Fertilizantes, aditivos, enmiendas, microorganismos, fitosanitarios, PGR y prohibidos, con semáforo de seguridad; cómo actúan los químicos; orden de mezcla; mitos. |
-| Diagnóstico | Asistente síntoma → causa; carencias y excesos con hojas ilustradas; plagas y enfermedades. |
-| Técnicas | Topping, FIM, LST, supercropping, SCROG, SOG, defoliación, lollipop, esquejes, trasplante. |
-| Cosecha y curado | Microscopio de tricomas por día de floración; simulador de secado y curado. |
+| Diagnóstico | Asistente síntoma → causa; carencias y excesos con hojas ilustradas; plagas (con foto real de Wikimedia Commons, crédito y licencia al pie) y enfermedades. |
+| Técnicas | Topping, FIM, LST, supercropping, SCROG, SOG, defoliación, lollipop, esquejes, trasplante, cada una con un dibujo animado del corte o del doblado. |
+| Cosecha y curado | Microscopio de tricomas por día de floración; simulador de secado y curado (cada cuántos días, cuántos minutos y durante cuántas semanas se abren los frascos). |
 | Fuentes | Bibliografía (DOI verificados), glosario y marco legal. |
 
 ## Modelo (resumen)
