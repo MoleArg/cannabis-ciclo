@@ -70,7 +70,7 @@ export function makeScene2D(Base, D) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       this.u = {};
-      for (const n of ['uPlant', 'uRes', 'uTime', 'uDpr', 'uOut', 'uLight', 'uPPFD', 'uNight', 'uRH', 'uHeat', 'uRain', 'uCloud', 'uDay', 'uUV', 'uLeak', 'uIntro', 'uLampCol', 'uLamp', 'uFloorY', 'uSun', 'uHover', 'uPulse', 'uProx']) this.u[n] = gl.getUniformLocation(pr, n);
+      for (const n of ['uPlant', 'uRes', 'uTime', 'uDpr', 'uOut', 'uLight', 'uPPFD', 'uNight', 'uRH', 'uHeat', 'uRain', 'uCloud', 'uDay', 'uUV', 'uLeak', 'uIntro', 'uLampCol', 'uLamp', 'uFloorY', 'uSun', 'uHover', 'uPulse', 'uProx', 'uTent']) this.u[n] = gl.getUniformLocation(pr, n);
     }
 
     resize() {
@@ -160,7 +160,7 @@ export function makeScene2D(Base, D) {
       const keep = this.ctx;
       this.ctx = o;
       this.drawRuler(sim);
-      if (this.loupe && sim.stage === 'flor') this.drawLoupe(sim, t);
+      if (this.loupe) this.drawLoupe(sim, t);
       this.ctx = keep;
       const t1 = performance.now();
       this.composite(sim, E, t);
@@ -605,6 +605,8 @@ export function makeScene2D(Base, D) {
       const pc = this.pulseAt || [w / 2, h / 2];
       gl.uniform3f(u.uPulse, pc[0], pc[1], this.fx.pulse);
       gl.uniform1f(u.uProx, E.prox || 0);
+      const tg = this.tentGeo(sim);
+      gl.uniform3f(u.uTent, tg.x0, tg.x1, tg.top);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
   };

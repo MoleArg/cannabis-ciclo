@@ -20,6 +20,7 @@ uniform vec3 uSun;       // x, y, sobre el horizonte (0..1)
 uniform vec4 uHover;     // x, y, radio, intensidad
 uniform vec3 uPulse;     // x, y, fase 0..1
 uniform float uProx;     // lámpara muy cerca de la copa
+uniform vec3 uTent;      // pared del fondo de la carpa: x izquierda, x derecha, y del techo (px, a escala real)
 in vec2 vUv;
 out vec4 o;
 
@@ -70,9 +71,10 @@ vec3 indoorBg(vec2 p, out float lit){
   vec2 lc = vec2((uLamp.x + uLamp.y) * 0.5, uLamp.z);
   float d = length((p - lc) / U * vec2(0.85, 1.0));
   lit = uLight * (0.2 + 0.8 * uPPFD) * exp(-d * 2.1);
-  float bx0 = W * 0.5 - min(W * 0.37, U * 0.62), bx1 = W - bx0, bt = U * 0.05, fy = uFloorY;
+  float bx0 = uTent.x, bx1 = uTent.y, bt = max(uTent.z, 2.0), fy = uFloorY;
+  float ww = bx1 - bx0;   // ancho de la pared del fondo: mide los accesorios
   vec3 c;
-  float tl = (bx0 - p.x) / bx0, tr = (p.x - bx1) / bx0;
+  float tl = (bx0 - p.x) / max(bx0, 1.0), tr = (p.x - bx1) / max(W - bx1, 1.0);
   float tc = (bt - p.y) / bt, tf = (p.y - fy) / max(1.0, H - fy);
   bool left = tl > 0.0 && p.y > bt * (1.0 - tl) && p.y < fy + (H - fy) * tl;
   bool right = tr > 0.0 && p.y > bt * (1.0 - tr) && p.y < fy + (H - fy) * tr;
@@ -95,13 +97,13 @@ vec3 indoorBg(vec2 p, out float lit){
     // pared del fondo
     c = mylar(q, q.x * 52.0, lit);
     // cierre (zipper) de la ventana de ventilación arriba a la derecha
-    vec2 vc = vec2(bx1 - (bx1 - bx0) * 0.16, bt + U * 0.11);
-    float vr = length((p - vc) / U);
-    c = mix(c, vec3(0.03), smoothstep(0.052, 0.048, vr) * 0.85);
-    c += vec3(0.1) * smoothstep(0.004, 0.0, abs(vr - 0.053));
+    vec2 vc = vec2(bx1 - ww * 0.14, bt + ww * 0.13);
+    float vr = length(p - vc) / ww;
+    c = mix(c, vec3(0.03), smoothstep(0.075, 0.07, vr) * 0.85);
+    c += vec3(0.1) * smoothstep(0.006, 0.0, abs(vr - 0.077));
   }
   // parantes: el marco del fondo y las aristas hacia adelante
-  float pw = U * 0.006;
+  float pw = max(ww * 0.009, 1.5 * uDpr);   // parante de ~1,6 cm
   float eb = min(min(segD(p, vec2(bx0, bt), vec2(bx1, bt)), segD(p, vec2(bx0, fy), vec2(bx1, fy))),
                  min(segD(p, vec2(bx0, bt), vec2(bx0, fy)), segD(p, vec2(bx1, bt), vec2(bx1, fy))));
   c = pole(c, eb, pw, lit);
@@ -119,23 +121,23 @@ vec3 indoorBg(vec2 p, out float lit){
   float by = bt * 0.55;
   c = pole(c, segD(p, vec2(bx0 * 0.45, by), vec2(W - bx0 * 0.45, by)), pw * 1.2, lit);
   // filtro de carbón colgado del techo, con la manguera hacia la ventana
-  vec2 fc = vec2(bx1 - (bx1 - bx0) * 0.16, bt + U * 0.11);
-  vec2 fsz = vec2(U * 0.1, U * 0.038);
-  vec2 fd = (p - (fc + vec2(-U * 0.13, U * 0.0))) ;
+  vec2 fc = vec2(bx1 - ww * 0.14, bt + ww * 0.13);
+  vec2 fsz = vec2(ww * 0.15, ww * 0.055);
+  vec2 fd = p - (fc + vec2(-ww * 0.2, 0.0));
   vec2 fb = abs(fd) - fsz;
-  float fbox = length(max(fb, 0.0)) + min(max(fb.x, fb.y), 0.0) - U * 0.012;
+  float fbox = length(max(fb, 0.0)) + min(max(fb.x, fb.y), 0.0) - ww * 0.015;
   if (fbox < 0.0){
     vec2 hg = fract(p / (5.0 * uDpr)) - 0.5;
     float holes = 1.0 - 0.55 * smoothstep(0.28, 0.16, length(hg));   // chapa perforada
     float shade = 0.7 + 0.3 * cos(fd.y / fsz.y * 1.5);
     c = vec3(0.13, 0.14, 0.15) * holes * shade + uLampCol * lit * 0.08;
-    if (abs(fd.x) > fsz.x - U * 0.006) c = vec3(0.05) * shade; // tapas
+    if (abs(fd.x) > fsz.x - ww * 0.01) c = vec3(0.05) * shade; // tapas
   }
-  float hose = segD(p, fc + vec2(-U * 0.02, 0.0), fc + vec2(-U * 0.006, 0.0));
-  c = mix(c, vec3(0.1, 0.105, 0.11) * (0.8 + 0.4 * sin(p.x * 0.8 / uDpr)), smoothstep(U * 0.024, U * 0.02, hose));
+  float hose = segD(p, fc + vec2(-ww * 0.05, 0.0), fc);
+  c = mix(c, vec3(0.1, 0.105, 0.11) * (0.8 + 0.4 * sin(p.x * 0.8 / uDpr)), smoothstep(ww * 0.04, ww * 0.034, hose));
   // ventilador de pinza en el parante izquierdo: las aspas giran
-  vec2 fanC = vec2(bx0 + U * 0.02, fy - (fy - bt) * 0.62);
-  vec2 fv = (p - fanC) / U;
+  vec2 fanC = vec2(bx0 + ww * 0.03, fy - (fy - bt) * 0.62);
+  vec2 fv = (p - fanC) / ww * 0.62;   // mismas proporciones que antes, con el ancho de la carpa
   float fr = length(fv);
   if (fr < 0.068){
     float ang = atan(fv.y, fv.x) + uTime * 9.0;
@@ -147,7 +149,7 @@ vec3 indoorBg(vec2 p, out float lit){
     fcol = mix(fcol, vec3(0.2), smoothstep(0.014, 0.011, fr));            // centro
     c = fcol;
   }
-  c = pole(c, segD(p, fanC, vec2(bx0, fanC.y + U * 0.07)), pw * 1.4, lit);   // pinza
+  c = pole(c, segD(p, fanC, vec2(bx0, fanC.y + ww * 0.11)), pw * 1.4, lit);   // pinza
   c *= 1.0 - 0.25 * smoothstep(0.3, 0.75, abs(p.x / W - 0.5));
   return c;
 }

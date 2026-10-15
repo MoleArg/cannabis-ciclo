@@ -467,6 +467,53 @@ body.stage-max .canvas-wrap{height:calc(100dvh - 210px)}
 @keyframes taGlow{0%,30%{opacity:.25}55%,88%{opacity:1}100%{opacity:.25}}
 @keyframes taMove{0%,30%{transform:none}50%{transform:translate(40px,-14px) rotate(8deg)}68%,90%{transform:translate(72px,48px)}100%{transform:none;opacity:1}}
 @keyframes taLift{0%,12%{transform:none}32%{transform:translate(0,-36px)}52%{transform:translate(104px,-36px)}68%,90%{transform:translate(104px,-12px)}100%{transform:none}}
+select:disabled{opacity:.55;cursor:not-allowed}
+/* panel de abajo: misma altura en las cinco pestañas (lo que no entra, scrollea adentro) */
+.insights .ipane.on{height:clamp(320px,46dvh,460px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.insights .ipane[data-pane=hist].on{display:flex;flex-direction:column;overflow:hidden}
+.insights .ipane[data-pane=hist] .chartbox{flex:1;min-height:0}
+.insights .ipane[data-pane=hist] .chart{height:100%}
+.insights .log{max-height:none;overflow:visible}
+/* animaciones de cosecha */
+.hv-bud{fill:#a9c97f;stroke:#6f8f4c;stroke-width:.9}
+.hv-sugar{fill:#5aa957}
+.hv-loupe{animation:hvScan 6s ease-in-out infinite}
+.hv-glass{fill:rgba(40,70,30,.92)}.hv-ring{fill:none;stroke:#dfe7e2;stroke-width:3}.hv-handle{stroke:#8a6a46;stroke-width:6;stroke-linecap:round}
+.hv-stalk{stroke:rgba(235,245,230,.7);stroke-width:1.6}
+.hv-head{animation:hvRipe 6s infinite;stroke:rgba(255,255,255,.6);stroke-width:.6}
+.hv-pistil{fill:none;stroke-width:2.2;stroke-linecap:round;animation:hvPistil 6s infinite}
+.hv-trim{animation:taDrop 6s infinite;transform-origin:120px 70px}.hv-snip{animation:hvSnip 6s infinite}
+.hv-rope{stroke:#d9c9a0;stroke-width:1.6}
+.hv-dry{animation:hvDry 6s infinite}
+.hv-steam{fill:rgba(220,235,255,.55);animation:hvSteam 3s infinite}
+.hv-meter rect{fill:#0f1512;stroke:rgba(255,255,255,.25)}.hv-meter text{fill:#cfe8d4;font:600 9px system-ui}
+.hv-glassjar{fill:rgba(200,225,235,.12);stroke:rgba(220,235,240,.6);stroke-width:1.5}
+.hv-lid rect{fill:#c9a24a;stroke:#8a6b22}.hv-lid{animation:hvLid 6s infinite}
+.hv-puff{fill:none;stroke:rgba(220,235,255,.6);stroke-width:2;stroke-linecap:round;animation:hvPuff 6s infinite}
+.hv-cab{fill:#20170f;stroke:#3a2a1c}
+.hv-lidc{fill:#c9a24a}
+.hv-sun circle{fill:#ffcf5a}.hv-sun line{stroke:#ffcf5a;stroke-width:2.4;stroke-linecap:round}
+.hv-ray{stroke:rgba(255,214,110,.55);stroke-width:4;stroke-linecap:round;stroke-dasharray:10 8;animation:hvRay 6s infinite}
+.hv-door rect{fill:#5b4129;stroke:#3a2a1c}.hv-door circle{fill:#d9c08a}.hv-door{animation:hvDoor 6s infinite}
+.hv-mol line{stroke:#cfe8d4;stroke-width:2.2;stroke-linecap:round}
+.hv-cooh circle{fill:#3a4a55;stroke:#9fc4dc}.hv-cooh text{fill:#e7f3fb;font:700 7px system-ui}.hv-bond{stroke:#cfe8d4;stroke-width:2.2}
+.hv-cooh{animation:hvCO2 6s infinite}
+.hv-lbl{fill:#cfe8d4;font:600 11px system-ui}.hv-a{animation:hvA 6s infinite}.hv-b{animation:hvB 6s infinite}
+.hv-flame path{fill:#ff8a3d}.hv-flame{animation:hvFlame 6s infinite;transform-origin:206px 132px}.hv-temp{fill:#ffb27a;font:600 9px system-ui}
+@keyframes hvScan{0%,100%{transform:translate(78px,96px)}50%{transform:translate(162px,62px)}}
+@keyframes hvRipe{0%,15%{fill:rgba(225,240,255,.35)}45%,60%{fill:#f3f2ea}85%,100%{fill:#d98a32}}
+@keyframes hvPistil{0%,15%{stroke:#f4f2e8;transform:none}55%{stroke:#e0802f;transform:rotate(-12deg)}85%,100%{stroke:#8a4b22;transform:rotate(-24deg) scale(.85)}}
+@keyframes hvSnip{0%{opacity:0;transform:translate(20px,-30px)}12%{opacity:1;transform:translate(0,-30px)}30%{transform:translate(-30px,-6px)}50%{transform:translate(-26px,16px)}70%{transform:translate(-50px,-14px);opacity:1}85%,100%{opacity:0}}
+@keyframes hvDry{0%,10%{transform:none;filter:none}80%,95%{transform:scale(.88);filter:saturate(.6) brightness(.9)}100%{transform:none}}
+@keyframes hvSteam{0%{opacity:0;transform:translateY(0)}20%{opacity:.8}100%{opacity:0;transform:translateY(-40px)}}
+@keyframes hvLid{0%,25%{transform:none}35%,65%{transform:rotate(70deg)}75%,100%{transform:none}}
+@keyframes hvPuff{0%,32%{opacity:0;transform:none}45%{opacity:1}68%,100%{opacity:0;transform:translateY(-16px)}}
+@keyframes hvRay{0%{opacity:0}6%,22%{opacity:1;stroke-dashoffset:0}40%{stroke-dashoffset:-36;opacity:0}100%{opacity:0}}
+@keyframes hvDoor{0%,25%{transform:perspective(300px) rotateY(-75deg)}50%,88%{transform:none}100%{transform:perspective(300px) rotateY(-75deg)}}
+@keyframes hvCO2{0%,30%{transform:none;opacity:1}65%,88%{transform:translate(12px,-34px);opacity:0}100%{opacity:1;transform:none}}
+@keyframes hvA{0%,40%{opacity:1}55%,90%{opacity:0}100%{opacity:1}}
+@keyframes hvB{0%,40%{opacity:0}55%,90%{opacity:1}100%{opacity:0}}
+@keyframes hvFlame{0%,12%{transform:scale(.4);opacity:.5}35%,85%{transform:scale(1.1);opacity:1}100%{transform:scale(.4);opacity:.5}}
 /* botón de plantar: la simulación no corre hasta tocarlo */
 .plant-go{position:absolute;z-index:4;left:50%;bottom:64px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;max-width:min(420px,86%);animation:fadeUp .4s var(--ease)}
 .plant-go .btn{font-size:17px;padding:12px 30px;border-radius:999px;box-shadow:0 10px 30px -8px rgba(123,216,143,.75)}
@@ -527,7 +574,7 @@ body.stage-max .canvas-wrap{height:calc(100dvh - 210px)}
             <div class="hud-r"><span id="hudClock" class="pill dim">—</span></div>
           </div>
           <div class="canvas-tools">
-            <button id="btnLoupe" class="mini only2d" title="Lupa de tricomas (en floración)">🔍 Lupa</button>
+            <button id="btnLoupe" class="mini on only2d" title="Lupa: amplía la planta mientras es chica y muestra los tricomas en floración">🔍 Lupa</button>
             <button id="btnRoots" class="mini on only2d" title="Mostrar raíces dentro de la maceta">🪴 Raíces</button>
             <button id="btnMax" class="mini only3d" title="Agrandar la escena">⤢</button>
             <div class="segc hidden" id="viewSeg" role="radiogroup" aria-label="Vista de la escena"><span class="ind"></span><button data-v="2d" class="on" title="Dibujo de la planta (tecla V)">🌿 2D</button><button data-v="3d" title="La misma planta dentro de la carpa en 3D (tecla V)">🏠 3D</button></div>
@@ -3221,7 +3268,7 @@ class Renderer {
     this.P = { ser: leafletPath(true), smooth: leafletPath(false), vein: veinPath(), tip: tipPath(), oval: ovalPath() };
     this.view = { s: 12, top: 40 };
     this.light = 1; this.hits = []; this.particles = []; this.lastWaterHour = -1; this.waterAnim = 0;
-    this.showRoots = true; this.loupe = false; this.simRef = null;
+    this.showRoots = true; this.loupe = true; this.simRef = null;
     this.lod = 1; this.dtAvg = 8; this.baseDpr = this.dpr;
   }
   /* si el cuadro tarda mucho, baja el detalle y la resolución */
@@ -3238,7 +3285,9 @@ class Renderer {
     this.cv.width = Math.round(this.W * this.dpr); this.cv.height = Math.round(this.H * this.dpr);
   }
   setSim(sim) { this.simRef = sim; this.roots = null; this.lastWaterHour = -1; this.view.init = false; }
-  potVis(sim) { const h = sim.potH(); return h > 30 ? 30 + (h - 30) * 0.3 : h; }
+  potVis(sim) { return sim.potH(); }
+  /* la carpa en píxeles: pared del fondo y techo */
+  tentGeo(sim) { const half = Math.sqrt(sim.env.tent) * 50, ph = this.potVis(sim); return { x0: this.X(-half), x1: this.X(half), top: this.Y(sim.env.tentH - ph) }; }
 
   genRoots(seed) {
     const R = rngFrom(seed * 31 + 5), roots = [];
@@ -3260,16 +3309,21 @@ class Renderer {
 
   /* ---------------- cámara ---------------- */
   updateView(sim, dt) {
+    // escala real en cm: en interior entra la carpa entera (piso a techo y de pared a pared),
+    // así la maceta, la lámpara y la planta guardan su proporción. La plántula se ve de cerca con la lupa.
     const out = sim.o.mode === 'exterior';
     const potH = this.potVis(sim), H = Math.max(sim.height, 2), Wd = Math.max(sim.width, 4);
-    const lampY = this.lampY(sim);
-    // de cerca mientras es chica: se ve la semilla y la plántula, no toda la maceta
-    const small = clamp((H - 4) / 30);
-    let top = Math.max(lerp(13, 26, small), H * 1.28 + 8);
-    if (!out && lampY < top + 30 && small > 0.5) top = Math.max(top, lampY + 10);
-    const bottom = lerp(-potH * 0.45, -potH - 6, small);
+    let top, bottom, spanX;
+    if (out) {
+      top = Math.max(140 - potH, H * 1.18 + 12);
+      bottom = -potH - 8;
+      spanX = Math.max(Wd * 1.3, 90);
+    } else {
+      top = sim.env.tentH - potH + 4;
+      bottom = -potH - 6;
+      spanX = Math.sqrt(sim.env.tent) * 100 * 1.25;
+    }
     const spanY = top - bottom;
-    const spanX = Math.max(Wd * 1.25, lerp(16, potH * 2.4, small), lerp(16, 30, small));
     const s = Math.min((this.H * this.dpr) / spanY, (this.W * this.dpr) / spanX);
     const k = this.view.init ? Math.min(1, dt * 2.5) : 1;
     this.view.s += (s - this.view.s) * k;
@@ -3313,7 +3367,7 @@ class Renderer {
     const night = (1 - this.light) * (out ? 0.62 : 0.55);
     if (night > 0.01) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = `rgba(8,12,34,${night})`; ctx.fillRect(0, 0, cw, ch); }
     if (!out && sim.env.lightLeak && !E.light && E.leak) this.drawLeak();
-    if (this.loupe && sim.stage === 'flor') this.drawLoupe(sim, t);
+    if (this.loupe) this.drawLoupe(sim, t);
   }
 
   drawTent(sim, E, t) {
@@ -3852,6 +3906,7 @@ class Renderer {
 
   /* Lupa: tricomas vistos a 60× */
   drawLoupe(sim, t) {
+    if (sim.stage !== 'flor') { this.drawZoom(sim, t); return; }
     const ctx = this.ctx, dpr = this.dpr;
     const R = Math.min(this.cv.width, this.cv.height) * 0.2;
     const cx = R + 10 * dpr, cy = this.cv.height - R - 10 * dpr;
@@ -3875,6 +3930,48 @@ class Renderer {
     ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(cx - R * 0.8, cy + R * 0.62, R * 1.6, 16 * dpr);
     ctx.fillStyle = '#fff'; ctx.font = `${10 * dpr}px system-ui`; ctx.textAlign = 'center';
     ctx.fillText(`Lupa 60× · ${Math.round(tri.clear * 100)}% transp. · ${Math.round(tri.cloudy * 100)}% lechosos · ${Math.round(tri.amber * 100)}% ámbar`, cx, cy + R * 0.62 + 11 * dpr);
+  }
+
+  /* lupa sobre la planta mientras es chica (a escala real se pierde en la carpa) */
+  drawZoom(sim, t) {
+    const ctx = this.ctx, dpr = this.dpr;
+    const H = Math.max(sim.height, 1.5), Wd = Math.max(sim.width, 3);
+    const box = Math.max(H + 5, Wd * 1.2, 10);               // cm a mostrar
+    const R = Math.min(this.cv.width, this.cv.height) * 0.19;
+    const zoom = (2 * R) / (box * this.view.s);
+    if (zoom < 2 || sim.dead) return;                          // ya se ve bien a escala real
+    const cx = R + 10 * dpr, cy = this.cv.height - R - 10 * dpr;
+    // se vuelve a dibujar la planta a la escala de la lupa (nítida, no una imagen estirada)
+    const n = Math.round(2 * R), Z = this._zc || (this._zc = document.createElement('canvas'));
+    if (Z.width !== n) { Z.width = n; Z.height = n; }
+    const zc = Z.getContext('2d');
+    const keep = { cv: this.cv, ctx: this.ctx, view: this.view, hits: this.hits, floorY: this.floorY };
+    zc.setTransform(1, 0, 0, 1, 0, 0);
+    const g = zc.createLinearGradient(0, 0, 0, n);
+    g.addColorStop(0, sim.o.mode === 'exterior' ? '#5d84a8' : '#2e353c'); g.addColorStop(1, sim.o.mode === 'exterior' ? '#9fb9cc' : '#181d21');
+    zc.fillStyle = g; zc.fillRect(0, 0, n, n);
+    try {
+      this.cv = Z; this.ctx = zc; this.hits = [];
+      this.view = { s: n / box, top: box - 3, bottom: -box, init: true };
+      this.drawPot(sim, t);
+      if (sim.stage !== 'germinacion' && !(sim.stage === 'muerta' && sim.main.nodes.length === 0)) this.drawPlant(sim, t);
+      else this.drawSeed(sim);
+    } catch (e) { /* la lupa no debe romper el cuadro */ }
+    Object.assign(this, keep);
+    const sx = this.X(-box / 2), sy = this.Y(box - 3), sw = box * this.view.s;
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.clip();
+    ctx.drawImage(Z, cx - R, cy - R);
+    ctx.restore();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.strokeStyle = 'rgba(230,236,232,.85)'; ctx.lineWidth = 3 * dpr; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(cx - R * 0.62, cy + R * 0.66, R * 1.24, 16 * dpr);
+    ctx.fillStyle = '#fff'; ctx.font = `${10 * dpr}px system-ui`; ctx.textAlign = 'center';
+    ctx.fillText(`Lupa ${nf(zoom, 0)}× · ${sim.height >= 1 ? nf(sim.height, 0) + ' cm de alto' : 'recién asomada'}`, cx, cy + R * 0.66 + 11 * dpr);
+    // marca en la escena de lo que se está ampliando
+    ctx.strokeStyle = 'rgba(230,236,232,.5)'; ctx.lineWidth = 1 * dpr; ctx.setLineDash([3 * dpr, 3 * dpr]);
+    ctx.strokeRect(sx, sy, sw, sw); ctx.setLineDash([]);
   }
 
   /* Qué hay bajo el puntero */
@@ -3981,8 +4078,28 @@ function draftList() {
   const d = App.draft || {};
   return [...Object.keys(d).filter((k) => k !== 'env'), ...Object.keys(d.env || {})].map((k) => names[k] || k).join(', ');
 }
+/* combinaciones que no existen en la práctica: las autos se venden feminizadas y no se
+   clonan (el esqueje tiene la edad de la madre y florece enseguida, sin crecer) */
+const PLANT_LOCKS = {
+  seedType: { when: () => draftOpt('genetics') === 'auto', value: 'fem', why: 'Las autoflorecientes se cultivan feminizadas: con una regular, la mitad sería macho y no hay tiempo de reponerla.' },
+  start: { when: () => draftOpt('genetics') === 'auto', value: 'semilla', why: 'Una auto no se clona: el esqueje tiene la edad de la madre y florece enseguida, sin llegar a crecer.' }
+};
+function applyLocks(o) { for (const [k, L] of Object.entries(PLANT_LOCKS)) if (L.when()) o[k] = L.value; }
+/* tope de maceta según el espacio: en interior lo que entra en la carpa, en exterior un macetón grande */
+function maxPotL(s) { return isOut(s) ? 200 : Math.round(25 + (s.env.tent - 0.36) * 70); }
 /* guarda un cambio de la planta; antes de plantar se ve enseguida (en pausa) */
 function setDraft(key, v, env) {
+  if (!env && key === 'genetics') {
+    // las opciones bloqueadas por la genética pasan a su valor obligado
+    if (!App.started) { App.opts.genetics = v; applyLocks(App.opts); newPlant(undefined, false); return; }
+    const d = (App.draft = Object.assign({}, App.draft, { genetics: v }));
+    applyLocks(d);
+    for (const k of Object.keys(PLANT_LOCKS)) if (d[k] === App.opts[k]) delete d[k];
+    if (d.genetics === App.opts.genetics) delete d.genetics;
+    App.draft = Object.keys(d).length ? d : null;
+    refreshControls(true);
+    return;
+  }
   if (!App.started) {
     if (env) App.opts.env = Object.assign({}, App.opts.env, { [key]: v }); else App.opts[key] = v;
     newPlant(undefined, false);
@@ -4003,8 +4120,8 @@ function controlGroups() {
     { id: 'planta', title: '🧬 Planta y modo de cultivo', sum: (s) => `${s.G.short} · ${s.S.name} · ${isOut(s) ? 'exterior' : 'interior'}`, items: [
       optSel('genetics', 'Genética', Object.entries(GENETICS).map(([k, g]) => [k, g.name]), () => GENETICS[draftOpt('genetics')].desc),
       optSel('chemo', 'Quimiotipo', Object.entries(CHEMOTYPES).map(([k, c]) => [k, c.name])),
-      optSel('seedType', 'Semilla', [['fem', 'Feminizada (siempre hembra)'], ['regular', 'Regular (50 % macho)']]),
-      optSel('start', 'Empezar desde', [['semilla', 'Semilla'], ['esqueje', 'Esqueje (clon de una madre)']]),
+      Object.assign(optSel('seedType', 'Semilla', [['fem', 'Feminizada (siempre hembra)'], ['regular', 'Regular (50 % macho)']]), { lock: PLANT_LOCKS.seedType, hint: () => (PLANT_LOCKS.seedType.when() ? '🔒 ' + PLANT_LOCKS.seedType.why : '') }),
+      Object.assign(optSel('start', 'Empezar desde', [['semilla', 'Semilla'], ['esqueje', 'Esqueje (clon de una madre)']]), { lock: PLANT_LOCKS.start, hint: () => (PLANT_LOCKS.start.when() ? '🔒 ' + PLANT_LOCKS.start.why : '') }),
       optSel('substrate', 'Sustrato', Object.entries(SUBSTRATES).map(([k, x]) => [k, x.name]), () => SUBSTRATES[draftOpt('substrate')].desc),
       optSel('mode', 'Dónde', [['interior', 'Interior (carpa con lámpara)'], ['exterior', 'Exterior (sol y clima real)']]),
       { type: 'sel', key: 'location', label: 'Ubicación', options: Object.entries(LOCATIONS).map(([k, l]) => [k, l.name]), show: () => draftOpt('mode') === 'exterior', needsReset: true },
@@ -4035,7 +4152,7 @@ function controlGroups() {
       { type: 'read', show: isOut, text: (s) => `Ahora: ${nf(s.lastE.tAir, 1)} °C · HR ${nf(s.lastE.rh, 0)} % · VPD ${nf(s.lastE.vpd, 2)} kPa · viento ${nf(s.lastE.airflow, 0)} %. En exterior el clima lo pone la estación: elegí bien la fecha de siembra y la genética.` }
     ] },
     { id: 'agua', title: '💧 Agua, sustrato y raíces', sum: (s) => (hydro(s) ? `depósito ${s.env.potL} L · ${s.env.hydroTemp} °C` : `${s.env.potL} L · ${Math.round(s.theta * 100)} % húmedo · pH ${nf(s.pH, 1)}`), items: [
-      { type: 'range', key: 'potL', label: (s) => (hydro(s) ? 'Volumen del depósito' : 'Tamaño de maceta (trasplante)'), min: 1, max: (s) => (isOut(s) ? 300 : 60), step: 1, unit: 'L', auto: 'potL', commit: true, set: (s, v) => s.transplant(v), hint: (s) => (hydro(s) ? '' : `Raíces: ${Math.round((s.B.root / s.rootCap()) * 100)} % de la capacidad. Agrandar = trasplante.`) },
+      { type: 'range', key: 'potL', label: (s) => (hydro(s) ? 'Volumen del depósito' : 'Tamaño de maceta (trasplante)'), min: 1, max: (s) => maxPotL(s), step: 1, unit: 'L', auto: 'potL', commit: true, set: (s, v) => s.transplant(v), hint: (s) => (hydro(s) ? '' : `Raíces: ${Math.round((s.B.root / s.rootCap()) * 100)} % de la capacidad. Agrandar = trasplante. Tope: ${maxPotL(s)} L (${isOut(s) ? 'macetón de exterior' : 'lo que entra en la carpa'}).`) },
       { type: 'sel', key: 'waterSource', label: 'Agua de riego', options: Object.entries(WATER_SOURCES).map(([k, w]) => [k, w.name]), hint: (s) => WATER_SOURCES[s.env.waterSource].desc },
       { type: 'check', key: 'phAdjust', label: 'Ajustar el pH del agua', auto: 'ph', hint: (s) => `Sin ajustar, la mezcla queda en pH ${nf(s.solution().natural, 1)}.` },
       { type: 'range', key: 'phTarget', label: 'pH del agua de riego', min: 4, max: 9, step: 0.1, unit: '', dec: 1, ideal: (s) => IDEAL.ph[s.o.substrate], auto: 'ph', show: (s) => s.env.phAdjust, hint: (s) => `pH en la raíz ahora: ${nf(s.pH, 2)}.` },
@@ -4097,7 +4214,7 @@ function buildItem(it) {
   if (it.type === 'range' || it.type === 'feed') {
     const val = el('span', { class: 'val' }), st = el('span', { class: 'st' }), chip = el('span', { class: 'chip hidden' });
     const labEl = el('label');
-    const inp = el('input', { type: 'range', min: it.min, max: typeof it.max === 'function' ? 300 : it.max, step: it.step });
+    const inp = el('input', { type: 'range', min: it.min, max: typeof it.max === 'function' ? it.max(App.sim) : it.max, step: it.step });
     const hint = el('div', { class: 'hint' });
     const row = el('div', { class: 'ctl' }, el('div', { class: 'ctl-h' }, labEl, chip, val, st), inp, hint);
     const apply = () => {
@@ -4191,6 +4308,10 @@ function refreshControls(force) {
     }
     if (it.type === 'check') c.inp.checked = it.get ? !!it.get(s) : !!s.env[it.key];
     if (c.sel) { const v = it.type === 'opt' ? draftOpt(it.key) : it.needsReset ? draftEnv(it.key) : s.env[it.key]; if (document.activeElement !== c.sel) c.sel.value = v; }
+    if (c.sel && it.lock) {
+      const on = it.lock.when();
+      c.sel.disabled = on;
+    }
     if (c.btn && it.id === 'replant') c.btn.classList.toggle('pending', !!App.draft);
     if (c.chip) {
       const key = it.type === 'feed' ? 'feed' : it.auto;
@@ -5124,6 +5245,7 @@ const LEAF_ICONS = {
 };
 function drawLeafIcon(cv, o) {
   const { ctx, W, H } = fitCanvas(cv);
+  const dpr = cv.width / W;   // las transformaciones de abajo son absolutas: hay que incluir la densidad de píxeles
   ctx.clearRect(0, 0, W, H);
   const P = { ser: leafletPath(true), vein: veinPath(), tip: tipPath() };
   const base = o.base || [62, 138, 52], n = 7, sc = (o.small ? 0.36 : 0.44) * H;
@@ -5135,7 +5257,7 @@ function drawLeafIcon(cv, o) {
     const Wd = len * 0.2;
     const a = ang - (o.claw ? Math.sign(Math.cos(ang)) * 0.25 : 0);
     const ca = Math.cos(a), sa = Math.sin(a);
-    ctx.setTransform(len * ca, -len * sa, -Wd * sa, -Wd * ca, ox, oy - H * 0.06);
+    ctx.setTransform(len * ca * dpr, -len * sa * dpr, -Wd * sa * dpr, -Wd * ca * dpr, ox * dpr, (oy - H * 0.06) * dpr);
     ctx.fillStyle = rgba(o.inter ? o.inter : base); ctx.fill(P.ser);
     if (o.inter) { ctx.strokeStyle = rgba([62, 138, 52]); ctx.lineWidth = 0.1; ctx.stroke(P.vein); }
     if (o.edge) { ctx.strokeStyle = rgba(C.brown, 0.9); ctx.lineWidth = 0.16; ctx.stroke(P.ser); }
@@ -5161,7 +5283,7 @@ function buildDiag() {
   const order = [...ELEMENTS.map((e) => [e, NUT_INFO[e]]), ['exc', { name: 'Exceso de nitrógeno', role: 'Demasiado fertilizante de crecimiento.', def: NUT_INFO.N.exc, mobile: null }], ['salt', { name: 'Exceso de sales (quemadura)', role: 'EC demasiado alta o sales acumuladas.', def: 'Puntas amarillas que pasan a marrones y crocantes; avanzan hacia adentro. Raíces dañadas.', mobile: null }]];
   for (const [k, n] of order) {
     const cv = el('canvas', { class: 'leafcv', 'data-leaf': k });
-    $('#nutCards').append(el('div', { class: 'card' }, cv, el('h3', null, n.name), el('div', { class: 'meta' }, n.mobile == null ? '' : n.mobile ? 'Móvil: síntomas en hojas viejas' : 'Inmóvil: síntomas en hojas nuevas'), el('p', null, n.role), el('p', null, el('b', null, 'Síntomas: '), n.def), n.exc && k !== 'exc' ? el('p', null, el('b', null, 'Exceso: '), n.exc) : null));
+    $('#nutCards').append(el('div', { class: 'card' }, photoFig(DIAG_PHOTOS[k], `Carencia de ${n.name}`), cv, el('h3', null, n.name), el('div', { class: 'meta' }, n.mobile == null ? '' : n.mobile ? 'Móvil: síntomas en hojas viejas' : 'Inmóvil: síntomas en hojas nuevas'), el('p', null, n.role), el('p', null, el('b', null, 'Síntomas: '), n.def), n.exc && k !== 'exc' ? el('p', null, el('b', null, 'Exceso: '), n.exc) : null));
   }
   const pestScn = { mites: 'arana', gnats: 'mosquitas' };
   for (const [k, p] of Object.entries(PESTS)) $('#pestCards').append(pestCard(k, p, pestScn[k]));
@@ -5177,11 +5299,26 @@ const PEST_PHOTOS = {
   gnats: { src: 'plagas/gnats.jpg', author: "AfroBrazilian", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Bradysia_sp._01.JPG" },
   caterpillars: { src: 'plagas/caterpillars.jpg', author: "Gyorgy Csoka, Hungary Forest Research Institute, Bugwood.org", license: "CC BY 3.0 us", page: "https://commons.wikimedia.org/wiki/File:Helicoverpa_armigera_larva.jpg" }
 };
+/* Fotos reales de enfermedades y carencias (Wikimedia Commons). Casi no hay fotos libres de
+   carencias en cannabis: se usan de otros cultivos cuando el patrón del síntoma es el mismo */
+const DIAG_PHOTOS = {
+  pm: { src: 'diag/pm.jpg', host: "en otra planta", author: "Dmitry Brant", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Powdery_mildew_9.jpg" },
+  botrytis: { src: 'diag/botrytis.jpg', host: "en frambuesa", author: "Schlaghecken Josef", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Himbeere_(Rubus_idaeus)_mit_Grauschimmel_(Botrytis_cinerea)-Josef_Schlaghecken.jpg" },
+  pythium: { src: 'diag/pythium.jpg', host: "plantín en maceta", author: "Scot Nelson", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Awa_Pythium_Root_Rot_--_wilt_on_young_plant.jpg" },
+  N: { src: 'diag/N.jpg', host: "en cannabis", author: "Cannabis Training University", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Cannabis_Nutrient_Deficiency.JPG" },
+  K: { src: 'diag/K.jpg', host: "en tomate", author: "Goldlocki", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Tomate_Blatt_Kalimangel.jpg" },
+  Mg: { src: 'diag/Mg.jpg', host: "en arraclán", author: "Karduelis", license: "Public domain", page: "https://commons.wikimedia.org/wiki/File:Frangula_alnus_with_magnesium_deficiency.jpg" },
+  Fe: { src: 'diag/Fe.jpg', host: "en naranjo amargo", author: "Eiku en exil", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Chlorose_ferrique_sur_Citrus_aurantium.jpg" }
+};
+/* foto con crédito al pie (y la planta de la foto, si no es cannabis) */
+function photoFig(ph, alt) {
+  if (!ph) return null;
+  return el('figure', { class: 'pest-ph' }, el('img', { src: ph.src, alt, loading: 'lazy', decoding: 'async' }),
+    el('figcaption', null, ph.host ? `${ph.host} · ` : '', 'Foto: ', el('a', { href: ph.page, target: '_blank', rel: 'noopener' }, ph.author), ` · ${ph.license}`));
+}
 function pestCard(k, p, scn) {
-  const ph = PEST_PHOTOS[k];
   return el('div', { class: 'card' },
-    ph ? el('figure', { class: 'pest-ph' }, el('img', { src: ph.src, alt: `${p.name} (${p.sci})`, loading: 'lazy', decoding: 'async' }),
-      el('figcaption', null, 'Foto: ', el('a', { href: ph.page, target: '_blank', rel: 'noopener' }, ph.author), ` · ${ph.license}`)) : null,
+    photoFig(PEST_PHOTOS[k] || DIAG_PHOTOS[k], `${p.name} (${p.sci})`),
     el('h3', null, `${p.icon} ${p.name}`), el('div', { class: 'meta' }, p.sci),
     el('table', null, el('tr', null, el('td', null, 'La favorece'), el('td', null, p.favor)), el('tr', null, el('td', null, 'Síntomas'), el('td', null, p.symptoms)), el('tr', null, el('td', null, 'Prevención'), el('td', null, p.prevent)), el('tr', null, el('td', null, 'Control'), el('td', null, p.control))),
     el('div', { class: 'act btns' },
@@ -5298,39 +5435,159 @@ function tryTechnique(t) {
 }
 
 /* ---------------- COSECHA ---------------- */
+/* animaciones de las tarjetas de cosecha (mismo estilo que las de técnicas) */
+const HV_ANIM = [
+  // tricomas: la lupa recorre el cogollo; adentro las cabezas pasan de transparentes a lechosas y ámbar
+  () => `<g>${TA.stem(120, 140, 120, 96, 3)}<path class="hv-bud" d="M120 30c22 10 26 40 18 66-6 14-30 14-36 0-8-26-4-56 18-66z"/>${[[106, 60], [134, 70], [112, 84], [128, 46], [118, 74]].map(([x, y]) => `<path class="hv-sugar" d="M${x} ${y}l-6 -8l8 3z"/>`).join('')}</g>
+    <g class="hv-loupe"><circle cx="0" cy="0" r="34" class="hv-glass"/>${[-22, -12, -3, 6, 15, 24].map((x, i) => `<line class="hv-stalk" x1="${x}" y1="22" x2="${x + (i % 2 ? 2 : -2)}" y2="${-4 - (i % 3) * 5}"/><circle class="hv-head" style="animation-delay:${-i * 0.12}s" cx="${x + (i % 2 ? 2 : -2)}" cy="${-4 - (i % 3) * 5}" r="4.2"/>`).join('')}<circle cx="0" cy="0" r="34" class="hv-ring"/><line x1="24" y1="24" x2="44" y2="44" class="hv-handle"/></g>`,
+  // pistilos: los pelos blancos se oscurecen y se enrulan
+  () => `${TA.stem(120, 140, 120, 100, 3)}<path class="hv-bud" d="M120 40c18 8 22 34 15 58-5 12-25 12-30 0-7-24-3-50 15-58z"/>
+    ${[[-14, 70, -1], [12, 62, 1], [-6, 50, -1], [8, 84, 1], [0, 44, 1], [-12, 90, -1]].map(([dx, y, sd], i) => `<path class="hv-pistil" style="animation-delay:${-i * 0.2}s;transform-origin:${120 + dx}px ${y}px" d="M${120 + dx} ${y}q${sd * 14} -10 ${sd * 22} -22"/>`).join('')}`,
+  // manicura: la tijera saca las hojitas de azúcar y queda el cogollo prolijo
+  () => `${TA.stem(120, 142, 120, 104, 3)}<path class="hv-bud" d="M120 36c20 9 24 38 16 64-5 13-27 13-32 0-8-26-4-55 16-64z"/>
+    ${[[100, 70, -55], [140, 64, 55], [102, 92, -40], [138, 90, 45], [106, 50, -60]].map(([x, y, r], i) => `<g class="hv-trim" style="animation-delay:${-i * 0.35}s">${TA.leaf(x, y, r, 0.75)}</g>`).join('')}` + TA.tool(158, 74, '✂️', 'ta-tool hv-snip'),
+  // secado: ramas cabeza abajo en la soga; el agua sale como vapor y el cogollo se achica
+  () => `<line x1="20" y1="22" x2="220" y2="22" class="hv-rope"/>${[60, 120, 180].map((x, i) => `<g class="hv-dry" style="transform-origin:${x}px 22px;animation-delay:${-i * 0.2}s">${TA.stem(x, 22, x, 70, 2.4)}<path class="hv-bud" d="M${x} 112c14 -6 17 -26 11 -42-4-9-18-9-22 0-6 16-3 36 11 42z"/>${TA.leaf(x - 2, 56, -130, 0.6)}${TA.leaf(x + 2, 56, 130, 0.6)}</g>${[0, 1, 2].map((k) => `<circle class="hv-steam" style="animation-delay:${-(i * 0.7 + k * 1.6)}s" cx="${x + (k - 1) * 8}" cy="100" r="2.6"/>`).join('')}`).join('')}
+    <g class="hv-meter"><rect x="196" y="104" width="34" height="30" rx="5"/><text x="213" y="117" text-anchor="middle">18°C</text><text x="213" y="129" text-anchor="middle">60%</text></g>`,
+  // curado: la tapa se abre ("eructar"), sale el aire húmedo y la humedad del frasco baja a 60 %
+  () => `<g class="hv-jar"><path class="hv-glassjar" d="M82 52h76v78a10 10 0 0 1 -10 10h-56a10 10 0 0 1 -10 -10z"/>${[[100, 112], [124, 116], [146, 110], [110, 94], [136, 92], [122, 76]].map(([x, y]) => `<ellipse class="hv-bud" cx="${x}" cy="${y}" rx="11" ry="9"/>`).join('')}</g>
+    <g class="hv-lid" style="transform-origin:160px 48px"><rect x="78" y="40" width="84" height="12" rx="3"/></g>
+    ${[0, 1, 2].map((k) => `<path class="hv-puff" style="animation-delay:${-k * 0.25}s" d="M${104 + k * 16} 36q-6 -8 0 -16q6 -8 0 -16"/>`).join('')}
+    <g class="hv-meter"><rect x="176" y="96" width="44" height="30" rx="5"/><text x="198" y="109" text-anchor="middle">HR</text><text x="198" y="121" text-anchor="middle" class="hv-a">66 %</text><text x="198" y="121" text-anchor="middle" class="hv-b">60 %</text></g>`,
+  // guardado: el placard se cierra; la luz y el calor quedan afuera
+  () => `<rect x="120" y="22" width="96" height="116" rx="4" class="hv-cab"/><g class="hv-jar2"><path class="hv-glassjar" d="M150 82h36v44a6 6 0 0 1 -6 6h-24a6 6 0 0 1 -6 -6z"/><rect x="148" y="76" width="40" height="7" rx="2" class="hv-lidc"/>${[[160, 116], [174, 118], [167, 102]].map(([x, y]) => `<ellipse class="hv-bud" cx="${x}" cy="${y}" rx="7" ry="6"/>`).join('')}</g>
+    <g class="hv-sun"><circle cx="38" cy="36" r="14"/>${[0, 45, 90, 135, 180, 225, 270, 315].map((a) => `<line x1="38" y1="36" x2="${38 + Math.cos(a * Math.PI / 180) * 24}" y2="${36 + Math.sin(a * Math.PI / 180) * 24}"/>`).join('')}</g>
+    <g class="hv-rays">${[0, 1, 2].map((k) => `<line class="hv-ray" style="animation-delay:${-k * 0.3}s" x1="58" y1="${48 + k * 12}" x2="146" y2="${80 + k * 12}"/>`).join('')}</g>
+    <g class="hv-door" style="transform-origin:120px 80px"><rect x="120" y="22" width="96" height="116" rx="4"/><circle cx="206" cy="80" r="3"/></g>`,
+  // descarboxilación: con calor, el THCA suelta un CO₂ y queda THC
+  () => `<g class="hv-mol">${[[96, 70], [114, 60], [132, 70], [132, 90], [114, 100], [96, 90]].map(([x, y], i, a) => `<line x1="${x}" y1="${y}" x2="${a[(i + 1) % 6][0]}" y2="${a[(i + 1) % 6][1]}"/>`).join('')}<line x1="132" y1="70" x2="150" y2="60"/><line x1="150" y1="60" x2="168" y2="70"/><line x1="96" y1="90" x2="78" y2="100"/></g>
+    <g class="hv-cooh"><line x1="114" y1="60" x2="114" y2="42" class="hv-bond"/><circle cx="114" cy="36" r="8"/><text x="114" y="39" text-anchor="middle">CO₂</text></g>
+    <text x="120" y="126" text-anchor="middle" class="hv-lbl hv-a">THCA (ácido)</text><text x="120" y="126" text-anchor="middle" class="hv-lbl hv-b">THC (activo)</text>
+    <g class="hv-flame"><path d="M206 132c-12 -6 -12 -22 0 -34c2 10 10 12 8 22c4 -4 4 -8 3 -12c8 8 6 22 -11 24z"/></g>
+    <text x="206" y="146" text-anchor="middle" class="hv-temp">~110 °C</text>`
+];
+function harvestFigure(i) {
+  const f = HV_ANIM[i];
+  if (!f) return null;
+  const fig = el('figure', { class: 'tec-anim hv-' + i });
+  fig.innerHTML = `<svg viewBox="0 0 240 150" role="img" aria-label="Animación">${f()}</svg>`;
+  return fig;
+}
 function buildCosecha() {
+  taDefs();
   const sel = $('#trGen');
   for (const [k, g] of Object.entries(GENETICS)) sel.append(el('option', { value: k }, g.name));
   sel.value = 'hibrida';
   sel.addEventListener('change', drawTrichomes);
   $('#trDay').addEventListener('input', drawTrichomes);
-  $('#harvestCards').append(...HARVEST_INFO.map(([t, d]) => el('div', { class: 'card' }, el('h3', null, t), el('p', null, d))));
+  $('#harvestCards').append(...HARVEST_INFO.map(([t, d], i) => el('div', { class: 'card' }, harvestFigure(i), el('h3', null, t), el('p', null, d))));
+}
+/* Microscopio de tricomas animado: vista de 60× sobre un cáliz, con tres planos de foco.
+   Los colores siguen al día de floración con una transición suave; la vista deriva despacio. */
+const TRI = { raf: 0, cur: null, want: null };
+function triTarget() {
+  const g = GENETICS[$('#trGen').value], d = +$('#trDay').value;
+  const fake = { stage: 'flor', sex: 'hembra', fd: d, FT: g.floweringDays, dis: { hlvd: 0 }, pgr: 0 };
+  const tri = Sim.prototype.trichomes.call(fake);
+  return { clear: tri.clear, cloudy: tri.cloudy, amber: tri.amber, density: tri.density, pist: Sim.prototype.pistils.call(fake) };
+}
+function triFrame(ts) {
+  const cv = $('#trCv');
+  if (App.tab !== 'cosecha' || !cv || !cv.offsetWidth) { TRI.raf = 0; return; }
+  const w = TRI.want, c = TRI.cur || (TRI.cur = Object.assign({}, w));
+  let moving = false;
+  for (const k in w) { const dv = w[k] - c[k]; if (Math.abs(dv) > 0.002) { c[k] += dv * 0.12; moving = true; } else c[k] = w[k]; }
+  if (moving || !TRI.last || ts - TRI.last > 33) { TRI.last = ts; paintTrichomes(cv, c, REDUCED ? 0 : ts / 1000); }
+  TRI.raf = REDUCED && !moving ? 0 : requestAnimationFrame(triFrame);
+}
+function triPlane(ctx, li, sc, m, t, W, H, drift, rise) {
+  // unidad fija (no el alto del lienzo): tallo de 2-4 veces el diámetro de la cabeza
+  const pre = m.density < 0.08, u = Math.min(W, H) / 6;
+  const n = Math.min(li === 2 ? 45 : 60, Math.round(((W * H) / (u * u)) * (pre ? 0.25 : 0.4 + m.density * 1.1) * (li === 2 ? 0.7 : 1)));
+  for (let i = 0; i < n; i++) {
+    const id = i + li * 211;
+    const x = hash(id) * (W + 60) - 30 + drift * sc, y = H * (0.08 + hash(id + 7) * 1.0) + rise * sc;
+    const r = u * (pre ? 0.06 : 0.11 + hash(id + 11) * 0.05) * sc;
+    const hgt = u * (0.4 + hash(id + 3) * 0.5) * sc * (pre ? 0.6 : 1);
+    const lean = (hash(id + 2) - 0.5) * 0.7 + Math.sin(t * 0.8 + id) * 0.02;
+    const hx = x + Math.sin(lean) * hgt, hy = y - Math.cos(lean) * hgt;
+    // pelo sin glándula (cistolito): fino y en punta
+    if (hash(id + 17) < 0.25) {
+      ctx.strokeStyle = 'rgba(240,248,235,.5)'; ctx.lineWidth = Math.max(1, r * 0.25);
+      ctx.beginPath(); ctx.moveTo(x + r * 2, y); ctx.lineTo(x + r * 2 + hgt * 0.45, y - hgt * 0.4); ctx.stroke();
+    }
+    // tallo translúcido
+    ctx.strokeStyle = 'rgba(238,246,232,.62)'; ctx.lineWidth = Math.max(1.2, r * 0.42); ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo((x + hx) / 2 + 3, (y + hy) / 2, hx, hy); ctx.stroke();
+    // cabeza: transparente, lechosa o ámbar
+    const k = hash(id + 19);
+    const kind = k < m.amber ? 'amber' : k < m.amber + m.cloudy ? 'cloudy' : 'clear';
+    const hg = ctx.createRadialGradient(hx - r * 0.35, hy - r * 0.4, r * 0.1, hx, hy, r);
+    if (kind === 'clear') { hg.addColorStop(0, 'rgba(255,255,255,.55)'); hg.addColorStop(0.7, 'rgba(200,230,245,.18)'); hg.addColorStop(1, 'rgba(230,245,255,.5)'); }
+    else if (kind === 'cloudy') { hg.addColorStop(0, '#ffffff'); hg.addColorStop(0.75, '#e7e6dc'); hg.addColorStop(1, '#c9c8bc'); }
+    else { hg.addColorStop(0, '#ffe2a6'); hg.addColorStop(0.6, '#e09a3c'); hg.addColorStop(1, '#9c5a17'); }
+    ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(hx, hy, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = kind === 'clear' ? 'rgba(255,255,255,.7)' : 'rgba(0,0,0,.18)'; ctx.lineWidth = 1; ctx.stroke();
+    // brillo que se mueve con la luz del microscopio
+    const gl = 0.55 + 0.45 * Math.sin(t * 1.1 + id * 0.7);
+    ctx.fillStyle = `rgba(255,255,255,${0.35 + 0.45 * gl})`;
+    ctx.beginPath(); ctx.ellipse(hx - r * 0.38, hy - r * 0.4, r * 0.28, r * 0.18, -0.6, 0, Math.PI * 2); ctx.fill();
+  }
+}
+function paintTrichomes(cv, m, t) {
+  const { ctx, W, H } = fitCanvas(cv);
+  const drift = Math.sin(t * 0.13) * 10, rise = Math.cos(t * 0.09) * 5;
+  // superficie del cáliz: verde con relieve de células
+  const bg = ctx.createRadialGradient(W * 0.45, H * 0.35, 10, W * 0.5, H * 0.6, Math.max(W, H) * 0.8);
+  bg.addColorStop(0, '#6f9a4c'); bg.addColorStop(0.6, '#486f32'); bg.addColorStop(1, '#2a4520');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < 70; i++) {
+    const x = hash(i + 300) * (W + 40) - 20 + drift * 0.4, y = hash(i + 310) * (H + 40) - 20 + rise * 0.4;
+    ctx.fillStyle = `rgba(${hash(i) < 0.5 ? '160,200,120' : '30,60,25'},${0.05 + hash(i + 2) * 0.07})`;
+    ctx.beginPath(); ctx.ellipse(x, y, 14 + hash(i + 5) * 26, 9 + hash(i + 6) * 16, hash(i + 7) * 3, 0, Math.PI * 2); ctx.fill();
+  }
+  // pistilos rizados, del blanco al naranja y al marrón
+  for (let i = 0; i < 5; i++) {
+    const p = clamp(m.pist * 1.25 - hash(i + 50) * 0.35);
+    const col = p < 0.5 ? mixc([246, 242, 228], [222, 128, 48], p * 2) : mixc([222, 128, 48], [130, 70, 35], (p - 0.5) * 2);
+    const x = W * (0.08 + hash(i + 40) * 0.84) + drift * 0.8, sway = Math.sin(t * 0.7 + i) * 4;
+    ctx.strokeStyle = rgba(col, 0.92); ctx.lineWidth = 7; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x, H + 10);
+    ctx.bezierCurveTo(x + 50 + sway, H * 0.75, x - 30 - p * 30, H * 0.5, x + 22 + sway * 2 - p * 40, H * (0.22 + p * 0.18)); ctx.stroke();
+    ctx.strokeStyle = rgba(col, 0.5); ctx.lineWidth = 1;
+    for (let k = 0; k < 18; k++) { const yy = H * (0.3 + k * 0.04), xx = x + Math.sin(k * 1.7) * 18; ctx.beginPath(); ctx.moveTo(xx, yy); ctx.lineTo(xx + 5, yy - 4); ctx.stroke(); }
+  }
+  // tricomas en tres planos de foco: atrás borrosos y chicos (en caché: el desenfoque es caro), adelante nítidos
+  const key = `${W}x${H}|${cv.width}|${[m.clear, m.cloudy, m.amber, m.density].map((v) => Math.round(v * 12)).join(',')}`;
+  if (!TRI.cache || TRI.cache.key !== key) {
+    const k = cv.width / W;
+    TRI.cache = { key, layers: [[0.55, 2.6, 0.55], [0.8, 1.1, 0.8]].map(([sc, blur, alpha], li) => {
+      const c = document.createElement('canvas'); c.width = Math.round((W + 60) * k); c.height = Math.round((H + 30) * k);
+      const x = c.getContext('2d'); x.scale(k, k); x.translate(30, 15);
+      x.filter = `blur(${blur}px)`; x.globalAlpha = alpha;
+      triPlane(x, li, sc, m, 0, W, H, 0, 0);
+      return { c, sc };
+    }) };
+  }
+  for (const L of TRI.cache.layers) ctx.drawImage(L.c, -30 + drift * L.sc, -15 + rise * L.sc, W + 60, H + 30);
+  triPlane(ctx, 2, 1, m, t, W, H, drift, rise);
+  // ocular: viñeta circular y escala
+  const vg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.42, W / 2, H / 2, Math.max(W, H) * 0.72);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.78)');
+  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(W - 92, H - 22, 60, 3);
+  ctx.font = '11px system-ui'; ctx.textAlign = 'center'; ctx.fillText('100 µm', W - 62, H - 28);
+  ctx.textAlign = 'left'; ctx.fillText('60×', 12, 20);
 }
 function drawTrichomes() {
   const g = GENETICS[$('#trGen').value], d = +$('#trDay').value;
   $('#trDay').max = Math.round(g.floweringDays * 1.4);
   $('#trDayV').textContent = d;
-  const fake = { stage: 'flor', sex: 'hembra', fd: d, FT: g.floweringDays, dis: { hlvd: 0 }, pgr: 0 };
-  const tri = Sim.prototype.trichomes.call(fake), pist = Sim.prototype.pistils.call(fake);
-  const { ctx, W, H, dpr } = fitCanvas($('#trCv'));
-  ctx.fillStyle = '#4a6a34'; ctx.fillRect(0, 0, W, H);
-  const n = Math.round(14 + tri.density * 60);
-  for (let i = 0; i < n; i++) {
-    const x = hash(i) * W, y = H * 0.25 + hash(i + 7) * H * 0.75, hh = H * (0.12 + hash(i + 3) * 0.15);
-    const r = hash(i + 19);
-    const head = r < tri.amber ? '#d68c32' : r < tri.amber + tri.cloudy ? '#f0f0ec' : 'rgba(225,240,255,0.5)';
-    ctx.strokeStyle = 'rgba(235,240,230,0.7)'; ctx.lineWidth = Math.max(1, 2 * dpr);
-    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (hash(i + 2) - 0.5) * 8, y - hh); ctx.stroke();
-    ctx.fillStyle = head; ctx.beginPath(); ctx.arc(x + (hash(i + 2) - 0.5) * 8, y - hh, 5.5 * dpr, 0, Math.PI * 2); ctx.fill();
-  }
-  for (let i = 0; i < 6; i++) {
-    ctx.strokeStyle = hash(i + 50) < pist ? '#d4762c' : '#f4f2e8'; ctx.lineWidth = 3 * dpr;
-    const x = W * (0.1 + hash(i + 40) * 0.8);
-    ctx.beginPath(); ctx.moveTo(x, H); ctx.quadraticCurveTo(x + 30 * dpr, H * 0.6, x + 10 * dpr, H * 0.35); ctx.stroke();
-  }
+  const w = (TRI.want = triTarget());
+  if (!TRI.raf) TRI.raf = requestAnimationFrame(triFrame);
   const r = d / g.floweringDays;
   const verdict = d < 10 ? 'Preflor: todavía no hay tricomas glandulares formados.' : r < 0.8 ? 'Inmaduro: mayoría transparentes. Cosechar ahora da menos peso y potencia.' : r < 0.93 ? 'Casi: los lechosos están ganando.' : r <= 1.1 ? '✅ Ventana de cosecha: mayoría lechosos con algo de ámbar.' : 'Tarde: el ámbar avanza y el THC se degrada a CBN (efecto más sedante).';
-  $('#trOut').innerHTML = `Día ${d} de ~${g.floweringDays}: <b>${Math.round(tri.clear * 100)} %</b> transparentes · <b>${Math.round(tri.cloudy * 100)} %</b> lechosos · <b>${Math.round(tri.amber * 100)} %</b> ámbar · pistilos oscuros ${Math.round(pist * 100)} %.<br>${verdict}`;
+  $('#trOut').innerHTML = `Día ${d} de ~${g.floweringDays}: <b>${Math.round(w.clear * 100)} %</b> transparentes · <b>${Math.round(w.cloudy * 100)} %</b> lechosos · <b>${Math.round(w.amber * 100)} %</b> ámbar · pistilos oscuros ${Math.round(w.pist * 100)} %.<br>${verdict}`;
 }
 function updateDryFrom() {
   const box = $('#dryCtl'), out = $('#dryOut');
@@ -5481,7 +5738,7 @@ function init() {
     else toast('Piloto automático apagado: ahora todo depende de vos.', 'warn');
     refreshControls(true);
   });
-  $('#btnLoupe').addEventListener('click', (e) => { App.rend.loupe = !App.rend.loupe; e.target.classList.toggle('on', App.rend.loupe); if (App.rend.loupe && App.sim.stage !== 'flor') toast('La lupa muestra tricomas cuando la planta está en floración.'); });
+  $('#btnLoupe').addEventListener('click', (e) => { App.rend.loupe = !App.rend.loupe; e.target.classList.toggle('on', App.rend.loupe); if (App.rend.loupe && App.sim.stage !== 'flor') toast('La lupa amplía la planta mientras es chica; en floración muestra los tricomas.'); });
   $('#btnRoots').addEventListener('click', (e) => { App.rend.showRoots = !App.rend.showRoots; e.target.classList.toggle('on', App.rend.showRoots); });
   $('#modalX').addEventListener('click', closeModal);
   $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
