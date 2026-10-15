@@ -3891,13 +3891,14 @@ class Renderer {
   drawRuler(sim) {
     const ctx = this.ctx, dpr = this.dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    const span = this.view.top;
+    // la regla termina debajo del HUD (etapa, día, hora y luz), que ocupa los primeros ~56 px
+    const span = Math.max(5, this.view.top - (56 * dpr) / this.view.s);
     const step = span > 200 ? 50 : span > 90 ? 20 : span > 40 ? 10 : 5;
     ctx.strokeStyle = 'rgba(255,255,255,0.28)'; ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = `${9 * dpr}px system-ui`; ctx.textAlign = 'left'; ctx.lineWidth = dpr;
     const x = this.cv.width - 34 * dpr;
     ctx.beginPath(); ctx.moveTo(x, this.Y(0)); ctx.lineTo(x, this.Y(span)); ctx.stroke();
     for (let y = 0; y <= span; y += step) { ctx.beginPath(); ctx.moveTo(x, this.Y(y)); ctx.lineTo(x + 5 * dpr, this.Y(y)); ctx.stroke(); ctx.fillText(`${y}`, x + 7 * dpr, this.Y(y) + 3 * dpr); }
-    ctx.fillText('cm', x + 7 * dpr, this.Y(span) + 14 * dpr);
+    ctx.fillText('cm', x + 7 * dpr, this.Y(span) - 6 * dpr);
     if (sim.height > 2) {
       ctx.strokeStyle = 'rgba(140,220,120,0.6)'; ctx.setLineDash([3 * dpr, 3 * dpr]);
       ctx.beginPath(); ctx.moveTo(x - 30 * dpr, this.Y(sim.height)); ctx.lineTo(x, this.Y(sim.height)); ctx.stroke(); ctx.setLineDash([]);
