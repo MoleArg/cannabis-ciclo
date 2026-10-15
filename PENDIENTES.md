@@ -3,14 +3,17 @@
 ## Vista 3D: no se ve el render (oculta)
 
 El interruptor **2D / 3D** del simulador está oculto (`SHOW_3D = false` en `index.html`; la
-tecla V también queda desactivada). Al pasar a 3D el `iframe` con `indoor.html?embed` no muestra
-la carpa: la escena queda vacía. Todavía no se buscó la causa. Para retomarlo:
+tecla V también queda desactivada).
 
-1. Abrir `indoor.html` solo y ver si renderiza (descarta Three.js / WebGL).
-2. Abrir `indoor.html?embed` solo: en modo embebido espera mensajes `ready`/`state` del simulador.
-3. Revisar el handshake `indoorMessage` / `indoorPost` en `index.html` (el simulador manda
-   `enter` solo después de recibir `ready`).
-4. Al arreglarlo: `SHOW_3D = true` y sacar la clase `hidden` de `#viewSeg`.
+**Causa probable (2026-10-15):** Pages estaba en "Deploy from a branch" y publicaba los archivos
+crudos de `main`: `indoor.html` sin compilar no puede importar Three.js y `index.html` pedía
+`/src/scene2d/index.js` (404). Al pasar Pages a "GitHub Actions", `indoor.html` publicado carga
+sin errores y renderiza la carpa. Falta probar el 3D embebido en el simulador:
+
+1. Poner `SHOW_3D = true` y sacar la clase `hidden` de `#viewSeg`.
+2. Probar en https://molearg.github.io/cannabis-ciclo/ el paso 2D → 3D y el regreso.
+3. Si el `iframe` sigue vacío, revisar el handshake `indoorMessage` / `indoorPost`
+   (el simulador manda `enter` solo después de recibir `ready`).
 
 ## Idea: equipamiento de interior y carpas cargadas por el usuario
 
