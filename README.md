@@ -32,7 +32,7 @@ feminizada y de semilla (no se clona). La maceta tiene un tope realista: lo que 
 | Ciclo de vida | Etapas con duración, necesidades, riesgos y consejos; línea de tiempo por genética; fotoperíodo y fitocromo; sexo; autoflorecientes. |
 | Laboratorio | Barril de Liebig, tabla de VPD (clic = aplicar al simulador), pH vs. disponibilidad de nutrientes, luz/CO₂/DLI, temperatura (fotosíntesis vs. respiración). |
 | Productos y químicos | Fertilizantes, aditivos, enmiendas, microorganismos, fitosanitarios, PGR y prohibidos, con semáforo de seguridad; cómo actúan los químicos; orden de mezcla; mitos. |
-| Diagnóstico | Asistente síntoma → causa. Carencias y excesos con hoja ilustrada; plagas, enfermedades y carencias con fotos reales (para P, Ca, S y HLVd no hay fotos libres y queda solo el dibujo). |
+| Diagnóstico | Asistente síntoma → causa. Carencias y excesos con hoja ilustrada; plagas, enfermedades y carencias con fotos reales (para calcio, azufre, exceso de nitrógeno y HLVd no hay fotos libres que sirvan y queda solo el dibujo). |
 | Técnicas | Topping, FIM, LST, supercropping, SCROG, SOG, defoliación, lollipop, esquejes y trasplante, cada una con un dibujo animado del corte o del doblado. |
 | Cosecha y curado | Microscopio de tricomas animado (60×, tres planos de foco) según el día de floración; tarjetas animadas de cada paso; simulador de secado y curado, con cada cuántos días, cuántos minutos y durante cuántas semanas se abren los frascos. |
 | Fuentes | Bibliografía (DOI verificados), glosario y marco legal. |
@@ -69,7 +69,7 @@ publican los archivos sin compilar y se rompen tres cosas: las fotos de `public/
 |---|---|
 | `index.html` | La plataforma: simulador y guía. El simulador y las pestañas son un script en línea, sin dependencias. |
 | `src/scene2d/` | La escena 2D en WebGL2: `renderer.js` (luz, cámara, animaciones) y `shader.js` (fondo de carpa o cielo, haz de luz, sombras). |
-| `public/plagas/`, `public/diag/` | Fotos de plagas, enfermedades y carencias de Wikimedia Commons. Autor, licencia y planta de origen están en `PEST_PHOTOS` y `DIAG_PHOTOS` (dentro de `index.html`) y se muestran al pie de cada foto. |
+| `public/plagas/`, `public/diag/` | Fotos de plagas, enfermedades y carencias de Wikimedia Commons y Flickr, solo con licencias libres (CC0, dominio público, CC BY, CC BY-SA). Autor, licencia y planta de origen están en `PEST_PHOTOS` y `DIAG_PHOTOS` (dentro de `index.html`) y se muestran al pie de cada foto. |
 | `indoor.html`, `src/indoor/` | La carpa Cultivarg 80 × 80 × 160 en 3D (Three.js + Anime.js). Abierta sola funciona por su cuenta; con `?embed` es la vista 3D del simulador. |
 | `PENDIENTES.md` | Lo que queda anotado: probar el 3D embebido y la idea de equipamiento de interior (aire acondicionado, ventiladores, filtro de carbón, carpas cargadas con fotos o video). |
 | `index.min.html`, `canvas.html` | Versión anterior del simulador solo (sin 3D ni los cambios recientes), minificada y comprimida para incrustar donde hay límite de tamaño, como el canvas de Paseo. **Desactualizadas.** |

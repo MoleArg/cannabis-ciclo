@@ -5291,24 +5291,29 @@ function buildDiag() {
   const disScn = { botrytis: 'botrytis', pythium: 'encharcada', hlvd: 'hlvd' };
   for (const [k, p] of Object.entries(DISEASES)) $('#disCards').append(pestCard(k, p, disScn[k]));
 }
-/* Fotos reales de cada plaga (Wikimedia Commons, licencias libres; el crédito va al pie) */
+/* Fotos reales de cada plaga (Wikimedia Commons, licencias libres; el crédito va al pie).
+   La araña roja muestra el daño en una hoja de cannabis, que es lo que se ve al diagnosticar */
 const PEST_PHOTOS = {
-  mites: { src: 'plagas/mites.jpg', author: "Gilles San Martin", license: "CC BY-SA 2.0", page: "https://commons.wikimedia.org/wiki/File:Tetranychus_urticae_with_silk_threads.jpg" },
+  mites: { src: 'plagas/mites.jpg', host: 'en cannabis', author: "Rikva (Wikipedia en neerlandés)", license: "Public domain", page: "https://commons.wikimedia.org/wiki/File:Spint_op_Cannabis_Sativa.jpg" },
   thrips: { src: 'plagas/thrips.jpg', author: "Frank Peairs, Colorado State University, Bugwood.org", license: "CC BY 3.0", page: "https://commons.wikimedia.org/wiki/File:Frankliniella_occidentalis_5364132-LGPT.jpg" },
   aphids: { src: 'plagas/aphids.jpg', author: "Sanjay ach", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Sa_aphid_colony_highres.jpg" },
   whitefly: { src: 'plagas/whitefly.jpg', author: "NobbiP", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Gew%C3%A4chshaus-Wei%C3%9Fe_Fliege_Trialeurodes_vaporariorum_5226.jpg" },
   gnats: { src: 'plagas/gnats.jpg', author: "AfroBrazilian", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Bradysia_sp._01.JPG" },
   caterpillars: { src: 'plagas/caterpillars.jpg', author: "Gyorgy Csoka, Hungary Forest Research Institute, Bugwood.org", license: "CC BY 3.0 us", page: "https://commons.wikimedia.org/wiki/File:Helicoverpa_armigera_larva.jpg" }
 };
-/* Fotos reales de enfermedades y carencias (Wikimedia Commons). Casi no hay fotos libres de
-   carencias en cannabis: se usan de otros cultivos cuando el patrón del síntoma es el mismo */
+/* Fotos reales de enfermedades y carencias (Wikimedia Commons y Flickr, solo licencias libres:
+   CC0, dominio público, CC BY y CC BY-SA). Casi no hay fotos libres de carencias en cannabis:
+   se usan de otros cultivos cuando el patrón del síntoma es el mismo. Sin foto libre que sirva:
+   calcio, azufre, exceso de nitrógeno y HLVd (queda el dibujo) */
 const DIAG_PHOTOS = {
   pm: { src: 'diag/pm.jpg', host: "en otra planta", author: "Dmitry Brant", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Powdery_mildew_9.jpg" },
   botrytis: { src: 'diag/botrytis.jpg', host: "en frambuesa", author: "Schlaghecken Josef", license: "CC BY 4.0", page: "https://commons.wikimedia.org/wiki/File:Himbeere_(Rubus_idaeus)_mit_Grauschimmel_(Botrytis_cinerea)-Josef_Schlaghecken.jpg" },
   pythium: { src: 'diag/pythium.jpg', host: "plantín en maceta", author: "Scot Nelson", license: "CC0", page: "https://commons.wikimedia.org/wiki/File:Awa_Pythium_Root_Rot_--_wilt_on_young_plant.jpg" },
   N: { src: 'diag/N.jpg', host: "en cannabis", author: "Cannabis Training University", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Cannabis_Nutrient_Deficiency.JPG" },
-  K: { src: 'diag/K.jpg', host: "en tomate", author: "Goldlocki", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Tomate_Blatt_Kalimangel.jpg" },
-  Mg: { src: 'diag/Mg.jpg', host: "en arraclán", author: "Karduelis", license: "Public domain", page: "https://commons.wikimedia.org/wiki/File:Frangula_alnus_with_magnesium_deficiency.jpg" },
+  P: { src: 'diag/P.jpg', host: "en otra planta", author: "Plant pests and diseases", license: "CC0", page: "https://www.flickr.com/photos/62295966@N07/16233464175" },
+  salt: { src: 'diag/salt.jpg', host: "en cannabis", author: "Fenrisulfir", license: "CC BY-SA 3.0", page: "https://commons.wikimedia.org/wiki/File:Fertilizer-Burn.jpg" },
+  K: { src: 'diag/K.jpg', host: "en tomate", author: "Plant pests and diseases", license: "CC0", page: "https://www.flickr.com/photos/62295966@N07/16014199760" },
+  Mg: { src: 'diag/Mg.jpg', host: "en tomate", author: "Plant pests and diseases", license: "CC0", page: "https://www.flickr.com/photos/62295966@N07/14817322901" },
   Fe: { src: 'diag/Fe.jpg', host: "en naranjo amargo", author: "Eiku en exil", license: "CC BY-SA 4.0", page: "https://commons.wikimedia.org/wiki/File:Chlorose_ferrique_sur_Citrus_aurantium.jpg" }
 };
 /* foto con crédito al pie (y la planta de la foto, si no es cannabis) */
