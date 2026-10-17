@@ -165,7 +165,24 @@ select:hover{border-color:var(--line2)}
 .dg b{font-size:13.5px}
 .dg .d{font-size:12.5px;color:var(--txt2)}
 .dg .f{font-size:12.5px;color:var(--acc)}
+.mixp small{color:var(--mut);font-size:11px}
+.nutt{width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums}
+.nutt th,.nutt td{padding:2px 4px;text-align:right}
+.nutt th{color:var(--mut);font-weight:600}
+.nutt tr>th:first-child,.nutt tr>th:nth-child(4){text-align:left;color:var(--txt2)}
+.ppm-h{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mut);margin:8px 0 2px}
+.fold{border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.015)}
+.fold>summary{cursor:pointer;padding:8px 10px;font-size:12.5px;font-weight:600;color:var(--txt2);display:flex;gap:8px;align-items:center;list-style:none}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:"▸";transition:transform .2s var(--ease);color:var(--mut)}
+.fold[open]>summary::before{transform:rotate(90deg)}
+.fold-n{margin-left:auto;font-weight:500;font-size:11.5px;color:var(--acc)}
+.fold-body{display:flex;flex-direction:column;gap:8px;padding:2px 10px 10px}
 .nutbars{display:grid;gap:8px}
+.nutchart-w{grid-column:1/-1}
+.chart.nutchart{height:250px}
+.nlegend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--txt2);margin:0 0 8px}
+.nlegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
 .nb{display:grid;grid-template-columns:96px 1fr 46px;gap:10px;align-items:center;font-size:12.5px}
 .nb>span:last-child{text-align:right;font-variant-numeric:tabular-nums;color:var(--txt2)}
 .nb .bar .band{position:absolute;top:0;bottom:0;background:rgba(139,227,156,.14);border-left:1px solid rgba(139,227,156,.5);border-right:1px solid rgba(139,227,156,.5)}
@@ -239,7 +256,7 @@ input[type=checkbox]{accent-color:var(--acc2)}
 .sub{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
 .sol{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px;display:grid;gap:6px}
 .sol .row{display:flex;justify-content:space-between;gap:8px}
-.ppm{display:grid;grid-template-columns:28px 1fr 58px;gap:8px;align-items:center;font-size:12px}
+.ppm{display:grid;grid-template-columns:28px 1fr 68px;gap:8px;align-items:center;font-size:12px}
 .ppm>span:last-child{text-align:right;font-variant-numeric:tabular-nums}
 .ppm .bar{overflow:visible}
 .ppm .bar i{background:var(--info)}
@@ -303,6 +320,7 @@ details.more[open]>summary::before{transform:rotate(45deg)}
 .lab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));gap:16px}
 .cwrap{position:relative}
 .labcv{width:100%;height:270px;display:block;background:#0b100d;border:1px solid var(--line);border-radius:12px;margin:8px 0;cursor:crosshair;touch-action:pan-y}
+#phChart{height:420px}
 .lab-two{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:center}
 .barrel{width:100%;max-width:220px}
 .barrel rect{transition:y .45s var(--ease),height .45s var(--ease),fill .3s}
@@ -617,6 +635,11 @@ select:disabled{opacity:.55;cursor:not-allowed}
             <div id="growth" class="growthline"></div>
           </div>
           <div class="ipane two" data-pane="nut">
+            <div class="nutchart-w"><h4>Carencias y excesos en el tiempo</h4>
+              <div class="nlegend"><span><i style="background:#ff6b6b"></i>Carencia fuerte</span><span><i style="background:rgba(255,107,107,.45)"></i>Carencia leve</span><span><i style="background:rgba(242,193,78,.5)"></i>Justo</span><span><i style="background:rgba(255,255,255,.08)"></i>Suficiente</span><span><i style="background:#6cb6ff"></i>Exceso / tóxico</span></div>
+              <div class="chartbox"><canvas id="nutChart" class="chart nutchart"></canvas><div class="ctip"></div></div>
+              <p class="hint" style="margin:6px 0 0">Cada fila es un nutriente y cada columna un día: así se ve cuándo empezó una carencia, cuánto duró y si un riego, un cambio de pH o una pulverización foliar la corrigió. Pasá el dedo o el mouse para ver el valor.</p>
+            </div>
             <div><h4>Nutrientes dentro de la planta</h4><div id="nutbars" class="nutbars"></div></div>
             <div><h4>Plagas, enfermedades y riesgos</h4><div id="riskbars" class="nutbars"></div></div>
           </div>
@@ -734,7 +757,7 @@ select:disabled{opacity:.55;cursor:not-allowed}
         <div id="wzOut"></div>
       </div>
       <h3>Nutrientes: carencias y excesos</h3>
-      <p class="lead">Regla de oro: si el síntoma empieza <b>abajo</b> (hojas viejas) es un nutriente <b>móvil</b> (N, P, K, Mg); si empieza <b>arriba</b> (hojas nuevas), uno <b>inmóvil</b> (Ca, Fe, S, B). Antes de agregar nada, medí el pH.</p>
+      <p class="lead">Regla de oro: si el síntoma empieza <b>abajo</b> (hojas viejas) es un nutriente <b>móvil</b> (N, P, K, Mg); si empieza <b>arriba</b> (hojas nuevas), uno <b>inmóvil</b> (Ca, S y los micros Fe, Mn, Zn, Cu y B). El molibdeno es la excepción entre los micros: es móvil y falta con pH <b>bajo</b>. Antes de agregar nada, medí el pH: la mayoría de las carencias de micros son bloqueos, no falta de producto.</p>
       <div id="nutCards" class="cards"></div>
       <h3>Plagas</h3>
       <div id="pestCards" class="cards"></div>
@@ -840,17 +863,65 @@ const CHEMOTYPES = {
 
 const SUBSTRATES = {
   tierra: { name: 'Tierra abonada', hold: 0.46, afp: 0.11, buffer: 4, pH: 6.5, soil: true,
-    reserve: { N: 260, P: 240, K: 750, Ca: 2300, Mg: 380, S: 260, Fe: 22 }, organic: { N: 1300, P: 220, K: 400, Ca: 400, Mg: 120, S: 120, Fe: 25 }, microbes: 0.45,
+    reserve: { N: 260, P: 240, K: 750, Ca: 2300, Mg: 380, S: 260, Fe: 22, Mn: 2.4, Zn: 1.4, Cu: 0.3, B: 1.6, Mo: 0.16 }, organic: { N: 1300, P: 220, K: 400, Ca: 400, Mg: 120, S: 120, Fe: 25, Mn: 2.6, Zn: 1.6, Cu: 0.32, B: 1.6, Mo: 0.16 }, microbes: 0.45,
     desc: 'Sustrato comercial con fertilizante para 3-4 semanas. Amortigua errores de pH y EC. Hay que regar cuando la maceta está liviana.' },
   viva: { name: 'Tierra viva (orgánica)', hold: 0.5, afp: 0.14, buffer: 6, pH: 6.6, soil: true,
-    reserve: { N: 380, P: 240, K: 1100, Ca: 2600, Mg: 500, S: 450, Fe: 30 }, organic: { N: 6400, P: 1200, K: 6500, Ca: 2600, Mg: 800, S: 700, Fe: 140 }, microbes: 0.85,
+    reserve: { N: 380, P: 240, K: 1100, Ca: 2600, Mg: 500, S: 450, Fe: 30, Mn: 3, Zn: 1.8, Cu: 0.35, B: 2.6, Mo: 0.3 }, organic: { N: 6400, P: 1200, K: 6500, Ca: 2600, Mg: 800, S: 700, Fe: 140, Mn: 26, Zn: 15, Cu: 2.6, B: 22, Mo: 2.4 }, microbes: 0.85,
     desc: 'Suelo con compost, humus y minerales: los microbios liberan los nutrientes de a poco. Casi solo agua. Muy estable, pero lento para corregir.' },
   coco: { name: 'Coco + perlita', hold: 0.52, afp: 0.24, buffer: 1.4, pH: 6.0, soil: false, coco: true,
-    reserve: { N: 0, P: 10, K: 260, Ca: 0, Mg: 0, S: 20, Fe: 2 }, organic: {}, microbes: 0.15,
+    reserve: { N: 0, P: 10, K: 260, Ca: 0, Mg: 0, S: 20, Fe: 2, Mn: 0.6, Zn: 0.3, Cu: 0.05, B: 0.6, Mo: 0 }, organic: {}, microbes: 0.15,
     desc: 'Casi inerte y muy aireado: crecimiento rápido. Exige fertilizar en cada riego, ajustar pH (5,8-6,2) y suele pedir Cal-Mag (el coco retiene Ca y Mg).' },
   hidro: { name: 'Hidroponia (DWC)', hold: 1, afp: 0, buffer: 1, pH: 6.0, soil: false, hydro: true,
     reserve: { N: 0, P: 0, K: 0, Ca: 0, Mg: 0, S: 0, Fe: 0 }, organic: {}, microbes: 0.05,
     desc: 'Raíces sumergidas en solución nutritiva con burbujeo de aire. El más rápido y el menos tolerante: oxígeno disuelto, temperatura del agua (18-22 °C) y pH mandan.' }
+};
+
+/* ---------------------------------------------------------------------
+   COMPONENTES DEL SUSTRATO (por litro de componente seco y suelto).
+   dens: densidad aparente (g/L) · mo: materia orgánica (% del peso seco)
+   tp/air/wat: porosidad total, de aire y agua retenida a capacidad de
+   maceta (% del volumen) · cic: capacidad de intercambio (meq/100 g)
+   mic: vida microbiana 0-1 · cn: relación carbono/nitrógeno
+   av: nutrientes disponibles y org: nutrientes en la materia orgánica (mg/L)
+   --------------------------------------------------------------------- */
+const MIX_COMP = {
+  turba: { name: 'Turba rubia (sphagnum)', dens: 110, mo: 94, tp: 92, air: 20, wat: 62, cic: 120, pH: 3.9, mic: 0.1, cn: 45,
+    av: { N: 5, P: 3, K: 10, Ca: 60, Mg: 30, S: 20, Fe: 3, Mn: 0.5, Zn: 0.3, Cu: 0.05, B: 0.2, Mo: 0.01 }, org: { N: 60, P: 5, S: 10, Fe: 5 },
+    desc: 'Esponja ácida (pH ~4): retiene mucha agua y nutrientes. Hay que encalarla.' },
+  coco: { name: 'Fibra de coco', dens: 75, mo: 92, tp: 94, air: 24, wat: 56, cic: 60, pH: 6.0, mic: 0.15, cn: 90,
+    av: { P: 8, K: 250, Ca: 10, Mg: 10, S: 15, Fe: 2, Mn: 0.6, Zn: 0.3, Cu: 0.05, B: 0.6 }, org: {},
+    desc: 'Aireada y casi inerte. Trae potasio y sodio; retiene Ca y Mg (hay que "bufferarla").' },
+  perlita: { name: 'Perlita', dens: 100, mo: 0, tp: 88, air: 48, wat: 22, cic: 1, pH: 7.2, mic: 0, cn: 0, av: {}, org: {},
+    desc: 'Roca volcánica expandida: solo da aire y drenaje.' },
+  vermi: { name: 'Vermiculita', dens: 110, mo: 0, tp: 90, air: 12, wat: 62, cic: 120, pH: 7.0, mic: 0, cn: 0,
+    av: { K: 40, Ca: 20, Mg: 60 }, org: {},
+    desc: 'Mica expandida: retiene agua y nutrientes (alta CIC), aporta algo de Mg y K.' },
+  compost: { name: 'Compost maduro', dens: 450, mo: 45, tp: 75, air: 12, wat: 50, cic: 70, pH: 7.4, mic: 0.9, cn: 14,
+    av: { N: 80, P: 60, K: 500, Ca: 400, Mg: 80, S: 60, Fe: 5, Mn: 1.5, Zn: 1, Cu: 0.2, B: 0.6, Mo: 0.03 },
+    org: { N: 2400, P: 500, K: 600, Ca: 1500, Mg: 300, S: 300, Fe: 200, Mn: 40, Zn: 25, Cu: 5, B: 8, Mo: 0.6 },
+    desc: 'Materia orgánica estable con mucha vida: nutre de a poco durante meses.' },
+  humus: { name: 'Humus de lombriz', dens: 550, mo: 38, tp: 72, air: 9, wat: 56, cic: 80, pH: 7.0, mic: 1, cn: 11,
+    av: { N: 150, P: 90, K: 500, Ca: 600, Mg: 120, S: 70, Fe: 6, Mn: 1.5, Zn: 1, Cu: 0.2, B: 0.8, Mo: 0.04 },
+    org: { N: 2800, P: 800, K: 900, Ca: 2000, Mg: 400, S: 300, Fe: 250, Mn: 50, Zn: 35, Cu: 6, B: 10, Mo: 0.8 },
+    desc: 'El abono orgánico más suave: microbios, ácidos húmicos y nutrientes. Fino: con mucho se compacta.' },
+  suelo: { name: 'Tierra negra (suelo franco)', dens: 1100, mo: 5, tp: 50, air: 6, wat: 36, cic: 25, pH: 6.8, mic: 0.6, cn: 11,
+    av: { N: 20, P: 15, K: 150, Ca: 900, Mg: 150, S: 20, Fe: 4, Mn: 3, Zn: 1, Cu: 0.3, B: 0.5, Mo: 0.02 },
+    org: { N: 1500, P: 300, K: 300, Ca: 500, Mg: 100, S: 150, Fe: 100, Mn: 30, Zn: 8, Cu: 2, B: 3, Mo: 0.3 },
+    desc: 'Suelo mineral (arena, limo y arcilla): pesado, poco aire en maceta, pero estable.' },
+  arena: { name: 'Arena gruesa', dens: 1500, mo: 0, tp: 38, air: 9, wat: 12, cic: 1, pH: 7.2, mic: 0.05, cn: 0, av: {}, org: {},
+    desc: 'Da peso y drenaje en suelos, pero en maceta llena los poros de los demás.' },
+  corteza: { name: 'Corteza de pino compostada', dens: 250, mo: 88, tp: 85, air: 30, wat: 40, cic: 50, pH: 5.3, mic: 0.3, cn: 120,
+    av: { K: 60, Ca: 80, Mn: 2 }, org: { N: 500 },
+    desc: 'Estructura gruesa que no se aplasta. C/N alto: los microbios toman nitrógeno al descomponerla.' }
+};
+/* "abono de base" (NPK 14-16-18 + micros) y cal dolomita que se mezclan al preparar: mg/L por cada g/L */
+const MIX_FERT = { N: 140, P: 70, K: 150, Mg: 20, S: 30, Fe: 1, Mn: 0.5, Zn: 0.3, Cu: 0.1, B: 0.2, Mo: 0.02 };
+const MIX_LIME = { av: { Ca: 60, Mg: 30 }, org: { Ca: 160, Mg: 90 } };
+/* mezclas óptimas (modo automático) de cada sustrato: % en volumen, cal y abono de base en g/L */
+const MIX_PRESET = {
+  tierra: { comp: { turba: 50, perlita: 20, compost: 15, humus: 10, suelo: 5 }, lime: 4, fert: 1 },
+  viva: { comp: { suelo: 20, compost: 25, humus: 20, turba: 15, perlita: 20 }, lime: 2, fert: 0 },
+  coco: { comp: { coco: 70, perlita: 30 }, lime: 0, fert: 0 }
 };
 
 const LAMPS = {
@@ -862,34 +933,37 @@ const LAMPS = {
 
 /* ppm de cada elemento aportado por el agua; alc = alcalinidad (meq/L) */
 const WATER_SOURCES = {
-  red: { name: 'Agua de red', pH: 7.6, ppm: { Ca: 40, Mg: 12, S: 15, Na: 28 }, alc: 2.2, chlorine: 1,
+  red: { name: 'Agua de red', pH: 7.6, ppm: { Ca: 40, Mg: 12, S: 15, Na: 28, B: 0.05 }, alc: 2.2, chlorine: 1,
     desc: 'pH alto y algo de dureza. Trae cloro o cloramina (afecta a los microbios del suelo).' },
-  reposada: { name: 'De red reposada 24 h', pH: 7.6, ppm: { Ca: 40, Mg: 12, S: 15, Na: 28 }, alc: 2.2, chlorine: 0.5,
+  reposada: { name: 'De red reposada 24 h', pH: 7.6, ppm: { Ca: 40, Mg: 12, S: 15, Na: 28, B: 0.05 }, alc: 2.2, chlorine: 0.5,
     desc: 'El cloro libre se evapora, pero la cloramina no (se neutraliza con vitamina C o carbón activado).' },
   osmosis: { name: 'Ósmosis inversa', pH: 6.5, ppm: { Ca: 1, Mg: 0, S: 0, Na: 2 }, alc: 0.1, chlorine: 0,
     desc: 'Pura: control total, pero sin Ca ni Mg. Casi siempre requiere Cal-Mag.' },
   lluvia: { name: 'Lluvia', pH: 5.8, ppm: { Ca: 2, Mg: 0.5, S: 2, Na: 2 }, alc: 0.05, chlorine: 0,
     desc: 'Blanda y algo ácida. Buena base, sin aporte mineral.' },
-  pozo: { name: 'Pozo (dura)', pH: 7.9, ppm: { Ca: 95, Mg: 35, S: 40, Na: 110 }, alc: 5, chlorine: 0,
+  pozo: { name: 'Pozo (dura)', pH: 7.9, ppm: { Ca: 95, Mg: 35, S: 40, Na: 110, B: 0.3, Mn: 0.05 }, alc: 5, chlorine: 0,
     desc: 'Mucho bicarbonato: el pH del sustrato sube con el tiempo y bloquea hierro y manganeso. El sodio suma EC sin nutrir.' }
 };
 
 /* Elementos seguidos por el modelo. ion: factor masa ion/elemento para estimar EC */
-const ELEMENTS = ['N', 'P', 'K', 'Ca', 'Mg', 'S', 'Fe'];
-const ION_FACTOR = { N: 4.4, P: 3.1, K: 1, Ca: 1, Mg: 1, S: 3, Fe: 2, Na: 2.5 };
+const ELEMENTS = ['N', 'P', 'K', 'Ca', 'Mg', 'S', 'Fe', 'Mn', 'Zn', 'Cu', 'B', 'Mo'];
+const MACROS = ['N', 'P', 'K', 'Ca', 'Mg', 'S'], MICROS = ['Fe', 'Mn', 'Zn', 'Cu', 'B', 'Mo'];
+const ION_FACTOR = { N: 4.4, P: 3.1, K: 1, Ca: 1, Mg: 1, S: 3, Fe: 2, Mn: 2, Zn: 2, Cu: 2, B: 3, Mo: 1.7, Na: 2.5 };
+/* decimales para mostrar ppm: los micros van en décimas o centésimas */
+const PPM_DEC = { Fe: 1, Mn: 2, Zn: 2, Cu: 2, B: 2, Mo: 3 };
 
 /* Concentración objetivo en la zona radicular (ppm) por etapa — orientativa */
 const TARGET_PPM = {
-  plantula: { N: 45, P: 12, K: 45, Ca: 45, Mg: 18, S: 18, Fe: 0.8 },
-  veg: { N: 130, P: 30, K: 120, Ca: 100, Mg: 40, S: 45, Fe: 1.8 },
-  flor: { N: 120, P: 40, K: 140, Ca: 90, Mg: 40, S: 50, Fe: 1.8 },
-  madura: { N: 80, P: 35, K: 120, Ca: 90, Mg: 36, S: 45, Fe: 1.5 }
+  plantula: { N: 45, P: 12, K: 45, Ca: 45, Mg: 18, S: 18, Fe: 0.8, Mn: 0.22, Zn: 0.13, Cu: 0.022, B: 0.18, Mo: 0.018 },
+  veg: { N: 130, P: 30, K: 120, Ca: 100, Mg: 40, S: 45, Fe: 1.8, Mn: 0.5, Zn: 0.3, Cu: 0.05, B: 0.4, Mo: 0.04 },
+  flor: { N: 120, P: 40, K: 140, Ca: 90, Mg: 40, S: 50, Fe: 1.8, Mn: 0.5, Zn: 0.3, Cu: 0.05, B: 0.45, Mo: 0.04 },
+  madura: { N: 80, P: 35, K: 120, Ca: 90, Mg: 36, S: 45, Fe: 1.5, Mn: 0.42, Zn: 0.25, Cu: 0.042, B: 0.38, Mo: 0.033 }
 };
 
 /* Contenido de cada elemento en la materia seca nueva (mg/g) */
 const TISSUE = {
-  veg: { N: 42, P: 5, K: 32, Ca: 16, Mg: 5, S: 3, Fe: 0.15 },
-  flor: { N: 30, P: 5.5, K: 28, Ca: 12, Mg: 4.5, S: 3, Fe: 0.12 }
+  veg: { N: 42, P: 5, K: 32, Ca: 16, Mg: 5, S: 3, Fe: 0.15, Mn: 0.05, Zn: 0.03, Cu: 0.006, B: 0.035, Mo: 0.0035 },
+  flor: { N: 30, P: 5.5, K: 28, Ca: 12, Mg: 4.5, S: 3, Fe: 0.12, Mn: 0.04, Zn: 0.025, Cu: 0.005, B: 0.035, Mo: 0.003 }
 };
 
 /* Disponibilidad relativa por pH en suelo (4.0 → 9.0 cada 0.5). Coco/hidro se desplazan ~0,6 */
@@ -900,7 +974,12 @@ const PH_AVAIL = {
   Ca: [0.3, 0.38, 0.5, 0.66, 0.82, 0.95, 1, 1, 1, 0.95, 0.8],
   Mg: [0.28, 0.36, 0.48, 0.64, 0.8, 0.94, 1, 1, 1, 0.94, 0.8],
   S: [0.4, 0.5, 0.65, 0.85, 1, 1, 1, 1, 1, 0.95, 0.9],
-  Fe: [1, 1, 1, 1, 0.96, 0.86, 0.62, 0.42, 0.28, 0.22, 0.18]
+  Fe: [1, 1, 1, 1, 0.96, 0.86, 0.62, 0.42, 0.28, 0.22, 0.18],
+  Mn: [1, 1, 1, 1, 0.97, 0.88, 0.66, 0.44, 0.3, 0.22, 0.18],
+  Zn: [1, 1, 1, 1, 0.97, 0.9, 0.74, 0.52, 0.34, 0.25, 0.2],
+  Cu: [1, 1, 1, 1, 0.97, 0.92, 0.8, 0.62, 0.45, 0.36, 0.3],
+  B: [0.55, 0.66, 0.78, 0.9, 1, 1, 1, 0.9, 0.66, 0.46, 0.4],
+  Mo: [0.3, 0.4, 0.5, 0.62, 0.76, 0.9, 0.97, 1, 1, 1, 1]
 };
 
 /* ---------------------------------------------------------------------
@@ -910,72 +989,199 @@ const PH_AVAIL = {
    ppm = aporte por 1 ml/L (o 1 g/L). safe: verde / amarillo / rojo
    --------------------------------------------------------------------- */
 const PRODUCTS = {
-  baseVeg: { name: 'Base crecimiento (mineral, NPK 4-1-4)', kind: 'feed', unit: 'ml/L', max: 6, step: 0.25,
-    ppm: { N: 45, P: 10, K: 38, Mg: 6, S: 15, Fe: 0.9 }, pH: -0.35, safe: 'verde',
+  baseVeg: { cat: 'base', name: 'Base crecimiento (mineral, NPK 4-1-4)', kind: 'feed', unit: 'ml/L', max: 6, step: 0.25,
+    ppm: { N: 45, P: 10, K: 38, Mg: 6, S: 15, Fe: 0.9, Mn: 0.25, Zn: 0.15, Cu: 0.026, B: 0.14, Mo: 0.02 }, pH: -0.35, safe: 'verde',
     what: 'Sales solubles (nitratos, fosfatos, sulfatos) con mucho nitrógeno para hojas y tallos.',
     effect: 'Efecto inmediato y medible con el medidor de EC. Si te pasás, salinidad: puntas quemadas y raíces dañadas.',
     evidence: 'Alta: la nutrición mineral es la base de la horticultura moderna.' },
-  baseFlor: { name: 'Base floración (mineral, NPK 3-3-5)', kind: 'feed', unit: 'ml/L', max: 6, step: 0.25,
-    ppm: { N: 32, P: 16, K: 45, Mg: 8, S: 20, Fe: 0.9 }, pH: -0.4, safe: 'verde',
+  baseFlor: { cat: 'base', name: 'Base floración (mineral, NPK 3-3-5)', kind: 'feed', unit: 'ml/L', max: 6, step: 0.25,
+    ppm: { N: 32, P: 16, K: 45, Mg: 8, S: 20, Fe: 0.9, Mn: 0.25, Zn: 0.15, Cu: 0.026, B: 0.15, Mo: 0.02 }, pH: -0.4, safe: 'verde',
     what: 'Menos N y más K (y algo más de P) para la etapa de flor.',
     effect: 'Reducir el N en floración favorece la maduración; el K sostiene la densidad de las flores.',
     evidence: 'Alta para el criterio general. Las dosis óptimas medidas (Bernstein) son moderadas: 160 ppm N, 30-90 ppm P, ~60-175 ppm K.' },
-  calmag: { name: 'Cal-Mag', kind: 'feed', unit: 'ml/L', max: 4, step: 0.25,
+  calmag: { cat: 'mineral', name: 'Cal-Mag', kind: 'feed', unit: 'ml/L', max: 4, step: 0.25,
     ppm: { Ca: 36, Mg: 14, N: 11 }, pH: -0.02, safe: 'verde',
     what: 'Nitrato de calcio y magnesio.',
     effect: 'Corrige carencias típicas de coco, agua de ósmosis o lluvia y de luces LED (hojas con manchas óxido o clorosis entre venas).',
     evidence: 'Alta en coco/ósmosis; innecesario con agua dura.' },
-  pk: { name: 'Booster PK 13-14', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
+  pk: { cat: 'mineral', name: 'Booster PK 13-14', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
     ppm: { P: 55, K: 58 }, pH: -0.5, safe: 'amarillo',
     what: 'Fosfato monopotásico concentrado para "engordar" cogollos.',
     effect: 'Por encima de lo necesario no aumenta el rendimiento: el exceso de P bloquea zinc y hierro y frena a las micorrizas.',
     evidence: 'Baja para el "más es mejor": Shiponi y Bernstein (2021) hallaron el óptimo de P entre 30 y 90 ppm.' },
-  micro: { name: 'Micronutrientes quelatados', kind: 'feed', unit: 'ml/L', max: 2, step: 0.1,
-    ppm: { Fe: 4, S: 2 }, pH: -0.02, safe: 'verde',
+  micro: { cat: 'micro', name: 'Micronutrientes quelatados', kind: 'feed', unit: 'ml/L', max: 2, step: 0.1,
+    ppm: { Fe: 4, Mn: 1.1, Zn: 0.6, Cu: 0.12, B: 0.8, Mo: 0.08, S: 2 }, pH: -0.02, safe: 'verde',
     what: 'Hierro, manganeso, zinc, cobre, boro y molibdeno unidos a quelatos (EDTA, DTPA, EDDHA).',
     effect: 'El quelato mantiene el hierro disponible a pH más alto. Corrige hojas nuevas amarillas con venas verdes.',
     evidence: 'Alta. El EDDHA es el que mejor funciona con pH alto.' },
-  epsom: { name: 'Sulfato de magnesio (sal de Epsom)', kind: 'feed', unit: 'g/L', max: 1.5, step: 0.1,
+  epsom: { cat: 'mineral', name: 'Sulfato de magnesio (sal de Epsom)', kind: 'feed', unit: 'g/L', max: 1.5, step: 0.1,
     ppm: { Mg: 98, S: 128 }, pH: 0, safe: 'verde',
     what: 'Sal barata de magnesio y azufre.',
     effect: 'Corrige carencia de Mg (clorosis internerval en hojas viejas). En exceso compite con el calcio.',
     evidence: 'Alta.' },
-  silicio: { name: 'Silicato de potasio (Si)', kind: 'feed', unit: 'ml/L', max: 1.5, step: 0.1,
+  silicio: { cat: 'bio', name: 'Silicato de potasio (Si)', kind: 'feed', unit: 'ml/L', max: 1.5, step: 0.1,
     ppm: { K: 22 }, si: 1, pH: 0.45, safe: 'verde',
     what: 'Fuente de silicio, un elemento "beneficioso" que se deposita en las paredes celulares.',
     effect: 'Tallos más fuertes, mejor tolerancia al calor y a la sequía y menos oídio. Sube el pH: agregarlo primero y ajustar al final.',
     evidence: 'Media-alta: el silicio aplicado a la raíz redujo el oídio en cáñamo (Univ. de Kentucky).' },
-  algas: { name: 'Extracto de algas', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
+  algas: { cat: 'bio', name: 'Extracto de algas', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
     ppm: { K: 9, N: 2 }, bio: 'algas', pH: 0.02, safe: 'verde',
     what: 'Extracto de Ascophyllum nodosum: hormonas vegetales (citoquininas, auxinas), betaínas y micronutrientes.',
     effect: 'Mejora levemente el enraizamiento y la tolerancia al estrés. No reemplaza al fertilizante.',
     evidence: 'Media en otros cultivos, escasa en cannabis.' },
-  humicos: { name: 'Ácidos húmicos y fúlvicos', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
+  humicos: { cat: 'bio', name: 'Ácidos húmicos y fúlvicos', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
     ppm: { K: 4 }, bio: 'humicos', pH: -0.05, safe: 'verde',
     what: 'Materia orgánica estabilizada que actúa como quelato natural.',
     effect: 'Mejora la absorción de micronutrientes y fósforo y alimenta la vida del suelo.',
     evidence: 'Media.' },
-  melaza: { name: 'Melaza', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
+  melaza: { cat: 'org', name: 'Melaza', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
     ppm: { K: 6 }, bio: 'melaza', pH: -0.05, safe: 'amarillo',
     what: 'Azúcares para alimentar a los microbios del suelo.',
     effect: 'En tierra viva acelera la liberación de nutrientes. En hidro o coco alimenta bacterias indeseadas (biofilm, Pythium). No "endulza" los cogollos.',
-    evidence: 'Mito el sabor; real el efecto sobre microbios.' }
+    evidence: 'Mito el sabor; real el efecto sobre microbios.' },
+  /* ---- completos ---- */
+  npk20: { cat: 'base', name: 'Soluble completo NPK 20-20-20 + micros', kind: 'feed', unit: 'g/L', max: 2, step: 0.05,
+    ppm: { N: 200, P: 87, K: 166, Mg: 5, S: 10, Fe: 1, Mn: 0.5, Zn: 0.3, Cu: 0.05, B: 0.2, Mo: 0.01 }, pH: -0.3, safe: 'verde',
+    what: 'Polvo soluble equilibrado (urea, nitratos y fosfatos) con micronutrientes. No trae calcio.',
+    effect: 'Cómodo para vegetativo a 0,5-1 g/L. Tiene mucho más fósforo del que hace falta y casi la mitad del N es urea: en hidro y coco no es lo ideal.',
+    evidence: 'Alta como fertilizante general; poco ajustado para cannabis.' },
+  /* ---- sales simples ---- */
+  nitCa: { cat: 'mineral', name: 'Nitrato de calcio (15,5-0-0 + 19 % Ca)', kind: 'feed', unit: 'g/L', max: 1.5, step: 0.05,
+    ppm: { N: 155, Ca: 190 }, pH: 0.05, safe: 'verde',
+    what: 'La fuente de calcio soluble más usada en hidroponia.',
+    effect: 'Calcio y nitrógeno de efecto inmediato. Va en el tanque A: con sulfatos o fosfatos concentrados precipita (yeso, fosfato de calcio).',
+    evidence: 'Alta.' },
+  nitK: { cat: 'mineral', name: 'Nitrato de potasio (13-0-46)', kind: 'feed', unit: 'g/L', max: 1.5, step: 0.05,
+    ppm: { N: 130, K: 380 }, pH: 0.05, safe: 'verde',
+    what: 'Potasio y nitrógeno nítrico, muy soluble.',
+    effect: 'Corrige falta de K sin agregar sulfatos ni cloruros. En exceso compite con Ca y Mg.',
+    evidence: 'Alta.' },
+  mkp: { cat: 'mineral', name: 'Fosfato monopotásico (MKP 0-52-34)', kind: 'feed', unit: 'g/L', max: 1, step: 0.05,
+    ppm: { P: 227, K: 282 }, pH: -0.3, safe: 'verde',
+    what: 'Fósforo y potasio puros; es la base de casi todos los "boosters PK".',
+    effect: 'Medio gramo por litro ya aporta más P del que usa la planta. Baja un poco el pH.',
+    evidence: 'Alta para corregir carencias; baja para el "más es mejor".' },
+  sulK: { cat: 'mineral', name: 'Sulfato de potasio (0-0-50 + 18 % S)', kind: 'feed', unit: 'g/L', max: 1, step: 0.05,
+    ppm: { K: 415, S: 170 }, pH: 0, safe: 'verde',
+    what: 'Potasio con azufre, sin nitrógeno.',
+    effect: 'Útil al final de la floración, cuando ya no se quiere N. Se disuelve lento en agua fría.',
+    evidence: 'Alta.' },
+  nitMg: { cat: 'mineral', name: 'Nitrato de magnesio', kind: 'feed', unit: 'g/L', max: 1, step: 0.05,
+    ppm: { N: 110, Mg: 95 }, pH: 0, safe: 'verde',
+    what: 'Magnesio con nitrógeno nítrico, sin azufre.',
+    effect: 'Alternativa a la sal de Epsom cuando sobra azufre o el agua ya trae sulfatos.',
+    evidence: 'Alta.' },
+  /* ---- micronutrientes sueltos (dosis en mg por litro: un exceso es tóxico) ---- */
+  feEddha: { cat: 'micro', name: 'Quelato de hierro EDDHA 6 %', kind: 'feed', unit: 'mg/L', max: 60, step: 1,
+    ppm: { Fe: 0.06 }, chel: 1, pH: 0, safe: 'verde',
+    what: 'Hierro unido a EDDHA, el quelato más estable: tiñe el agua de rojo oscuro.',
+    effect: 'Sigue disponible hasta pH 9, a diferencia del EDTA (que se pierde arriba de 6,5). La solución para agua dura o tierra alcalina.',
+    evidence: 'Alta.' },
+  mnSO4: { cat: 'micro', name: 'Sulfato de manganeso (32 % Mn)', kind: 'feed', unit: 'mg/L', max: 10, step: 0.25,
+    ppm: { Mn: 0.32, S: 0.19 }, pH: 0, safe: 'amarillo',
+    what: 'Manganeso soluble, sin quelato.',
+    effect: 'Con 1-2 mg/L alcanza. Con pH alto se oxida y precipita; con pH bajo se vuelve tóxico.',
+    evidence: 'Alta.' },
+  znSO4: { cat: 'micro', name: 'Sulfato de zinc (35 % Zn)', kind: 'feed', unit: 'mg/L', max: 6, step: 0.25,
+    ppm: { Zn: 0.35, S: 0.17 }, pH: 0, safe: 'amarillo',
+    what: 'Zinc soluble.',
+    effect: 'Corrige hojas nuevas chicas y entrenudos cortos. Con 0,5-1 mg/L alcanza; el exceso bloquea el hierro.',
+    evidence: 'Alta.' },
+  cuSO4: { cat: 'micro', name: 'Sulfato de cobre (25 % Cu)', kind: 'feed', unit: 'mg/L', max: 2, step: 0.05,
+    ppm: { Cu: 0.25, S: 0.13 }, pH: 0, safe: 'amarillo',
+    what: 'Cobre soluble (el mismo de la "caldo bordelés").',
+    effect: 'Se necesita poquísimo (0,1-0,3 mg/L). Es de los micros más tóxicos para las raíces.',
+    evidence: 'Alta.' },
+  boric: { cat: 'micro', name: 'Ácido bórico (17,5 % B)', kind: 'feed', unit: 'mg/L', max: 20, step: 0.25,
+    ppm: { B: 0.175 }, pH: 0, safe: 'amarillo',
+    what: 'Boro soluble.',
+    effect: 'Entre lo justo (0,3-0,5 ppm) y lo tóxico (más de ~1,5 ppm) hay muy poco margen: dosificar con balanza de 0,01 g.',
+    evidence: 'Alta.' },
+  moly: { cat: 'micro', name: 'Molibdato de sodio (39 % Mo)', kind: 'feed', unit: 'mg/L', max: 0.5, step: 0.01,
+    ppm: { Mo: 0.39, Na: 0.19 }, pH: 0, safe: 'verde',
+    what: 'Molibdeno soluble.',
+    effect: 'Se usan centésimas de mg por litro. Hace falta sobre todo con pH bajo, donde el molibdeno se insolubiliza.',
+    evidence: 'Alta.' },
+  /* ---- orgánicos líquidos: parte del aporte llega como materia orgánica que liberan los microbios ---- */
+  pescado: { cat: 'org', name: 'Emulsión de pescado (5-1-1)', kind: 'feed', unit: 'ml/L', max: 5, step: 0.25,
+    ppm: { N: 18, P: 3, K: 6, Ca: 4, Fe: 0.1, Zn: 0.03 }, org: { N: 30, P: 6, K: 4, Ca: 6, S: 3, Fe: 0.2, Mn: 0.04, Zn: 0.05, Cu: 0.01, B: 0.02 }, bio: 'organico', pH: -0.05, safe: 'verde',
+    what: 'Pescado hidrolizado: nitrógeno orgánico y aminoácidos.',
+    effect: 'En tierra los microbios lo liberan en días. En coco o hidro se pudre: biofilm y olor.',
+    evidence: 'Media-alta en tierra.' },
+  ortiga: { cat: 'org', name: 'Purín de ortiga (fermentado, diluido 1:10)', kind: 'feed', unit: '% del riego', max: 20, step: 1,
+    ppm: { N: 2.5, K: 4, Ca: 3, Mg: 0.6, Fe: 0.03 }, org: { N: 2, Ca: 1, Fe: 0.02 }, bio: 'organico', pH: 0.02, safe: 'verde',
+    what: 'Ortigas fermentadas en agua 1-2 semanas: N, K, Ca, hierro y algo de microbios.',
+    effect: 'Abono casero suave para vegetativo en tierra. Huele fuerte; colado y diluido no quema.',
+    evidence: 'Media (tradicional, poco estudiado).' },
+  te: { cat: 'org', name: 'Té de compost aireado', kind: 'feed', unit: '% del riego', max: 50, step: 5,
+    ppm: { N: 0.3, K: 0.6, Ca: 0.3 }, org: { N: 0.6, P: 0.1, K: 0.3 }, bio: 'te', pH: 0, safe: 'verde',
+    what: 'Compost o humus "lavado" en agua con burbujeo 24-36 h: sobre todo microbios, poco nutriente.',
+    effect: 'Repone la vida del suelo (después de cloro, H₂O₂ o un trasplante). Usarlo fresco, en menos de 4 h.',
+    evidence: 'Media para la vida del suelo; escasa para nutrir.' },
+  amino: { cat: 'bio', name: 'Aminoácidos (hidrolizado vegetal)', kind: 'feed', unit: 'ml/L', max: 3, step: 0.25,
+    ppm: { N: 9, K: 2 }, bio: 'algas', pH: -0.02, safe: 'verde',
+    what: 'Aminoácidos libres (glicina, prolina, glutamato) listos para usar.',
+    effect: 'Ahorran energía a la planta tras un estrés (calor, trasplante, poda). Aporte de N menor.',
+    evidence: 'Media en otros cultivos.' }
 };
+const FEED_CATS = [['base', 'Fertilizantes base (completos)'], ['mineral', 'Sales simples: N, P, K, Ca, Mg, S'], ['micro', 'Micronutrientes'], ['org', 'Orgánicos líquidos'], ['bio', 'Bioestimulantes y aditivos']];
 
 /* Enmiendas sólidas: se incorporan una vez al sustrato (dosis = puñados en maceta de ~11 L) */
 const AMENDMENTS = {
-  humus: { name: 'Humus de lombriz', org: { N: 300, P: 120, K: 420, Ca: 320, Mg: 90, S: 60, Fe: 18 }, minRate: 0.012, microbes: 0.2, water: 0.04,
+  humus: { name: 'Humus de lombriz', org: { N: 300, P: 120, K: 420, Ca: 320, Mg: 90, S: 60, Fe: 18, Mn: 1.8, Zn: 1.1, Cu: 0.22, B: 1.2, Mo: 0.11 }, minRate: 0.012, microbes: 0.2, water: 0.04,
     what: 'Abono suave, rico en microbios y ácidos húmicos.', effect: 'Liberación lenta (semanas). Mejora la retención de agua y la vida del suelo. Difícil pasarse.' },
-  guano: { name: 'Guano de murciélago (alto P)', org: { N: 120, P: 420, K: 60, Ca: 380, Mg: 30, S: 20, Fe: 6 }, minRate: 0.03, microbes: 0.05,
+  guano: { name: 'Guano de murciélago (alto P)', org: { N: 120, P: 420, K: 60, Ca: 380, Mg: 30, S: 20, Fe: 6, Mn: 0.8, Zn: 1.4, Cu: 0.3, B: 0.25, Mo: 0.04 }, minRate: 0.03, microbes: 0.05,
     what: 'Excremento de murciélago mineralizado.', effect: 'Fósforo de liberación media (1-3 semanas). En exceso quema y frena micorrizas.' },
   sangre: { name: 'Harina de sangre (alto N)', org: { N: 900, P: 20, K: 20, Fe: 30 }, minRate: 0.06, microbes: 0.05,
     what: 'Nitrógeno orgánico muy rápido.', effect: 'Corrige carencias de N en suelo en ~1 semana. Fácil de pasarse (quema, olor, moscas).' },
   hueso: { name: 'Harina de hueso', org: { N: 60, P: 700, Ca: 900, Mg: 20 }, minRate: 0.006, microbes: 0.03,
     what: 'Fosfato de calcio de liberación muy lenta.', effect: 'Aporta P y Ca durante meses; se usa al preparar la tierra, no para corregir.' },
+  compost: { name: 'Compost maduro', org: { N: 260, P: 70, K: 240, Ca: 400, Mg: 80, S: 50, Fe: 30, Mn: 2.4, Zn: 1.2, Cu: 0.3, B: 1, Mo: 0.08 }, minRate: 0.012, microbes: 0.25, water: 0.03, dpH: 0.1,
+    what: 'Restos vegetales descompuestos: materia orgánica estable y vida del suelo.', effect: 'Nutre poco pero de todo y por meses. Si no está maduro (huele a amoníaco, quema) frena las raíces.' },
+  bokashi: { name: 'Bokashi', org: { N: 380, P: 160, K: 220, Ca: 260, Mg: 60, S: 40, Fe: 12, Mn: 1.5, Zn: 1, Cu: 0.25, B: 0.7, Mo: 0.06 }, minRate: 0.03, microbes: 0.3,
+    what: 'Abono fermentado (salvado, estiércol, carbón, melaza y microorganismos).', effect: 'Más rápido que el compost (1-3 semanas). Con mucha cantidad se calienta y quema.' },
+  plumas: { name: 'Harina de plumas (alto N, lenta)', org: { N: 1100, S: 60 }, minRate: 0.006, microbes: 0.03,
+    what: 'Queratina: proteína muy resistente.', effect: 'Nitrógeno de liberación lenta (1-3 meses). Para preparar la tierra de floración, no para corregir.' },
+  kelp: { name: 'Harina de algas (kelp)', org: { N: 40, P: 10, K: 600, Ca: 300, Mg: 200, S: 150, Fe: 20, Mn: 1, Zn: 0.5, Cu: 0.1, B: 4, Mo: 0.05 }, minRate: 0.02, microbes: 0.08,
+    what: 'Algas marinas secas y molidas.', effect: 'Potasio, boro y oligoelementos de liberación media. Trae algo de sodio: con moderación.' },
+  roca: { name: 'Roca fosfórica', org: { P: 900, Ca: 2200, Zn: 0.5 }, minRate: 0.003, microbes: 0,
+    what: 'Fosfato de calcio natural molido.', effect: 'Casi insoluble con pH arriba de 6,5: solo libera P en suelos ácidos o con mucha vida y micorrizas. Puede traer cadmio.' },
+  ceniza: { name: 'Ceniza de madera', reserve: { K: 420, Ca: 900, Mg: 90, P: 40, B: 1.2 }, dpH: 0.7, microbes: 0,
+    what: 'Carbonatos y óxidos de potasio y calcio.', effect: 'Potasio inmediato, pero sube mucho el pH (bloquea Fe, Mn y Zn). Solo en tierra ácida y poquita.' },
+  dolomita: { name: 'Cal dolomita', reserve: { Ca: 400, Mg: 200 }, org: { Ca: 1400, Mg: 700 }, minRate: 0.004, dpH: 0.4, microbes: 0,
+    what: 'Carbonato de calcio y magnesio.', effect: 'Sube el pH de a poco (semanas) y aporta Ca y Mg. Se usa al preparar la tierra con turba; en un sustrato ya alcalino empeora todo.' },
+  yeso: { name: 'Yeso agrícola', reserve: { Ca: 700, S: 560 }, dpH: 0, microbes: 0,
+    what: 'Sulfato de calcio.', effect: 'Calcio y azufre sin cambiar el pH. Afloja suelos arcillosos.' },
+  azufreEl: { name: 'Azufre elemental (baja el pH)', org: { S: 900 }, minRate: 0.004, dpH: -0.7, microbes: 0,
+    what: 'Azufre en polvo que las bacterias oxidan a ácido sulfúrico.', effect: 'Baja el pH de a poco (2-6 semanas, más rápido con calor). Para tierra o agua alcalina; no sirve en coco ni hidro.' },
   micorrizas: { name: 'Micorrizas (inóculo)', mycorrhiza: true,
     what: 'Hongos (Glomus/Rhizophagus) que se asocian a las raíces y extienden su alcance.', effect: 'Mejoran la absorción de P, Zn y agua. Tardan 3-4 semanas en colonizar; el exceso de fósforo y algunos fungicidas las inhiben. No sirven en hidro con H₂O₂.' },
   tricho: { name: 'Trichoderma + Bacillus', beneficials: true,
     what: 'Hongos y bacterias benéficos de la rizósfera.', effect: 'Compiten con Pythium y Fusarium y estimulan raíces. El agua con cloro y el H₂O₂ los matan.' }
+};
+
+/* Fertilización foliar: se pulveriza sobre las hojas y entra por la cutícula y los estomas.
+   boost = cuánto sube el nivel interno del nutriente (fracción de lo necesario) con una pasada
+   bien hecha. Dura 2-4 días: corrige rápido, pero no reemplaza al riego */
+const FOLIAR = {
+  urea: { name: 'Urea (0,5 %)', boost: { N: 0.3 }, burn: 0.6,
+    what: 'Urea de bajo biuret, 5 g/L.', effect: 'El nitrógeno foliar más rápido (horas). Más concentrada quema las puntas.' },
+  calcio: { name: 'Calcio (cloruro o nitrato, 0,4 %)', boost: { Ca: 0.25 }, burn: 0.5,
+    what: 'Nitrato o cloruro de calcio, 4 g/L.', effect: 'El calcio casi no se redistribuye: solo corrige las hojas mojadas. Útil con VPD bajo.' },
+  epsom: { name: 'Sal de Epsom (1-2 %)', boost: { Mg: 0.35, S: 0.12 }, burn: 0.3,
+    what: 'Sulfato de magnesio, 10-20 g/L.', effect: 'La corrección foliar clásica de la clorosis por magnesio: en 3-5 días se nota.' },
+  potasio: { name: 'Potasio (sulfato o nitrato, 1 %)', boost: { K: 0.22 }, burn: 0.5,
+    what: 'Sulfato de potasio, 10 g/L.', effect: 'Ayuda en floración si la raíz no da abasto. La raíz absorbe mucho más K que la hoja.' },
+  hierro: { name: 'Quelato de hierro (0,1 %)', boost: { Fe: 0.4 }, burn: 0.2,
+    what: 'Fe-EDTA o Fe-DTPA, 1 g/L.', effect: 'Reverdece en 2-4 días aunque el pH de raíz esté alto. Las manchas reverdecen a parches: no corrige la causa.' },
+  micros: { name: 'Micros quelatados (Fe, Mn, Zn, Cu, B, Mo)', boost: { Fe: 0.2, Mn: 0.4, Zn: 0.4, Cu: 0.3, B: 0.2, Mo: 0.3 }, burn: 0.3,
+    what: 'Mezcla de micronutrientes quelatados, 1 ml/L.', effect: 'La forma más eficiente de dar micros: se necesitan cantidades mínimas.' },
+  zinc: { name: 'Sulfato de zinc (0,1 %)', boost: { Zn: 0.45 }, burn: 0.4, tox: { Zn: 0.6 },
+    what: 'Sulfato de zinc, 1 g/L.', effect: 'Corrige hojas nuevas chicas y arrugadas en pocos días.' },
+  boro: { name: 'Ácido bórico (0,05 %)', boost: { B: 0.45 }, burn: 0.3, tox: { B: 0.9 },
+    what: 'Ácido bórico, 0,5 g/L.', effect: 'Repetirlo más de una vez por semana acumula boro hasta niveles tóxicos.' },
+  algas: { name: 'Extracto de algas', boost: {}, stress: 0.3, burn: 0.05,
+    what: 'Ascophyllum, 2 ml/L.', effect: 'Bioestimulante: ayuda a recuperarse de un estrés (calor, trasplante, poda). Casi no nutre.' }
 };
 
 /* Aplicaciones sanitarias y otras acciones químicas */
@@ -1190,6 +1396,80 @@ function phAvail(el, pH, soilless) {
   const i = Math.min(9, Math.floor(x));
   return lerp(arr[i], arr[i + 1], x - i);
 }
+/* Propiedades de una mezcla de sustrato a partir de sus componentes */
+function mixProps(mix) {
+  const comp = mix.comp || {};
+  const tot = Object.values(comp).reduce((a, b) => a + (b || 0), 0) || 1;
+  let dens = 0, dm = 0, tp = 0, air = 0, wat = 0, cicL = 0, wpH = 0, w = 0, mic = 0, c = 0, n = 0;
+  const av = {}, org = {};
+  for (const e of ELEMENTS) { av[e] = 0; org[e] = 0; }
+  for (const [k, v] of Object.entries(comp)) {
+    const C = MIX_COMP[k], f = (v || 0) / tot;
+    if (!C || !f) continue;
+    const m = f * C.dens;
+    dens += m; dm += (m * C.mo) / 100; tp += f * C.tp; air += f * C.air; wat += f * C.wat;
+    cicL += (m * C.cic) / 100;
+    const bw = m * Math.max(C.cic, 3); w += bw; wpH += bw * C.pH;
+    mic += f * C.mic;
+    if (C.cn) { const carbon = ((m * C.mo) / 100) * 0.58; c += carbon; n += carbon / C.cn; }
+    for (const e in C.av) av[e] += f * C.av[e];
+    for (const e in C.org) org[e] += f * C.org[e];
+  }
+  // al mezclar, lo fino se mete en los poros de lo grueso: se pierde aire
+  const fines = ((comp.suelo || 0) + (comp.arena || 0) + 0.5 * (comp.humus || 0)) / tot;
+  const coarse = ((comp.perlita || 0) + (comp.corteza || 0) + 0.5 * (comp.coco || 0)) / tot;
+  const shrink = 16 * fines * coarse;
+  air = Math.max(1, air - shrink); tp -= shrink;
+  const lime = mix.lime || 0, fert = mix.fert || 0;
+  const pH = clamp((w ? wpH / w : 7) + (30 * lime) / Math.max(cicL, 20), 3.5, 8.3);
+  for (const e in MIX_LIME.av) { av[e] += lime * MIX_LIME.av[e]; org[e] += lime * MIX_LIME.org[e]; }
+  for (const e in MIX_FERT) av[e] += fert * MIX_FERT[e];
+  return { dens, mo: dens ? (dm / dens) * 100 : 0, tp, air, wat, cicL, cic: dens ? (cicL / dens) * 100 : 0, pH, mic, cn: n ? c / n : 0, av, org, sum: tot };
+}
+/* El sustrato que usa la simulación. En automático es el preset calibrado; con una mezcla
+   propia se le suman las diferencias entre esa mezcla y la óptima (así lo que cambia es
+   solo lo que cambiaste). ov = valores fijados a mano, que pisan a los calculados */
+const MIX_AV_K = 0.15, MIX_ORG_K = 0.16;
+function buildSubstrate(type, mix) {
+  const B = SUBSTRATES[type], P = MIX_PRESET[type];
+  if (!P) return Object.assign({}, B, { key: type, phKey: type, custom: false, props: null });
+  const custom = mix && !mix.auto ? mix : null;
+  const d = mixProps(custom || P), p = custom ? mixProps(P) : d;
+  const ov = (custom && custom.ov) || {};
+  const S = Object.assign({}, B, { key: type, phKey: type, custom: !!custom, reserve: {}, organic: {} });
+  // un coco con un cuarto o más de compost, humus o tierra ya se comporta como tierra (pH, vida, liberación)
+  const comp = (custom || P).comp, tot = Object.values(comp).reduce((a, b) => a + (b || 0), 0) || 1;
+  const soilLike = ((comp.compost || 0) + (comp.humus || 0) + (comp.suelo || 0)) / tot;
+  if (B.coco && soilLike >= 0.25) { S.soil = true; S.phKey = 'tierra'; }
+  S.hold = clamp(ov.wat != null ? ov.wat / 100 : B.hold + (d.wat - p.wat) / 100, 0.15, 0.75);
+  S.afp = clamp(ov.air != null ? ov.air / 100 : B.afp + (d.air - p.air) / 100, 0.02, 0.45);
+  S.pH = clamp(ov.pH != null ? ov.pH : B.pH + (d.pH - p.pH), 3.5, 8.5);
+  const mo = ov.mo != null ? ov.mo : d.mo;
+  const moF = d.mo > 1 ? mo / d.mo : 1;
+  const cicF = 1 + (moF - 1) * 0.7;
+  S.buffer = clamp((B.buffer * d.cicL * cicF) / Math.max(1, p.cicL), 1, 10);
+  S.microbes = clamp(B.microbes + (d.mic - p.mic) + (moF - 1) * 0.15, 0.02, 1);
+  // C/N alto (corteza, coco crudo): los microbios "secuestran" nitrógeno al descomponer el carbono
+  const immob = clamp((d.cn - p.cn - 5) / 60, 0, 0.7);
+  // si un aporte baja, baja en proporción (diluir el compost a la mitad deja la mitad);
+  // si sube, se suma lo que trae el componente nuevo
+  const blend = (base, dv, pv, k) => (dv >= pv ? base + (dv - pv) * k * 11 : pv > 0 ? (base * dv) / pv : base);
+  for (const e of ELEMENTS) {
+    let r = blend(B.reserve[e] || 0, d.av[e], p.av[e], MIX_AV_K);
+    if (e === 'N') r *= 1 - immob;
+    if (ov.nut && ov.nut[e] != null) r = ov.nut[e] * 11;
+    S.reserve[e] = Math.max(0, r);
+    S.organic[e] = Math.max(0, blend(B.organic[e] || 0, d.org[e], p.org[e], MIX_ORG_K)) * moF;
+  }
+  if (custom) S.name = B.name + ' (mezcla propia)';
+  // EC inicial aproximada de la solución del sustrato recién regado
+  const V = 11 * S.hold * 0.72, cs = {};
+  for (const e of ELEMENTS) cs[e] = S.reserve[e] / (V * (1 + (S.buffer - 1) * (BUF_AFFINITY[e] || 0.5)));
+  const air = S.afp * 100, wat = S.hold * 100;
+  S.props = { dens: d.dens, mo, tp: Math.max(d.tp, air + wat + 2), air, wat, cic: d.cic * cicF, cicL: d.cicL * cicF, pH: S.pH, mic: S.microbes, cn: d.cn, immob, ec: ecOf(cs), sum: d.sum,
+    texture: air > 24 ? 'Gruesa y muy aireada' : air >= 10 ? 'Media, esponjosa' : air >= 6 ? 'Fina, retiene mucho' : 'Compacta y pesada' };
+  return S;
+}
 function ecOf(ppm) { let t = 0; for (const k in ppm) t += (ppm[k] || 0) * (ION_FACTOR[k] || 1); return t / 640; }
 const vpdOf = (tLeaf, tAir, rh) => Math.max(0, svp(tLeaf) - (svp(tAir) * rh) / 100);
 const rhForVpd = (vpd, tLeaf, tAir) => clamp(((svp(tLeaf) - vpd) / svp(tAir)) * 100, 5, 100);
@@ -1203,10 +1483,13 @@ function dayLength(lat, doy) {
 }
 /* En suelo la difusión, la materia orgánica y los microbios reponen la solución:
    alcanzan concentraciones menores que en coco o hidro */
-const SOIL_MULT = { N: 0.8, P: 0.45, K: 0.65, Ca: 0.75, Mg: 0.8, S: 0.7, Fe: 0.55 };
-const VIVA_MULT = { N: 0.42, P: 0.35, K: 0.42, Ca: 0.65, Mg: 0.65, S: 0.55, Fe: 0.45 };
-const SOILLESS_MULT = { N: 1, P: 1, K: 1, Ca: 1, Mg: 1, S: 1, Fe: 1 };
-const BUF_AFFINITY = { N: 0.12, P: 1, K: 0.75, Ca: 0.9, Mg: 0.85, S: 0.2, Fe: 1, Na: 0.08 };
+const SOIL_MULT = { N: 0.8, P: 0.45, K: 0.65, Ca: 0.75, Mg: 0.8, S: 0.7, Fe: 0.55, Mn: 0.55, Zn: 0.55, Cu: 0.55, B: 0.7, Mo: 0.6 };
+const VIVA_MULT = { N: 0.42, P: 0.35, K: 0.42, Ca: 0.65, Mg: 0.65, S: 0.55, Fe: 0.45, Mn: 0.45, Zn: 0.45, Cu: 0.45, B: 0.55, Mo: 0.5 };
+/* veces lo necesario a partir de las cuales un micro es tóxico (el boro tiene el margen más angosto) */
+const TOX_AT = { Mn: 6, Zn: 6, Cu: 6, B: 3 }, TOX_AT_KEYS = Object.keys(TOX_AT);
+const SOILLESS_MULT = { N: 1, P: 1, K: 1, Ca: 1, Mg: 1, S: 1, Fe: 1, Mn: 1, Zn: 1, Cu: 1, B: 1, Mo: 1 };
+/* el boro y el molibdeno son aniones: el sustrato casi no los retiene y se lavan */
+const BUF_AFFINITY = { N: 0.12, P: 1, K: 0.75, Ca: 0.9, Mg: 0.85, S: 0.2, Fe: 1, Mn: 0.9, Zn: 0.95, Cu: 1, B: 0.3, Mo: 0.4, Na: 0.08 };
 const LAMP_DIST = { led: 30, hps: 45, cmh: 40, cfl: 10 };
 const STAGE_NAMES = { germinacion: 'Germinación', esqueje: 'Esqueje enraizando', plantula: 'Plántula', veg: 'Vegetativo', trans: 'Transición (estiramiento)', flor: 'Floración (engorde)', madura: 'Maduración', cosechada: 'Cosechada', muerta: 'Muerta' };
 
@@ -1252,7 +1535,7 @@ class Sim {
     this.K_PMAX = 1.95; this.K_CLUMP = 0.25;
     const O = (this.o = Object.assign({ genetics: 'hibrida', chemo: 'thc', seedType: 'fem', start: 'semilla', mode: 'interior', substrate: 'tierra', seed: 7 }, o));
     this.G = GENETICS[O.genetics];
-    this.S = SUBSTRATES[O.substrate];
+    this.S = buildSubstrate(O.substrate, O.mix && O.mix[O.substrate]);
     this.C = CHEMOTYPES[O.chemo];
     this.R = rngFrom(O.seed * 9973 + 17);
     this.sex = O.sex || (O.seedType === 'regular' && O.start !== 'esqueje' ? (this.R() < 0.5 ? 'hembra' : 'macho') : 'hembra');
@@ -1272,6 +1555,7 @@ class Sim {
     this.LA = 0; this.vigor = 1; this.growth = 0; this.growthPot = 0; this.netDay = 0; this.gAcc = 0; this.gPotAcc = 0;
     this.q = {}; this.s = {};
     for (const el of ELEMENTS) { this.q[el] = 1; this.s[el] = 1; }
+    this.xs = {}; for (const el of TOX_AT_KEYS) this.xs[el] = 1;
     this.fNut = 1; this.limEl = null;
     this.stress = { drought: 0, hypoxia: 0, heat: 0, cold: 0, light: 0, vpdHigh: 0, vpdLow: 0, salt: 0, wind: 0, recovery: 0 };
     this.leafDamage = 0; this.rootHealth = 1; this.o2 = 1; this.stomata = 1; this.stomataT = 1; this.transp = 0; this.senesce = 0;
@@ -1322,7 +1606,7 @@ class Sim {
     for (const el of ELEMENTS) this.M[el] = (S.reserve[el] || 0) * k;
     this.org = { fast: {}, slow: {} };
     for (const el of ELEMENTS) { this.org.fast[el] = 0; this.org.slow[el] = (S.organic[el] || 0) * k; }
-    this.pH = S.pH; this.microbes = S.microbes; this.myco = 0; this.mycoOn = false; this.benef = 0; this.si = 0;
+    this.pH = S.pH; this.pHBase = S.pH; this.pHPull = 0; this.microbes = S.microbes; this.myco = 0; this.mycoOn = false; this.benef = 0; this.si = 0;
     this.resAge = 0; this.lastWater = null; this.runoff = 0;
     if (S.hydro) this.changeSolution();
     else if (S.coco) {
@@ -1336,9 +1620,10 @@ class Sim {
 
   solution() {
     const W = WATER_SOURCES[this.env.waterSource];
-    const ppm = { N: 0, P: 0, K: 0, Ca: W.ppm.Ca || 0, Mg: W.ppm.Mg || 0, S: W.ppm.S || 0, Fe: 0, Na: W.ppm.Na || 0 };
-    let dpH = 0, si = 0;
-    const bio = {};
+    const ppm = { Na: W.ppm.Na || 0 };
+    for (const e of ELEMENTS) ppm[e] = W.ppm[e] || 0;
+    let dpH = 0, si = 0, chel = 0;
+    const bio = {}, org = {};
     for (const id in this.feed) {
       const dose = this.feed[id];
       const P = PRODUCTS[id];
@@ -1346,12 +1631,14 @@ class Sim {
       for (const el in P.ppm) ppm[el] = (ppm[el] || 0) + P.ppm[el] * dose;
       dpH += (P.pH || 0) * dose;
       if (P.si) si += P.si * dose;
-      if (P.bio) bio[P.bio] = dose;
+      if (P.bio) bio[P.bio] = (bio[P.bio] || 0) + dose;
+      if (P.chel) chel += P.chel * dose;
+      if (P.org) for (const el in P.org) org[el] = (org[el] || 0) + P.org[el] * dose;
     }
     const natural = clamp(W.pH + dpH / (1 + W.alc * 0.35), 3.5, 9.5);
     const pH = this.env.phAdjust ? this.env.phTarget : natural;
     const alc = this.env.phAdjust ? Math.min(W.alc, 0.4) : W.alc;
-    return { ppm, ec: ecOf(ppm) + alc * 0.06, pH, natural, alc, si, bio, chlorine: W.chlorine };
+    return { ppm, ec: ecOf(ppm) + alc * 0.06, pH, natural, alc, si, bio, chlorine: W.chlorine, org, chel };
   }
 
   bufFor(el) { return 1 + (this.S.buffer - 1) * (BUF_AFFINITY[el] || 0.5); }
@@ -1380,6 +1667,14 @@ class Sim {
     if (sol.bio.humicos) this.humic = Math.min(1, this.humic + 0.12 * sol.bio.humicos);
     if (sol.bio.algas) this.algas = Math.min(1, (this.algas || 0) + 0.12 * sol.bio.algas);
     if (sol.si) this.si = Math.min(1, this.si + 0.12 * sol.si);
+    // quelato EDDHA: fracción del hierro que no depende del pH
+    if (sol.chel) this.eddha = Math.min(1, (this.eddha || 0) + 0.004 * sol.chel);
+    if (sol.bio.te && this.S.soil) { this.microbes = Math.min(1, this.microbes + 0.0012 * sol.bio.te); this.benef = Math.min(1, this.benef + 0.0008 * sol.bio.te); }
+    if (sol.bio.organico || sol.bio.te) {
+      const d = (sol.bio.organico || 0) + 0.05 * (sol.bio.te || 0);
+      if (this.S.soil) this.food = Math.min(1.5, this.food + 0.01 * d);
+      else this.biofilm = Math.min(1, this.biofilm + (this.S.hydro ? 0.05 : 0.025) * d);
+    }
   }
 
   water(V, source) {
@@ -1399,6 +1694,7 @@ class Sim {
       this.M[el] = Math.max(0, total - runoff * cOut);
     }
     ecRun = ecOf(rp);
+    if (sol.org) for (const el in sol.org) this.org.fast[el] = (this.org.fast[el] || 0) + sol.org[el] * absorbed;
     this.theta = (held + absorbed) / Wc;
     const w = V / (V + held * B);
     this.pH += w * (sol.pH + 0.12 * sol.alc - this.pH);
@@ -1411,7 +1707,7 @@ class Sim {
 
   rainSolution() {
     const W = WATER_SOURCES.lluvia;
-    return { ppm: Object.assign({ N: 0.5, P: 0, K: 0, Fe: 0 }, W.ppm), ec: 0.05, pH: W.pH, alc: W.alc, si: 0, bio: {}, chlorine: 0 };
+    return { ppm: Object.assign({ N: 0.5 }, W.ppm), ec: 0.05, pH: W.pH, alc: W.alc, si: 0, bio: {}, chlorine: 0 };
   }
 
   /* ---------------- planta (estructura visual) ---------------- */
@@ -1750,7 +2046,9 @@ class Sim {
       // horas seguidas de sustrato empapado: el O₂ se agota (raíces y microbios lo consumen)
       this.wetHours = this.theta > 0.93 ? (this.wetHours || 0) + 1 : Math.max(0, (this.wetHours || 0) - 6);
       this.o2 = clamp((afp - 0.04) / 0.1) * (1 - 0.45 * clamp(this.wetHours / 96)) * (this.theta > 0.85 ? 1 - 0.2 * clamp((E.tRoot - 22) / 8) : 1);
-      this.pH += (this.S.pH - this.pH) * 0.003 * Math.pow(this.S.buffer / 4, 2);
+      // las enmiendas que cambian el pH (cal, azufre) mueven de a poco el pH propio del sustrato
+      if (Math.abs(this.pHPull) > 0.001) { const d = this.pHPull * (this.pHPull < 0 ? 0.0025 * betaT(E.tRoot, 5, 30, 42) : 0.004); this.pHBase += d; this.pHPull -= d; }
+      this.pH += (this.pHBase - this.pH) * 0.003 * Math.pow(this.S.buffer / 4, 2);
     }
     this.pH = clamp(this.pH, 3.5, 9.5);
     // estomas: agua, VPD alto, salinidad, oxígeno, raíces, calor
@@ -1895,23 +2193,40 @@ class Sim {
     const coldRoot = betaT(E.tRoot, 6, 24, 38);
     const s = this.s;
     for (const el of ELEMENTS) {
-      let a = (this.conc(el) / (T[el] * tm[el])) * phAvail(el, this.pH, soilless);
+      let pa = phAvail(el, this.pH, soilless);
+      if (el === 'Fe' && this.eddha) pa = lerp(pa, 1, this.eddha);
+      let a = (this.conc(el) / (T[el] * tm[el])) * pa;
       a *= Math.pow(this.rootHealth, 0.7) * (0.5 + 0.5 * this.o2);
       const bio = this.S.soil ? this.microbes : 0; // sideróforos y bacterias solubilizadoras
       if (el === 'P') a *= (0.4 + 0.6 * coldRoot) * (1 + 0.35 * this.myco) * (1 + 0.15 * this.humic) * (1 + 0.4 * bio);
       if (el === 'Fe') a *= (1 + 0.25 * this.humic) * (0.6 + 0.4 * coldRoot) * (1 + 0.9 * bio);
+      // Mn y Zn: los quelatos naturales (húmicos, exudados, microbios) los mantienen disueltos; Zn con micorrizas
+      if (el === 'Mn') a *= (1 + 0.2 * this.humic) * (0.7 + 0.3 * coldRoot) * (1 + 0.8 * bio);
+      if (el === 'Zn') a *= (1 + 0.2 * this.humic) * (0.6 + 0.4 * coldRoot) * (1 + 0.3 * this.myco) * (1 + 0.8 * bio);
+      // el cobre se pega fuerte a la materia orgánica: con mucha MO queda menos libre
+      if (el === 'Cu') a *= (1 + 0.15 * this.humic) * (1 + 0.6 * bio) / (1 + 0.25 * Math.max(0, (this.S.props ? this.S.props.mo : 0) - 30) / 30);
+      // el boro, como el calcio, viaja con la transpiración
+      if (el === 'B') a *= 0.45 + 0.55 * tr;
+      if (el === 'Mo') a *= 1 + 0.5 * bio;
       if (el === 'Ca') a *= tr * (this.S.coco ? 0.8 : 1);
       if (el === 'Mg' && this.S.coco) a *= 0.85;
       s[el] = a;
     }
     if (s.K > 1.8) { const f = 1 - 0.25 * clamp((s.K - 1.8) / 1.2); s.Ca *= f; s.Mg *= f; }
-    if (s.P > 2.2) s.Fe *= 0.7;
-    if (s.Ca > 2.6) s.Mg *= 0.85;
+    if (s.P > 2.2) { s.Fe *= 0.7; s.Zn *= 0.65; }
+    if (s.Ca > 2.6) { s.Mg *= 0.85; s.B *= 0.85; }
+    // hierro y manganeso compiten por el mismo transportador; el exceso de cobre o zinc desplaza al hierro
+    if (s.Fe > 2.5) s.Mn *= 1 - 0.25 * clamp((s.Fe - 2.5) / 1.5);
+    if (s.Mn > 2.5) s.Fe *= 1 - 0.25 * clamp((s.Mn - 2.5) / 1.5);
+    if (s.Cu > 2.5 || s.Zn > 2.6) s.Fe *= 0.85;
+    if (s.S > 2.6) s.Mo *= 0.85;
     const na = this.conc('Na') / 70;
     if (na > 1) { s.K *= 1 - 0.12 * clamp(na - 1); s.Ca *= 1 - 0.1 * clamp(na - 1); }
     if (this.stage !== 'germinacion') {
+      // exceso real (sin tope): solo los micros son tóxicos y hace falta mucho más que lo necesario
+      for (const el of TOX_AT_KEYS) this.xs[el] += (s[el] - this.xs[el]) / 48;
       for (const el of ELEMENTS) {
-        const tau = el === 'Ca' || el === 'Fe' || el === 'S' ? 44 : 64;
+        const tau = el === 'Ca' || el === 'S' || el === 'Fe' || el === 'Mn' || el === 'Cu' || el === 'B' || el === 'Zn' ? 44 : 64;
         this.q[el] += (clamp(s[el], 0, 3) - this.q[el]) / tau;
       }
     }
@@ -1922,13 +2237,15 @@ class Sim {
       if (g < fN) { fN = g; lim = el; }
     }
     if (this.q.N > 2) fN *= 1 - 0.15 * clamp(this.q.N - 2);
+    // toxicidad de micros: el margen entre "suficiente" y "demasiado" es angosto (sobre todo el boro)
+    for (const el of TOX_AT_KEYS) fN *= 1 - 0.15 * this.toxOf(el);
     this.fNut = fN; this.limEl = lim;
     if (growthDW > 0) {
       for (const el of ELEMENTS) this.M[el] = Math.max(0, this.M[el] - growthDW * tissue[el] * clamp(s[el], 0, 1.3));
       this.M.Na = Math.max(0, this.M.Na - growthDW * 1.2);
     }
     // mineralización de la materia orgánica (la hacen los microbios)
-    if (this.S.soil) {
+    if (!this.S.hydro) {
       // la rizósfera (exudados de raíz) activa a los microbios: con pocas raíces la liberación es lenta
       const k = this.microbes * betaT(E.tRoot, 3, 30, 42) * (this.theta > 0.25 && this.theta < 0.92 ? 1 : 0.4) * (0.08 + 0.92 * clamp(this.B.root / 14));
       for (const [pool, rate] of [[this.org.fast, 0.0025], [this.org.slow, 0.0011]]) {
@@ -1940,6 +2257,7 @@ class Sim {
       this.food *= 0.9992;
     }
     this.humic *= 0.9985;
+    if (this.eddha) this.eddha *= 0.999;
     if (this.algas) this.algas *= 0.998;
     this.si *= 0.9993;
     this.benef *= 0.9996;
@@ -2001,6 +2319,9 @@ class Sim {
   }
   frostHour() { this.leafDamage = clamp(this.leafDamage + 0.02); }
 
+  /* toxicidad 0-1 de un micro: desde TOX_AT veces lo necesario */
+  toxOf(el) { return clamp((this.xs[el] - TOX_AT[el]) / TOX_AT[el]); }
+
   /* Síntomas visibles 0-1 (los usan el dibujo y el diagnóstico) */
   sym(k) {
     const q = this.q, st = this.stress;
@@ -2013,7 +2334,12 @@ class Sim {
       case 'mgDef': return clamp((0.75 - q.Mg) / 0.45);
       case 'sDef': return clamp((0.7 - q.S) / 0.4);
       case 'feDef': return clamp((0.75 - q.Fe) / 0.45);
-      case 'tipBurn': return clamp(Math.max(st.salt * 1.2, (q.N - 1.9) / 0.6, (q.K - 2.2) / 0.8));
+      case 'mnDef': return clamp((0.75 - q.Mn) / 0.45);
+      case 'znDef': return clamp((0.75 - q.Zn) / 0.45);
+      case 'cuDef': return clamp((0.75 - q.Cu) / 0.45);
+      case 'bDef': return clamp((0.75 - q.B) / 0.45);
+      case 'moDef': return clamp((0.75 - q.Mo) / 0.45);
+      case 'tipBurn': return clamp(Math.max(st.salt * 1.2, (q.N - 1.9) / 0.6, (q.K - 2.2) / 0.8, this.toxOf('B') * 1.5));
       case 'bleach': return clamp(st.light * 1.3);
       case 'taco': return clamp(st.heat * 1.4 + st.vpdHigh * 0.4);
       case 'droop': return clamp(st.hypoxia * 1.3 - 0.15);
@@ -2233,6 +2559,36 @@ class Sim {
     return out;
   }
 
+  /* pulverización foliar: corrige rápido y dura poco; los nutrientes inmóviles solo llegan a lo mojado */
+  applyFoliar(id) {
+    const F = FOLIAR[id], E = this.lastE, out = [];
+    if (!F) return out;
+    if (this.stage === 'germinacion' || this.B.leaf < 0.02) { out.push('Todavía no hay hojas para pulverizar.'); return out; }
+    if (this.stage === 'cosechada' || this.dead) return out;
+    const rh = E.rh || 60;
+    // entra mejor con la hoja húmeda más tiempo (HR alta, luz apagada o tenue) y menos en hojas muy viejas
+    let eff = (0.55 + 0.45 * clamp((rh - 35) / 40)) * (E.light ? 0.75 : 1) * (this.stage === 'madura' ? 0.6 : 1);
+    const since = (this.hour - ((this.lastFoliar || {})[id] ?? -1e9)) / 24;
+    if (since < 2) { eff *= 0.35; out.push('Repetida antes de 2 días: la hoja todavía no absorbió la anterior.'); }
+    (this.lastFoliar = this.lastFoliar || {})[id] = this.hour;
+    const mobile = { N: 1, P: 1, K: 1, Mg: 1, Mo: 1 };
+    for (const el in F.boost) {
+      const b = F.boost[el] * eff * (mobile[el] ? 1 : 0.8);
+      this.q[el] = Math.max(this.q[el], Math.min(this.q[el] + b, 1.35));
+    }
+    if (F.tox) for (const el in F.tox) if (this.xs[el] != null) this.xs[el] += F.tox[el] * (since < 6 ? 2.5 : 1);
+    if (F.stress) { this.stress.recovery = Math.max(0, this.stress.recovery - F.stress); this.algas = Math.min(1, (this.algas || 0) + 0.3); }
+    // con luz fuerte o calor la gota se seca y concentra las sales: quema
+    if (E.light && (E.ppfd > 500 || E.tLeaf > 28)) { this.leafDamage = clamp(this.leafDamage + 0.04 * F.burn + 0.01); out.push('Con la luz fuerte o calor las gotas se secan y concentran las sales: quemó algunas puntas. Mejor al apagar la luz o al atardecer.'); }
+    if (this.stage === 'flor' && this.fd > 14 && this.sex !== 'macho') {
+      this.residue += 0.08; this.dis.botrytis = Math.max(this.dis.botrytis, rh > 55 ? 0.006 : 0.002);
+      out.push('Mojaste cogollos formados: deja residuo y la humedad invita a la botrytis. En floración avanzada solo se pulveriza por debajo de los cogollos o no se pulveriza.');
+    }
+    if (rh < 40) out.push('Con HR baja la gota se seca en minutos y entra poco.');
+    this.log('info', `Pulverización foliar: ${F.name}.` + (out.length ? ' ' + out.join(' ') : ''));
+    return out;
+  }
+
   applyAmendment(id) {
     const A = AMENDMENTS[id], k = this.potScale();
     const out = [];
@@ -2241,6 +2597,13 @@ class Sim {
       const pool = A.minRate > 0.02 ? this.org.fast : this.org.slow;
       for (const el in A.org) pool[el] += A.org[el] * k;
       if (this.S.hydro) for (const el in A.org) this.M[el] += A.org[el] * k * 0.3;
+    }
+    if (A.reserve) for (const el in A.reserve) this.M[el] += A.reserve[el] * k;
+    if (A.dpH) {
+      if (this.S.soil) this.pHPull += A.dpH / Math.sqrt(this.S.buffer / 4);
+      else { this.pH = clamp(this.pH + A.dpH * 0.4, 3.5, 9.5); out.push('Sin suelo que la amortigüe, cambia el pH de golpe y el próximo riego lo arrastra.'); }
+      if (A.dpH > 0 && this.pHBase + this.pHPull > 7.2) out.push('El pH va a quedar alto: se bloquean hierro, manganeso y zinc.');
+      if (A.dpH < 0 && this.pHBase + this.pHPull < 5.6) out.push('El pH va a quedar bajo: se pierden Ca, Mg y Mo, y el Mn puede volverse tóxico.');
     }
     if (A.microbes) this.food = Math.min(1.5, this.food + A.microbes * 2);
     if (A.mycorrhiza) { if (this.S.hydro) out.push('Las micorrizas no prosperan en hidroponia.'); else this.mycoOn = true; }
@@ -2385,7 +2748,7 @@ class Sim {
 
   idealFor(key, ph) {
     ph = ph || this.phase();
-    if (key === 'ph') return IDEAL.ph[this.o.substrate];
+    if (key === 'ph') return IDEAL.ph[this.S.phKey];
     if (key === 'airflow') return IDEAL.airflow;
     if (key === 'theta') return IDEAL.theta;
     if (key === 'hydroTemp') return IDEAL.hydroTemp;
@@ -2457,7 +2820,7 @@ class Sim {
       this.transplant(to);
       this.log('info', `Piloto automático: trasplante de 3 L a ${to} L (las raíces ya ocupaban la maceta chica).`);
     }
-    if (!this.manual.has('ph')) { this.env.phAdjust = true; this.env.phTarget = Math.round(mid(IDEAL.ph[this.o.substrate]) * 10) / 10; }
+    if (!this.manual.has('ph')) { this.env.phAdjust = true; this.env.phTarget = Math.round(mid(IDEAL.ph[this.S.phKey]) * 10) / 10; }
     if (!this.manual.has('feed')) {
       const rec = (RECIPES[this.o.substrate] || {})[ph];
       this.feed = Object.assign({}, rec || {});
@@ -2540,7 +2903,7 @@ class Sim {
     this.log('bad', reason);
   }
   record() {
-    this.hist.push({ d: this.hour / 24, h: this.height, hp: this.health(), f: this.B.flower, t: this.B.leaf + this.B.stem + this.B.root + this.B.flower, th: this.theta, ec: this.ecRoot(), ph: this.pH, vpd: this.lastE.vpd, tl: this.lastE.tLeaf });
+    this.hist.push({ nq: ELEMENTS.map((e) => Math.round(this.q[e] * 100)), nx: TOX_AT_KEYS.map((e) => Math.round(this.toxOf(e) * 100)), d: this.hour / 24, h: this.height, hp: this.health(), f: this.B.flower, t: this.B.leaf + this.B.stem + this.B.root + this.B.flower, th: this.theta, ec: this.ecRoot(), ph: this.pH, vpd: this.lastE.vpd, tl: this.lastE.tLeaf });
     if (this.hist.length > 1600) this.hist.splice(0, this.hist.length - 1600);
   }
 
@@ -2548,7 +2911,7 @@ class Sim {
     if (this.dead) return 0;
     const st = this.stress;
     const natural = this.phase() === 'madura' ? 0.6 : 0;
-    const chl = Math.max(this.sym('chlorN') * (1 - natural), this.sym('mgDef'), this.sym('feDef'), this.sym('kDef'), this.sym('caDef'), this.sym('pDef'));
+    const chl = Math.max(this.sym('chlorN') * (1 - natural), this.sym('mgDef'), this.sym('feDef'), this.sym('mnDef'), this.sym('znDef'), this.sym('moDef'), this.sym('kDef'), this.sym('caDef'), this.sym('pDef'));
     const leaf = clamp(1 - 0.9 * this.leafDamage - 0.45 * chl - 0.5 * this.dis.pm - 0.4 * this.pestLoad());
     const root = 0.3 + 0.7 * this.rootHealth;
     const str = 1 - 0.5 * Math.max(st.drought, st.hypoxia, st.heat, st.salt, st.light, st.vpdHigh, st.cold * 0.6);
@@ -2601,7 +2964,7 @@ class Sim {
     add('agua', 'Agua', 1 - Math.max(this.stress.drought, this.stress.hypoxia), this.S.hydro ? `O₂ disuelto ${(this.DO || 0).toFixed(1)} mg/L` : `sustrato ${Math.round(this.theta * 100)} % de capacidad`);
     add('raiz', 'Raíces', this.rootHealth * (0.5 + 0.5 * this.o2), `salud ${Math.round(this.rootHealth * 100)} %, oxígeno ${Math.round(this.o2 * 100)} %`);
     const soilless = !this.S.soil;
-    const phr = IDEAL.ph[this.o.substrate], mid = (phr[0] + phr[1]) / 2;
+    const phr = IDEAL.ph[this.S.phKey], mid = (phr[0] + phr[1]) / 2;
     let worst = 1, wEl = 'N';
     // relativo a lo que se logra con el pH ideal del sustrato
     for (const el of ELEMENTS) { const a = Math.min(1, phAvail(el, this.pH, soilless) / phAvail(el, mid, soilless)); if (a < worst) { worst = a; wEl = el; } }
@@ -2728,9 +3091,24 @@ const NUT_INFO = {
   S: { name: 'Azufre', mobile: false, role: 'Aminoácidos y aceites esenciales (terpenos).',
     def: 'Amarilleo general de las hojas NUEVAS (parecido al de N, pero empieza arriba).',
     exc: 'Poco común; suma sales (EC).' },
-  Fe: { name: 'Hierro (y micros)', mobile: false, role: 'Fabricación de clorofila; junto con Mn y Zn, enzimas clave.',
+  Fe: { name: 'Hierro', mobile: false, role: 'Fabricación de clorofila y transporte de electrones en la fotosíntesis.',
     def: 'Hojas nuevas amarillo brillante con venas verdes; si es grave, casi blancas. Casi siempre por pH alto, raíces frías o encharcadas.',
-    exc: 'Raro.' }
+    exc: 'Raro en la planta; en la solución compite con el manganeso.' },
+  Mn: { name: 'Manganeso', mobile: false, role: 'Rompe el agua en la fotosíntesis (libera el O₂) y activa enzimas.',
+    def: 'Hojas nuevas y medias con amarillo entre las venas, más tenue que el del hierro y con un borde verde ancho junto a cada vena; después puntitos marrones o grises. Por pH alto, agua dura o exceso de hierro.',
+    exc: 'Con pH bajo (< 5,3) se disuelve de más: manchas marrón oscuro en hojas viejas y bloqueo del hierro.' },
+  Zn: { name: 'Zinc', mobile: false, role: 'Fabrica auxinas (la hormona que alarga los entrenudos) y activa muchas enzimas.',
+    def: 'Hojas nuevas chicas, angostas y arrugadas, con amarillo entre las venas; entrenudos muy cortos ("roseta"); puntas que se retuercen. Por pH alto o exceso de fósforo.',
+    exc: 'Bloquea el hierro: hojas nuevas pálidas.' },
+  Cu: { name: 'Cobre', mobile: false, role: 'Enzimas de la fotosíntesis y de la lignina (tallos firmes); interviene en los terpenos.',
+    def: 'Hojas nuevas verde azulado oscuro, con puntas y bordes que se retuercen y quedan como marchitas; brotes débiles. Raro: aparece en sustratos con mucha materia orgánica o pH alto.',
+    exc: 'Tóxico a bajas dosis: raíces cortas y oscuras y clorosis por bloqueo de hierro.' },
+  B: { name: 'Boro', mobile: false, role: 'Une la pared celular y sostiene el crecimiento de puntas, raíces y polen. Viaja con la transpiración.',
+    def: 'Puntas de crecimiento deformes o muertas, hojas nuevas gruesas, quebradizas y retorcidas, tallos huecos o agrietados. Común con VPD muy bajo, pH alto o agua de ósmosis.',
+    exc: 'El margen es angosto: puntas y bordes de hojas viejas amarillos que se queman.' },
+  Mo: { name: 'Molibdeno', mobile: true, role: 'Lo necesita la enzima que convierte el nitrato en proteína (nitrato reductasa).',
+    def: 'Hojas medias y viejas amarillo pálido entre las venas, con bordes que se enrollan hacia arriba y se queman; parece falta de nitrógeno. Al revés que los demás micros, falta con pH BAJO.',
+    exc: 'Muy raro.' }
 };
 
 const MANUAL_GROUP = { waterMode: 'water', waterEvery: 'water', waterPct: 'water', phAdjust: 'ph', phTarget: 'ph' };
@@ -2848,7 +3226,7 @@ function diagnose(sim) {
   if (sim.rootHealth < 0.7) add(sim.rootHealth < 0.4 ? 2 : 1, '🟤', `Raíces dañadas (${Math.round(sim.rootHealth * 100)} %)`, 'Raíces marrones o escasas absorben poca agua y nutrientes: la planta se ve con carencias aunque los haya.', 'Corregí la causa (oxígeno, sales, Pythium) y dale tiempo: se regeneran a ~1 %/día.');
 
   /* ---------- pH, EC y nutrientes ---------- */
-  const pr = IDEAL.ph[sim.o.substrate];
+  const pr = IDEAL.ph[sim.S.phKey];
   if (sim.pH < pr[0] - 0.15 || sim.pH > pr[1] + 0.15) {
     const soilless = !sim.S.soil;
     const locked = ELEMENTS.filter((el) => phAvail(el, sim.pH, soilless) < 0.75).map((el) => NUT_INFO[el].name.split(' ')[0].toLowerCase());
@@ -2862,7 +3240,8 @@ function diagnose(sim) {
     const q = sim.q[el], info = NUT_INFO[el];
     if (q < 0.75) {
       const soilless = !sim.S.soil;
-      const pa = phAvail(el, sim.pH, soilless);
+      let pa = phAvail(el, sim.pH, soilless);
+      if (el === 'Fe' && sim.eddha) pa = lerp(pa, 1, sim.eddha);
       const T = TARGET_PPM[sim.nutStage()][el];
       const c = sim.conc(el);
       let cause;
@@ -2870,13 +3249,19 @@ function diagnose(sim) {
       else if (pa < 0.8) cause = `Causa probable: el pH ${sim.pH.toFixed(1)} lo bloquea (disponible al ${Math.round(pa * 100)} %).`;
       else if (el === 'Ca' && E.vpd < 0.5) cause = 'Causa probable: VPD muy bajo; el calcio viaja con la transpiración.';
       else if ((el === 'Ca' || el === 'Mg') && sim.s.K > 1.8) cause = 'Causa probable: exceso de potasio que compite con él.';
+      else if (el === 'B' && E.vpd < 0.5) cause = 'Causa probable: VPD muy bajo; el boro, como el calcio, viaja con la transpiración.';
+      else if (el === 'Zn' && sim.s.P > 2.2) cause = 'Causa probable: exceso de fósforo que bloquea el zinc.';
+      else if (el === 'Mn' && sim.s.Fe > 2.5) cause = 'Causa probable: exceso de hierro que compite con el manganeso.';
+      else if (el === 'Cu' && sim.S.props && sim.S.props.mo > 40) cause = `Causa probable: la materia orgánica (${Math.round(sim.S.props.mo)} %) retiene el cobre.`;
       else if (el === 'P' && E.tRoot < 16) cause = 'Causa probable: raíces frías.';
-      else if (c < T * 0.6) cause = `Causa probable: falta en la solución (${c.toFixed(el === 'Fe' ? 1 : 0)} ppm, la planta necesita ~${T} ppm).`;
+      else if (c < T * 0.6) cause = `Causa probable: falta en la solución (${c.toFixed(PPM_DEC[el] || 0)} ppm, la planta necesita ~${T} ppm).`;
       else cause = 'La planta crece más rápido de lo que la absorbe.';
-      const fixes = { N: 'Más fertilizante de crecimiento (o harina de sangre en tierra).', P: 'Base de floración/PK o guano; revisá pH y temperatura de raíz.', K: 'Base de floración o sulfato/silicato de potasio.', Ca: 'Cal-Mag; subí el VPD si está muy bajo.', Mg: 'Cal-Mag o sal de Epsom.', S: 'Sal de Epsom o fertilizante con sulfatos.', Fe: 'Bajá el pH al rango ideal; quelatos de hierro.' };
+      const fixes = { N: 'Más fertilizante de crecimiento (o harina de sangre en tierra). Rápido: urea foliar.', P: 'Base de floración/PK o guano; revisá pH y temperatura de raíz.', K: 'Base de floración o sulfato/silicato de potasio.', Ca: 'Cal-Mag o nitrato de calcio; subí el VPD si está muy bajo. Rápido: calcio foliar.', Mg: 'Cal-Mag o sal de Epsom (también foliar).', S: 'Sal de Epsom o fertilizante con sulfatos.', Fe: 'Bajá el pH al rango ideal; quelato de hierro (EDDHA si el pH es alto) o foliar.', Mn: 'Bajá el pH; sulfato de manganeso o micros quelatados.', Zn: 'Bajá el pH y el fósforo; sulfato de zinc o micros quelatados (foliar funciona bien).', Cu: 'Micros quelatados; en tierra muy orgánica, foliar con quelato de cobre.', B: 'Ácido bórico en dosis mínimas (foliar o en el riego); subí el VPD si está muy bajo.', Mo: 'Subí el pH al rango ideal; molibdato de sodio en dosis mínimas.' };
       add(q < 0.5 ? 2 : 1, '🍂', `Carencia de ${info.name.toLowerCase()}`, `${info.def} ${cause}`, fixes[el]);
     }
   }
+  const tox = { Mn: 'Bajá la dosis de micros y subí el pH: con pH bajo el manganeso se disuelve de más.', Zn: 'Bajá la dosis de micros o de sulfato de zinc; lavá el sustrato con agua.', Cu: 'Bajá la dosis de micros o de cobre; lavá el sustrato con agua.', B: 'Lavá el sustrato con abundante agua sin boro; revisá el agua de pozo.' };
+  for (const el in tox) if (sim.toxOf(el) > 0.1) add(sim.toxOf(el) > 0.5 ? 2 : 1, '☠️', `Exceso de ${NUT_INFO[el].name.toLowerCase()}`, NUT_INFO[el].exc, tox[el]);
   if (sim.q.N > 1.9) add(sim.q.N > 2.4 ? 2 : 1, '🌿', 'Exceso de nitrógeno', NUT_INFO.N.exc + (sim.stage === 'flor' ? ' En floración, además, reduce la concentración de THC (Saloner y Bernstein, 2021).' : ''), 'Bajá el fertilizante de crecimiento.');
   if (sim.phase() === 'madura' && sim.senesce > 0.15) add(0, '🍁', 'Amarilleo natural de maduración', 'En las últimas semanas la planta retira N y Mg de las hojas grandes para terminar los cogollos. Es normal.', '');
 
@@ -3187,14 +3572,19 @@ const SOURCES = [
 /* Asistente de diagnóstico: dónde + qué → causas probables (con referencias al simulador) */
 const WIZARD = {
   where: [['viejas', 'Hojas viejas (abajo)'], ['nuevas', 'Hojas nuevas (arriba)'], ['todas', 'Toda la planta'], ['cogollos', 'Cogollos'], ['raices', 'Raíces / sustrato']],
-  what: [['amarillo', 'Amarillo parejo'], ['venas', 'Amarillo entre venas verdes'], ['manchas', 'Manchas marrones u óxido'], ['bordes', 'Bordes quemados'], ['puntas', 'Puntas quemadas'], ['morado', 'Morado o rojizo'], ['caidas', 'Hojas caídas'], ['taco', 'Bordes hacia arriba (taco)'], ['oscuro', 'Verde muy oscuro / garras'], ['polvo', 'Polvo blanco'], ['puntitos', 'Puntitos o telarañas'], ['plateado', 'Manchas plateadas'], ['moho', 'Moho gris / marrón'], ['bichos', 'Insectos volando o caminando'], ['blanqueo', 'Blanqueadas cerca de la luz']],
+  what: [['amarillo', 'Amarillo parejo'], ['venas', 'Amarillo entre venas verdes'], ['manchas', 'Manchas marrones u óxido'], ['bordes', 'Bordes quemados'], ['puntas', 'Puntas quemadas'], ['morado', 'Morado o rojizo'], ['caidas', 'Hojas caídas'], ['taco', 'Bordes hacia arriba (taco)'], ['chicas', 'Hojas chicas y arrugadas'], ['deformes', 'Puntas deformes o muertas'], ['manchas2', 'Puntitos marrón oscuro'], ['bordes2', 'Amarillo pálido con bordes enrollados'], ['oscuro', 'Verde muy oscuro / garras'], ['polvo', 'Polvo blanco'], ['puntitos', 'Puntitos o telarañas'], ['plateado', 'Manchas plateadas'], ['moho', 'Moho gris / marrón'], ['bichos', 'Insectos volando o caminando'], ['blanqueo', 'Blanqueadas cerca de la luz']],
   rules: [
     ['viejas', 'amarillo', 'Carencia de nitrógeno (N es móvil). Si es el final de la floración, es senescencia natural.', 'hambre'],
     ['viejas', 'venas', 'Carencia de magnesio (común con LED, coco o pH bajo).', 'hambre'],
     ['viejas', 'manchas', 'Carencia de fósforo (manchas bronce) o de potasio (si empieza por los bordes).', 'hambre'],
     ['viejas', 'bordes', 'Carencia de potasio: bordes amarillos que se queman.', 'hambre'],
     ['viejas', 'morado', 'Carencia de fósforo o raíces frías. Ojo: tallos morados también pueden ser genéticos.', null],
-    ['nuevas', 'venas', 'Carencia de hierro o manganeso, casi siempre por pH alto.', 'phalto'],
+    ['nuevas', 'venas', 'Carencia de hierro (amarillo brillante, venas finas verdes) o de manganeso (más tenue, con borde verde ancho junto a las venas y puntitos), casi siempre por pH alto.', 'phalto'],
+    ['nuevas', 'chicas', 'Carencia de zinc: hojas nuevas chicas, angostas y arrugadas, entrenudos cortos. pH alto o exceso de fósforo.', 'phalto'],
+    ['nuevas', 'deformes', 'Carencia de boro (puntas de crecimiento muertas, hojas gruesas y quebradizas) o de calcio. Revisá el VPD y el pH.', null],
+    ['nuevas', 'oscuro', 'Carencia de cobre: verde azulado oscuro con puntas retorcidas y marchitas (rara; tierra muy orgánica).', null],
+    ['viejas', 'manchas2', 'Exceso de manganeso por pH muy bajo: puntitos marrón oscuro.', null],
+    ['viejas', 'bordes2', 'Carencia de molibdeno (pH bajo) o exceso de boro: amarillo pálido y bordes que se queman.', null],
     ['nuevas', 'amarillo', 'Carencia de azufre, o hierro por pH alto.', 'phalto'],
     ['nuevas', 'manchas', 'Carencia de calcio (coco, ósmosis, VPD muy bajo).', 'hambre'],
     ['nuevas', 'blanqueo', 'Exceso de luz o planta pegada a la lámpara (blanqueo).', 'calor'],
@@ -3571,7 +3961,7 @@ class Renderer {
 
   symptoms(sim) {
     const s = {};
-    for (const k of ['chlorN', 'darkN', 'pDef', 'kDef', 'caDef', 'mgDef', 'sDef', 'feDef', 'tipBurn', 'bleach', 'taco', 'droop', 'wilt', 'claw', 'coldStem', 'purple']) s[k] = sim.sym(k);
+    for (const k of ['chlorN', 'darkN', 'pDef', 'kDef', 'caDef', 'mgDef', 'sDef', 'feDef', 'mnDef', 'znDef', 'cuDef', 'bDef', 'moDef', 'tipBurn', 'bleach', 'taco', 'droop', 'wilt', 'claw', 'coldStem', 'purple']) s[k] = sim.sym(k);
     s.sen = sim.senesce; s.dmg = sim.leafDamage; s.pm = sim.dis.pm; s.hlvd = sim.dis.hlvd; s.reveg = sim.reveg;
     s.mites = sim.pests.mites; s.thrips = sim.pests.thrips; s.aphids = sim.pests.aphids;
     s.tone = sim.G.tone; s.lw = sim.G.leafletW;
@@ -3607,7 +3997,17 @@ class Renderer {
     const p = mob(sy.pDef); if (p > 0) { c = mixc(c, C.bluegreen, p * 0.6); fx.spots = Math.max(fx.spots, p * 0.6); fx.spotCol = C.bronze; }
     const mg = mob(sy.mgDef); if (mg > 0) fx.inter = Math.max(fx.inter, mg), fx.interCol = C.yellow;
     const fe = imm(sy.feDef); if (fe > 0) fx.inter = Math.max(fx.inter, fe), fx.interCol = C.pale;
-    const k = clamp((old + 0.25 - (1 - sy.kDef * 1.3)) / 0.3) * Math.min(1, sy.kDef * 1.5); if (k > 0) fx.edge = k;
+    // Mn: entre venas más tenue, en hojas nuevas y medias, con puntitos al agravarse
+    const mn = clamp(1 - Math.abs(pos - 0.7) * 2) * sy.mnDef; if (mn > 0) { fx.inter = Math.max(fx.inter, mn * 0.75); fx.interCol = fx.interCol || C.pale; if (mn > 0.5) { fx.spots = Math.max(fx.spots, (mn - 0.5) * 0.8); fx.spotCol = fx.spotCol || C.dkbrown; } }
+    // Zn: hojas nuevas pálidas entre venas y con puntas retorcidas
+    const zn = imm(sy.znDef); if (zn > 0) { fx.inter = Math.max(fx.inter, zn * 0.8); fx.interCol = fx.interCol || C.pale; fx.tip = Math.max(fx.tip, zn * 0.4); }
+    // Cu: hojas nuevas verde azulado oscuro con puntas muertas
+    const cu = imm(sy.cuDef); if (cu > 0) { c = mixc(c, C.bluegreen, cu * 0.5); fx.tip = Math.max(fx.tip, cu * 0.6); }
+    // B: puntas de crecimiento deformes, manchas y tejido muerto arriba
+    const bo = imm(sy.bDef); if (bo > 0) { fx.spots = Math.max(fx.spots, bo * 0.7); fx.spotCol = C.brown; fx.tip = Math.max(fx.tip, bo * 0.5); c = mixc(c, C.dark, bo * 0.2); }
+    // Mo: hojas medias y viejas pálidas entre venas con bordes quemados (parece falta de N)
+    const mo = mob(sy.moDef); if (mo > 0) { fx.inter = Math.max(fx.inter, mo * 0.8); fx.interCol = C.yellow; fx.edge = Math.max(fx.edge || 0, mo * 0.5); }
+    const k = clamp((old + 0.25 - (1 - sy.kDef * 1.3)) / 0.3) * Math.min(1, sy.kDef * 1.5); if (k > 0) fx.edge = Math.max(fx.edge, k);
     const ca = clamp(1 - Math.abs(pos - 0.65) * 2.2) * sy.caDef; if (ca > 0) { fx.spots = Math.max(fx.spots, ca); fx.spotCol = C.brown; }
     if (sy.bleach > 0 && pos > 0.72) c = mixc(c, C.bleach, sy.bleach * clamp((pos - 0.72) / 0.28) * 0.9);
     if (sy.sen > 0) { const s2 = clamp((old - (1 - sy.sen * 1.4)) / 0.35) * Math.min(1, sy.sen * 1.6); c = mixc(c, hash(L.l.id + 3) < 0.5 ? C.yellow : C.orange, s2 * 0.85); }
@@ -4075,7 +4475,7 @@ const ST_ICON = { ok: '✓', warn: '⚠', bad: '✖', '': '' };
 function draftOpt(k) { return App.draft && k in App.draft ? App.draft[k] : App.opts[k]; }
 function draftEnv(k) { const d = App.draft && App.draft.env; return d && k in d ? d[k] : App.sim.env[k]; }
 function draftList() {
-  const names = { genetics: 'genética', chemo: 'quimiotipo', seedType: 'semilla', start: 'inicio', substrate: 'sustrato', mode: 'dónde', location: 'ubicación', sowMonth: 'mes de siembra' };
+  const names = { genetics: 'genética', chemo: 'quimiotipo', seedType: 'semilla', start: 'inicio', substrate: 'sustrato', mix: 'mezcla del sustrato', mode: 'dónde', location: 'ubicación', sowMonth: 'mes de siembra' };
   const d = App.draft || {};
   return [...Object.keys(d).filter((k) => k !== 'env'), ...Object.keys(d.env || {})].map((k) => names[k] || k).join(', ');
 }
@@ -4088,6 +4488,36 @@ const PLANT_LOCKS = {
 function applyLocks(o) { for (const [k, L] of Object.entries(PLANT_LOCKS)) if (L.when()) o[k] = L.value; }
 /* tope de maceta según el espacio: en interior lo que entra en la carpa, en exterior un macetón grande */
 function maxPotL(s) { return isOut(s) ? 200 : Math.round(25 + (s.env.tent - 0.36) * 70); }
+const sameVal = (a, b) => a === b || JSON.stringify(a) === JSON.stringify(b);
+/* mezcla de sustrato en edición: por tipo de sustrato, null = automática */
+const hasMix = () => !!MIX_PRESET[draftOpt('substrate')];
+function draftMix() { return (draftOpt('mix') || {})[draftOpt('substrate')] || null; }
+function curMix() {
+  const m = draftMix();
+  if (m && !m.auto) return JSON.parse(JSON.stringify(m));
+  return Object.assign(JSON.parse(JSON.stringify(MIX_PRESET[draftOpt('substrate')])), { auto: false, ov: {} });
+}
+function setMix(m) {
+  const all = Object.assign({}, draftOpt('mix') || {});
+  if (m) all[draftOpt('substrate')] = m; else delete all[draftOpt('substrate')];
+  setDraft('mix', Object.keys(all).length ? all : undefined);
+}
+/* cambia un componente y reparte la diferencia entre los demás, en proporción, para sumar 100 */
+function rebalance(comp, k, v) {
+  const others = Object.keys(MIX_COMP).filter((x) => x !== k && comp[x] > 0);
+  const rest = others.reduce((a, x) => a + comp[x], 0), out = { [k]: v };
+  if (!rest) { if (v < 100) out.perlita = k === 'perlita' ? v : (out.perlita || 0) + 100 - v; return out; }
+  let acc = v;
+  others.forEach((x, i) => { const val = i === others.length - 1 ? Math.max(0, 100 - acc) : Math.round((comp[x] / rest) * (100 - v)); out[x] = val; acc += val; });
+  for (const x in out) if (!out[x]) delete out[x];
+  if (!out[k]) out[k] = 0;
+  return out;
+}
+function editMix(fn) { const m = curMix(); m.ov = m.ov || {}; fn(m); setMix(m); }
+const draftSubstrate = () => buildSubstrate(draftOpt('substrate'), draftMix());
+/* tope de los controles de nutrientes del sustrato (mg por litro de sustrato) */
+const MIX_NUT_MAX = { N: 150, P: 100, K: 300, Ca: 600, Mg: 150, S: 120, Fe: 10, Mn: 2, Zn: 1, Cu: 0.2, B: 1, Mo: 0.1 };
+const IDEAL_MIX = { air: [10, 25, 6, 35], wat: [40, 65, 30, 75], mo: [20, 70, 5, 90] };
 /* guarda un cambio de la planta; antes de plantar se ve enseguida (en pausa) */
 function setDraft(key, v, env) {
   if (!env && key === 'genetics') {
@@ -4109,7 +4539,7 @@ function setDraft(key, v, env) {
   const d = App.draft || {};
   if (env) d.env = Object.assign({}, d.env, { [key]: v }); else d[key] = v;
   // si se volvió al valor actual, deja de ser un cambio
-  if (env ? App.sim.env[key] === v : App.opts[key] === v) { if (env) { delete d.env[key]; if (!Object.keys(d.env).length) delete d.env; } else delete d[key]; }
+  if (env ? App.sim.env[key] === v : sameVal(App.opts[key], v)) { if (env) { delete d.env[key]; if (!Object.keys(d.env).length) delete d.env; } else delete d[key]; }
   App.draft = Object.keys(d).length ? d : null;
   refreshControls(true);
 }
@@ -4129,6 +4559,38 @@ function controlGroups() {
       { type: 'sel', key: 'sowMonth', label: 'Mes de siembra', num: true, options: MONTHS.map((m, i) => [i, m]), show: () => draftOpt('mode') === 'exterior', needsReset: true },
       { type: 'read', show: () => !!App.draft, cls: 'pending', text: () => `Cambios sin aplicar: ${draftList()}. Se aplican al plantar de nuevo; la planta actual sigue igual.` },
       { type: 'button', id: 'replant', label: '🌱 Plantar de nuevo con esta configuración', cls: 'prim', act: () => newPlant(undefined, true) }
+    ] },
+    { id: 'sustrato', title: '🪴 Sustrato: composición y propiedades', sum: () => { const S = draftSubstrate(); return S.props ? `${S.custom ? 'mezcla propia' : 'automático'} · MO ${nf(S.props.mo, 0)} % · aire ${nf(S.props.air, 0)} % · pH ${nf(S.pH, 1)}` : 'hidroponia: sin sustrato'; }, items: [
+      { type: 'read', show: () => !hasMix(), text: () => 'En hidroponia no hay sustrato: las raíces están en la solución. La química se maneja desde Nutrición.' },
+      { type: 'check', key: 'mixAuto', label: 'Automático: la mezcla óptima para este sustrato', show: hasMix, get: () => { const m = draftMix(); return !m || m.auto; }, set: (s, v) => setMix(v ? null : curMix()),
+        hint: () => (draftMix() && !draftMix().auto ? 'Mezcla propia: lo que cambies se aplica al plantar.' : 'La mezcla que usaría un buen cultivador. Destildá o mové cualquier control para hacer la tuya.') },
+      { type: 'read', show: hasMix, text: () => { const m = draftMix() && !draftMix().auto ? draftMix() : MIX_PRESET[draftOpt('substrate')]; const tot = Object.values(m.comp).reduce((a, b) => a + (b || 0), 0) || 1; return Object.entries(m.comp).filter(([, v]) => v > 0).map(([k, v]) => `${MIX_COMP[k].name.split(' (')[0]} ${Math.round((v / tot) * 100)} %`).join(' · ') + (m.lime ? ` · cal ${nf(m.lime, 1)} g/L` : '') + (m.fert ? ` · abono de base ${nf(m.fert, 2)} g/L` : ''); } },
+      { type: 'mixprops', show: hasMix },
+      { type: 'fold', label: 'Composición (textura)', show: hasMix, items: [
+        ...Object.entries(MIX_COMP).map(([k, C]) => ({ type: 'range', key: 'mix_' + k, label: C.name, min: 0, max: 100, step: 5, unit: '%', commit: true, show: hasMix,
+          get: () => (curMix().comp[k] || 0), set: (s, v) => editMix((m) => { m.comp = rebalance(m.comp, k, v); }), hint: C.desc })),
+        { type: 'read', show: hasMix, text: () => 'Al subir un componente, los demás bajan en proporción: la mezcla siempre suma 100 %.' },
+        { type: 'range', key: 'mix_lime', label: 'Cal dolomita', min: 0, max: 10, step: 0.5, unit: 'g/L', dec: 1, commit: true, show: hasMix, get: () => curMix().lime || 0, set: (s, v) => editMix((m) => { m.lime = v; }), hint: 'Sube el pH de la turba y aporta Ca y Mg. La turba sola tiene pH ~4: necesita 3-6 g/L.' },
+        { type: 'range', key: 'mix_fert', label: 'Abono de base (NPK 14-16-18 + micros)', min: 0, max: 4, step: 0.25, unit: 'g/L', dec: 2, commit: true, show: hasMix, get: () => curMix().fert || 0, set: (s, v) => editMix((m) => { m.fert = v; }), hint: 'La "carga" de las tierras comerciales: alimenta las primeras 3-4 semanas. Mucho = EC alta y raíces quemadas en la plántula.' }
+      ] },
+      { type: 'fold', label: 'Propiedades físicas (fijar a mano)', show: hasMix, items: [
+        ...[['air', 'Porosidad de aire', 2, 45, 1, 'Aire que queda en la maceta recién regada y escurrida. Con menos de ~8 % las raíces se asfixian; con más de ~30 % se seca enseguida.'],
+          ['wat', 'Retención de agua', 15, 75, 1, 'Agua que retiene a capacidad de maceta. Más retención = riegos más espaciados, pero menos aire.'],
+          ['mo', 'Materia orgánica', 0, 95, 1, 'Porcentaje del peso seco. Más MO = más CIC (amortiguación), más vida y más nutrientes de liberación lenta; también retiene cobre.']].map(([k, label, min, max, step, h]) => ({
+          type: 'range', key: 'mix_' + k, label, min, max, step, unit: '%', commit: true, show: hasMix, ideal: () => IDEAL_MIX[k],
+          get: () => draftSubstrate().props[k], set: (s, v) => editMix((m) => { m.ov[k] = v; }),
+          hint: () => { const m = draftMix(); const fixed = m && !m.auto && m.ov && m.ov[k] != null; return (fixed ? '📌 Fijado a mano (no sigue a la composición). ' : 'Calculado desde la composición. ') + h; } })),
+        { type: 'button', label: '↺ Recalcular desde la composición', show: () => { const m = draftMix(); return hasMix() && !!(m && !m.auto && m.ov && Object.keys(m.ov).length); }, act: () => editMix((m) => { m.ov = {}; }) }
+      ] },
+      { type: 'fold', label: 'Química y nutrientes del sustrato', show: hasMix, items: [
+        { type: 'range', key: 'mix_pH', label: 'pH del sustrato', min: 3.5, max: 8.5, step: 0.1, unit: '', dec: 1, commit: true, show: hasMix, ideal: () => IDEAL.ph[draftSubstrate().phKey], get: () => draftSubstrate().pH, set: (s, v) => editMix((m) => { m.ov.pH = v; }),
+          hint: () => { const m = draftMix(); return (m && !m.auto && m.ov && m.ov.pH != null ? '📌 Fijado a mano. ' : 'Calculado de los componentes y la cal. ') + 'Es el pH al que el sustrato vuelve solo (con riegos de pH distinto se mueve, más cuanto menor la CIC).'; } },
+        { type: 'sub', label: 'Nutrientes disponibles (mg por litro de sustrato)' },
+        ...ELEMENTS.map((e) => ({ type: 'range', key: 'mix_n' + e, label: `${NUT_INFO[e].name} (${e})`, min: 0, max: MIX_NUT_MAX[e], step: MIX_NUT_MAX[e] / 200, unit: 'mg/L', dec: PPM_DEC[e] ? PPM_DEC[e] + (e === 'Fe' ? 0 : 1) : 0, commit: true, show: hasMix,
+          get: () => draftSubstrate().reserve[e] / 11, set: (s, v) => editMix((m) => { m.ov.nut = Object.assign({}, m.ov.nut, { [e]: v }); }),
+          hint: () => { const S = draftSubstrate(), m = draftMix(); const fixed = m && !m.auto && m.ov && m.ov.nut && m.ov.nut[e] != null; return `${fixed ? '📌 Fijado a mano. ' : ''}En la materia orgánica (se libera de a poco): ${nf(S.organic[e] / 11, PPM_DEC[e] ? PPM_DEC[e] : 0)} mg/L.`; } }))
+      ] },
+      { type: 'button', label: '↺ Volver a la mezcla óptima (automático)', show: () => hasMix() && !!draftMix() && !draftMix().auto, act: () => setMix(null) }
     ] },
     { id: 'luz', title: '💡 Luz', sum: (s) => (isOut(s) ? `${nf(s.lastE.photo, 1)} h de día (sol)` : `${Math.min(s.env.ppfd, LAMPS[s.env.lamp].maxPPFD)} µmol · ${s.env.photo} h · ${LAMPS[s.env.lamp].name.split(' ')[0]}`), items: [
       { type: 'sel', key: 'lamp', label: 'Lámpara', options: Object.entries(LAMPS).map(([k, l]) => [k, l.name]), show: indoor, after: (s) => { s.env.blue = LAMPS[s.env.lamp].blue; }, hint: (s) => `Eficiencia ~${LAMPS[s.env.lamp].eff} µmol/J. ${s.env.lamp === 'hps' ? 'El sodio irradia calor: la hoja queda 1-3 °C más caliente que el aire.' : s.env.lamp === 'led' ? 'El LED casi no irradia calor: la hoja queda más fresca que el aire.' : ''}` },
@@ -4156,7 +4618,7 @@ function controlGroups() {
       { type: 'range', key: 'potL', label: (s) => (hydro(s) ? 'Volumen del depósito' : 'Tamaño de maceta (trasplante)'), min: 1, max: (s) => maxPotL(s), step: 1, unit: 'L', auto: 'potL', commit: true, set: (s, v) => s.transplant(v), hint: (s) => (hydro(s) ? '' : `Raíces: ${Math.round((s.B.root / s.rootCap()) * 100)} % de la capacidad. Agrandar = trasplante. Tope: ${maxPotL(s)} L (${isOut(s) ? 'macetón de exterior' : 'lo que entra en la carpa'}).`) },
       { type: 'sel', key: 'waterSource', label: 'Agua de riego', options: Object.entries(WATER_SOURCES).map(([k, w]) => [k, w.name]), hint: (s) => WATER_SOURCES[s.env.waterSource].desc },
       { type: 'check', key: 'phAdjust', label: 'Ajustar el pH del agua', auto: 'ph', hint: (s) => `Sin ajustar, la mezcla queda en pH ${nf(s.solution().natural, 1)}.` },
-      { type: 'range', key: 'phTarget', label: 'pH del agua de riego', min: 4, max: 9, step: 0.1, unit: '', dec: 1, ideal: (s) => IDEAL.ph[s.o.substrate], auto: 'ph', show: (s) => s.env.phAdjust, hint: (s) => `pH en la raíz ahora: ${nf(s.pH, 2)}.` },
+      { type: 'range', key: 'phTarget', label: 'pH del agua de riego', min: 4, max: 9, step: 0.1, unit: '', dec: 1, ideal: (s) => IDEAL.ph[s.S.phKey], auto: 'ph', show: (s) => s.env.phAdjust, hint: (s) => `pH en la raíz ahora: ${nf(s.pH, 2)}.` },
       { type: 'sel', key: 'waterMode', label: 'Cómo regar', options: [['auto', 'Por peso: cuando la maceta está liviana'], ['freq', 'Por calendario']], auto: 'water', show: (s) => !hydro(s) },
       { type: 'range', key: 'waterEvery', label: 'Regar cada', min: 1, max: 7, step: 1, unit: 'días', auto: 'water', show: (s) => !hydro(s) && s.env.waterMode === 'freq' },
       { type: 'range', key: 'waterPct', label: 'Cantidad por riego', min: 5, max: 60, step: 1, unit: '% de la maceta', auto: 'water', show: (s) => !hydro(s) && s.env.waterMode === 'freq', hint: (s) => `${nf((s.env.potL * s.env.waterPct) / 100, 1)} L por riego.` },
@@ -4168,8 +4630,15 @@ function controlGroups() {
       { type: 'read', text: (s) => `Zona de raíces: EC ${nf(s.ecRoot(), 2)} · pH ${nf(s.pH, 2)} · O₂ ${Math.round(s.o2 * 100)} %${s.lastWater ? ` · último drenaje ${Math.round((s.runoff || 0) * 100)} %` : ''}` }
     ] },
     { id: 'nutri', title: '🧪 Nutrición y productos en el riego', sum: (s) => `EC ${nf(s.solution().ec, 2)} · pH ${nf(s.solution().pH, 1)}${App.sim.autopilot && !App.sim.manual.has('feed') ? ' · auto' : ''}`, items: [
-      ...Object.entries(PRODUCTS).filter(([, p]) => p.kind === 'feed').map(([id, p]) => ({ type: 'feed', id, label: p.name, min: 0, max: p.max, step: p.step, unit: p.unit, hint: p.what + ' ' + p.effect })),
+      ...FEED_CATS.map(([cat, label]) => {
+        const ids = Object.keys(PRODUCTS).filter((id) => PRODUCTS[id].kind === 'feed' && PRODUCTS[id].cat === cat);
+        return { type: 'fold', label, open: cat === 'base', count: (s) => ids.filter((id) => s.feed[id] > 0).length,
+          items: ids.map((id) => { const p = PRODUCTS[id]; return { type: 'feed', id, label: p.name, min: 0, max: p.max, step: p.step, unit: p.unit, dec: p.step < 0.1 ? 2 : p.step < 1 ? 1 : 0, hint: p.what + ' ' + p.effect }; }) };
+      }),
       { type: 'solution' },
+      { type: 'sub', label: 'Fertilización foliar (pulverizar las hojas)' },
+      { type: 'read', text: (s) => `Corrige en 2-4 días y dura poco: sirve para salir de una carencia mientras se arregla la causa en la raíz. Pulverizar con la luz apagada y mojando el envés.${s.stage === 'flor' && s.fd > 14 ? ' ⚠ Cogollos formados: mojarlos deja residuo y favorece la botrytis.' : ''}` },
+      { type: 'buttons', list: () => Object.entries(FOLIAR).map(([id, f]) => ({ label: '💦 ' + f.name, title: `${f.what} ${f.effect}`, act: () => { const msgs = App.sim.applyFoliar(id); toast(`${f.name}: ${msgs.length ? msgs.join(' ') : f.effect}`, msgs.length ? 'warn' : 'info', 7000); updatePanels(); } })) },
       { type: 'sub', label: 'Agregar al sustrato (una vez)' },
       { type: 'buttons', list: () => Object.entries(AMENDMENTS).map(([id, a]) => ({ label: a.name, title: `${a.what} ${a.effect}`, act: () => { const msgs = App.sim.applyAmendment(id); toast(`${a.name}: ${a.effect}${msgs.length ? ' ' + msgs.join(' ') : ''}`, msgs.length ? 'warn' : 'info', 6000); } })) }
     ] },
@@ -4267,11 +4736,23 @@ function buildItem(it) {
   } else if (it.type === 'buttons') {
     const box = el('div', { class: 'btns' }, ...it.list().map((x) => el('button', { class: 'btn ' + (x.cls || ''), title: x.title || '', onclick: x.act }, x.label)));
     Object.assign(ctl, { row: box });
+  } else if (it.type === 'fold') {
+    // subgrupo plegable: sus controles se registran como los demás
+    const cnt = el('span', { class: 'fold-n' });
+    const body = el('div', { class: 'fold-body' }, ...it.items.map(buildItem));
+    const det = el('details', { class: 'fold' }, el('summary', null, it.label, cnt), body);
+    const fo = (App.foldOpen = App.foldOpen || {});
+    det.open = it.label in fo ? fo[it.label] : !!it.open;
+    det.addEventListener('toggle', () => { fo[it.label] = det.open; });
+    Object.assign(ctl, { row: det, cnt });
   } else if (it.type === 'sub') {
     Object.assign(ctl, { row: el('div', { class: 'sub' }, it.label) });
   } else if (it.type === 'read') {
     const d = el('div', { class: 'hint ' + (it.cls || '') });
     Object.assign(ctl, { row: d, read: d });
+  } else if (it.type === 'mixprops') {
+    const d = el('div', { class: 'sol mixp' });
+    Object.assign(ctl, { row: d, mixp: d });
   } else if (it.type === 'solution') {
     const d = el('div', { class: 'sol' });
     Object.assign(ctl, { row: d, sol: d });
@@ -4291,7 +4772,9 @@ function refreshControls(force) {
     c.row.classList.toggle('hidden', !vis);
     if (!vis) continue;
     if (c.read) { c.read.textContent = it.text(s); continue; }
+    if (c.cnt) { const n = it.count ? it.count(s) : 0; c.cnt.textContent = n ? `${n} en uso` : ''; continue; }
     if (c.sol) { renderSolution(c.sol, s); continue; }
+    if (c.mixp) { renderMixProps(c.mixp); continue; }
     if (c.inp && it.type !== 'check') {
       const max = typeof it.max === 'function' ? it.max(s) : it.max;
       if (+c.inp.max !== max) c.inp.max = max;
@@ -4336,6 +4819,33 @@ function refreshControls(force) {
   for (const { g, sum } of App.groups) { try { sum.textContent = g.sum(s); } catch (e) { sum.textContent = ''; } }
 }
 
+/* ficha del sustrato: todo lo que la simulación usa, con su rango sano */
+function renderMixProps(box) {
+  const S = draftSubstrate(), P = S.props;
+  if (!P) { box.innerHTML = ''; return; }
+  const row = (lab, v, r, note) => { const st = r ? statusOf(v.n, r) : ''; return `<div class="row"><span>${lab}${note ? ` <small>${note}</small>` : ''}</span><b class="st ${st}">${v.t} ${ST_ICON[st]}</b></div>`; };
+  const pr = IDEAL.ph[S.phKey];
+  let h = `<div class="row"><span>Textura</span><b>${P.texture}</b></div>`;
+  if (S.coco && S.soil) h += '<div class="hint">Con un cuarto o más de compost, humus o tierra, este coco se maneja como tierra: pH 6,2-6,8 y la vida del suelo libera nutrientes.</div>';
+  h += row('Materia orgánica', { n: P.mo, t: nf(P.mo, 0) + ' %' }, IDEAL_MIX.mo, 'del peso seco');
+  h += row('Porosidad total', { n: P.tp, t: nf(P.tp, 0) + ' %' }, [70, 95, 55, 98]);
+  h += row('· de aire (drenada)', { n: P.air, t: nf(P.air, 0) + ' %' }, IDEAL_MIX.air);
+  h += row('· con agua (retención)', { n: P.wat, t: nf(P.wat, 0) + ' %' }, IDEAL_MIX.wat);
+  h += row('Densidad aparente', { n: P.dens, t: nf(P.dens / 1000, 2) + ' kg/L' }, null, P.dens > 600 ? 'pesada' : 'liviana');
+  h += row('CIC (amortiguación)', { n: P.cicL, t: `${nf(P.cic, 0)} meq/100 g · ${nf(P.cicL, 0)} meq/L` }, [60, 400, 25, 600]);
+  h += row('pH', { n: S.pH, t: nf(S.pH, 1) }, pr);
+  h += row('Relación C/N', { n: P.cn, t: P.cn ? nf(P.cn, 0) : '—' }, null, P.immob > 0.05 ? `secuestra ~${Math.round(P.immob * 100)} % del N` : P.cn > 40 ? 'alta: descompone lento' : '');
+  h += row('Vida microbiana', { n: P.mic, t: Math.round(P.mic * 100) + ' %' });
+  h += row('EC inicial (aprox.)', { n: P.ec, t: nf(P.ec, 2) + ' mS/cm' }, [0.3, 1.6, 0.05, 2.4]);
+  h += '<div class="ppm-h">Nutrientes (mg por litro de sustrato)</div><table class="nutt"><tr><th></th><th>Disponible</th><th>En la MO</th><th></th><th>Disponible</th><th>En la MO</th></tr>';
+  for (let i = 0; i < 6; i++) {
+    const a = MACROS[i], b = MICROS[i], f = (e, v) => nf(v / 11, PPM_DEC[e] || 0);
+    h += `<tr><th>${a}</th><td>${f(a, S.reserve[a])}</td><td>${f(a, S.organic[a])}</td><th>${b}</th><td>${f(b, S.reserve[b])}</td><td>${f(b, S.organic[b])}</td></tr>`;
+  }
+  h += '</table>';
+  if (box._h !== h) { box._h = h; box.innerHTML = h; }
+}
+
 function renderSolution(box, s) {
   const sol = s.solution(), ph = s.phase(), er = s.idealFor('ecIn', ph);
   const T = TARGET_PPM[s.nutStage()];
@@ -4343,9 +4853,12 @@ function renderSolution(box, s) {
   let html = `<div class="row"><span>Solución de riego</span><b class="st ${ecSt}">EC ${nf(sol.ec, 2)} ${ST_ICON[ecSt]}</b></div>`;
   html += `<div class="row"><span>pH de la mezcla sin ajustar: ${nf(sol.natural, 1)}</span><span>${s.env.phAdjust ? `ajustado a <b>${nf(sol.pH, 1)}</b>` : '<b class="st warn">sin ajustar</b>'}</span></div>`;
   html += `<div class="hint">Ideal para ${STAGE_NAMES[ph] ? STAGE_NAMES[ph].toLowerCase() : ph} en ${s.S.soil ? 'tierra' : s.S.name.toLowerCase()}: EC ${er[0]}–${er[1]}. La marca verde es lo que necesita la planta en hidro/coco${s.S.soil ? ' (en tierra el sustrato aporta parte)' : ''}.</div>`;
-  for (const e of ELEMENTS) {
-    const v = sol.ppm[e] || 0, tg = T[e], mx = tg * 2.2;
-    html += `<div class="ppm"><span>${e}</span><div class="bar"><i style="width:${clamp(v / mx) * 100}%"></i><span class="tg" style="left:${(tg / mx) * 100}%"></span></div><span>${nf(v, e === 'Fe' ? 1 : 0)} ppm</span></div>`;
+  for (const [lab, list] of [['Macro y secundarios', MACROS], ['Micronutrientes', MICROS]]) {
+    html += `<div class="ppm-h">${lab}</div>`;
+    for (const e of list) {
+      const v = sol.ppm[e] || 0, tg = T[e], mx = tg * 2.2;
+      html += `<div class="ppm"><span>${e}</span><div class="bar"><i style="width:${clamp(v / mx) * 100}%"></i><span class="tg" style="left:${(tg / mx) * 100}%"></span></div><span>${nf(v, PPM_DEC[e] || 0)} ppm</span></div>`;
+    }
   }
   box.innerHTML = html;
 }
@@ -4413,7 +4926,7 @@ function updatePanels() {
   const tri = s.trichomes();
   const growDay = s.lastGrowth || 0;
   const dli = s.prevDay.dli;
-  const dr = IDEAL.ph[s.o.substrate];
+  const dr = IDEAL.ph[s.S.phKey];
   const ecR = s.ecRoot();
   const male = s.sex === 'macho';
   const hist = s.hist;
@@ -4488,11 +5001,11 @@ function updatePanels() {
   // nutrientes internos
   const nut = ELEMENTS.map((e) => ({ e })).concat([{ hint: true }]);
   keyed($('#nutbars'), nut, (x) => x.e || 'hint', (x) => x.hint
-    ? el('div', { class: 'hint' }, '100 % = lo que necesita. La franja verde es "suficiente"; por debajo hay carencia. Arriba sobra (solo el N y el K en exceso causan problemas: garras, bloqueos).')
+    ? el('div', { class: 'hint' }, '100 % = lo que necesita. La franja verde es "suficiente"; por debajo hay carencia. Arriba sobra: el N y el K en exceso causan garras y bloqueos, y Mn, Zn, Cu y B pasan a ser tóxicos (naranja).')
     : el('div', { class: 'nb', html: `<span>${NUT_INFO[x.e].name.split(' ')[0]}</span><div class="bar"><span class="band" style="left:${(0.85 / 2.5) * 100}%;width:${((1.9 - 0.85) / 2.5) * 100}%"></span><i></i></div><span></span>` }),
   (n, x) => {
     if (x.hint) return;
-    const q = s.q[x.e], w = clamp(q / 2.5), excess = (x.e === 'N' && q > 1.9) || (x.e === 'K' && q > 2.2);
+    const q = s.q[x.e], w = clamp(q / 2.5), excess = (x.e === 'N' && q > 1.9) || (x.e === 'K' && q > 2.2) || (TOX_AT[x.e] && s.toxOf(x.e) > 0.1);
     const col = q < 0.6 ? '#ff6b6b' : q < 0.85 ? '#f2c14e' : excess ? '#ff9f43' : q > 1.9 ? '#5fb6a8' : '#4fbf6a';
     const i = n.querySelector('i'); i.style.width = w * 100 + '%'; i.style.backgroundColor = col;
     setText(n.lastChild, Math.round(q * 100) + ' %');
@@ -4520,6 +5033,7 @@ function updatePanels() {
   if ((s.dead || s.stage === 'cosechada') && App.running) { App.running = false; }
   drawProgress(s);
   if (App.pane === 'hist') drawChart(s);
+  if (App.pane === 'nut') drawNutChart(s);
   refreshControls(false);
 }
 
@@ -4562,6 +5076,81 @@ function buildSeries() {
   trackHover($('#chart'), () => drawChart(App.sim));
 }
 function histVal(p, k) { return k === 'th' ? p.th * 100 : p[k]; }
+/* Mapa de calor de carencias: filas = nutrientes, columnas = días.
+   Divergente: rojo = falta (más intenso, más grave), gris = suficiente, azul = exceso */
+const NUT_ORDER = [...MACROS, ...MICROS];
+function nutCell(e, q, tox) {
+  const excess = tox > 0.1 || (e === 'N' && q > 1.9) || (e === 'K' && q > 2.2);
+  if (excess) return { c: `rgba(108,182,255,${0.45 + 0.55 * clamp(tox || (q - 1.9) / 0.8)})`, t: e === 'N' || e === 'K' ? 'Exceso' : 'Tóxico' };
+  if (q < 0.6) return { c: `rgba(255,107,107,${0.7 + 0.3 * clamp((0.6 - q) / 0.35)})`, t: 'Carencia fuerte' };
+  if (q < 0.85) return { c: `rgba(255,107,107,${0.3 + 0.35 * clamp((0.85 - q) / 0.25)})`, t: 'Carencia leve' };
+  if (q < 1) return { c: 'rgba(242,193,78,.42)', t: 'Justo' };
+  return { c: 'rgba(255,255,255,.07)', t: 'Suficiente' };
+}
+function drawNutChart(s) {
+  const cv = $('#nutChart');
+  if (!cv || !cv.offsetParent) return;
+  const { ctx, W, H } = fitCanvas(cv);
+  const tip = cv.parentNode.querySelector('.ctip');
+  const hs = s.hist.filter((h) => h.nq);
+  if (hs.length < 2) {
+    ctx.fillStyle = '#8b9c92'; ctx.font = '13px system-ui'; ctx.textAlign = 'center';
+    ctx.fillText('El mapa de carencias aparece a medida que avanza el tiempo', W / 2, H / 2);
+    tip.classList.remove('show');
+    return;
+  }
+  // un valor por día (el peor del día: una carencia de unas horas también cuenta)
+  const days = new Map();
+  for (const h of hs) {
+    const d = Math.floor(h.d);
+    const cur = days.get(d);
+    if (!cur) days.set(d, { d, mn: h.nq.slice(), mx: h.nq.slice(), nx: (h.nx || []).slice() });
+    else { h.nq.forEach((v, i) => { cur.mn[i] = Math.min(cur.mn[i], v); cur.mx[i] = Math.max(cur.mx[i], v); }); (h.nx || []).forEach((v, i) => { cur.nx[i] = Math.max(cur.nx[i] || 0, v); }); }
+  }
+  const cols = [...days.values()];
+  for (const c of cols) c.nq = c.mn.map((v, i) => (v < 85 ? v : c.mx[i]));
+  const L = 34, R = W - 8, T = 6, gap = 8, B = H - 22;
+  const rowH = (B - T - gap) / NUT_ORDER.length;
+  const cw = (R - L) / cols.length;
+  const yOf = (i) => T + i * rowH + (i >= MACROS.length ? gap : 0);
+  const idx = Object.fromEntries(ELEMENTS.map((e, i) => [e, i]));
+  for (let ci = 0; ci < cols.length; ci++) {
+    const col = cols[ci], x = L + ci * cw;
+    NUT_ORDER.forEach((e, ri) => {
+      const ti = TOX_AT_KEYS.indexOf(e);
+      const cell = nutCell(e, col.nq[idx[e]] / 100, ti >= 0 ? (col.nx[ti] || 0) / 100 : 0);
+      ctx.fillStyle = cell.c;
+      // 1 px de separación entre celdas cuando entran (la superficie hace de divisor)
+      const g = cw > 4 ? 1 : 0;
+      ctx.fillRect(x, yOf(ri), Math.max(1, cw - g), rowH - 1);
+    });
+  }
+  ctx.font = '600 11px system-ui'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  NUT_ORDER.forEach((e, ri) => { ctx.fillStyle = MICROS.includes(e) ? '#a9c4b4' : '#c3cfc8'; ctx.fillText(e, L - 7, yOf(ri) + rowH / 2); });
+  ctx.textBaseline = 'alphabetic';
+  // eje de días
+  ctx.fillStyle = '#8b9c92'; ctx.font = '10.5px system-ui'; ctx.textAlign = 'center';
+  const span = cols[cols.length - 1].d - cols[0].d || 1, step = span > 120 ? 30 : span > 50 ? 14 : span > 20 ? 7 : span > 8 ? 2 : 1;
+  for (let ci = 0; ci < cols.length; ci++) if (cols[ci].d % step === 0) ctx.fillText(`día ${cols[ci].d}`, L + (ci + 0.5) * cw, H - 6);
+  // hover
+  const hv = hoverAt.nutChart;
+  if (hv && hv.x >= L && hv.x <= R) {
+    const ci = clamp(Math.floor((hv.x - L) / cw), 0, cols.length - 1);
+    let ri = -1;
+    NUT_ORDER.forEach((e, i) => { if (hv.y >= yOf(i) && hv.y < yOf(i) + rowH) ri = i; });
+    const col = cols[ci];
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 1.5;
+    ctx.strokeRect(L + ci * cw + 0.5, T, Math.max(2, cw - 1), B - T);
+    if (ri >= 0) {
+      const e = NUT_ORDER[ri], ti = TOX_AT_KEYS.indexOf(e), cell = nutCell(e, col.nq[idx[e]] / 100, ti >= 0 ? (col.nx[ti] || 0) / 100 : 0);
+      labTip(cv, `<div class="h">Día ${col.d}</div><div class="r"><span><i style="background:${cell.c}"></i>${NUT_INFO[e].name}</span><b>${col.nq[idx[e]]} % de lo necesario</b></div><div class="r"><span>Estado</span><b>${cell.t}</b></div>`, hv.x, hv.y);
+    } else {
+      const bad = NUT_ORDER.filter((e) => col.nq[idx[e]] < 85);
+      labTip(cv, `<div class="h">Día ${col.d}</div><div class="r"><span>Con carencia</span><b>${bad.length ? bad.join(', ') : 'ninguno'}</b></div>`, hv.x, hv.y);
+    }
+  } else labTip(cv, null);
+}
+
 function drawChart(s) {
   const cv = $('#chart');
   if (!cv.offsetParent) return;
@@ -4718,7 +5307,7 @@ function newPlant(sim, run = true) {
 
 function loadScenario(sc) {
   const sim = setupScenario(sc, App.opts.seed);
-  App.opts = Object.assign({}, App.opts, { genetics: sim.o.genetics, substrate: sim.o.substrate, mode: sim.o.mode, start: sim.o.start, seedType: sim.o.seedType });
+  App.opts = Object.assign({}, App.opts, { genetics: sim.o.genetics, substrate: sim.o.substrate, mode: sim.o.mode, start: sim.o.start, seedType: sim.o.seedType, mix: undefined });
   $('#autopilot').checked = sim.autopilot;
   newPlant(sim);
   switchTab('sim');
@@ -4944,7 +5533,7 @@ function spreadLabels(items, gap, top, bottom) {
 
 function goSimWith(setup, msg) {
   const sim = setupScenario({ name: 'Ejemplo', look: msg || '', setup }, App.opts.seed);
-  App.opts = Object.assign({}, App.opts, { genetics: sim.o.genetics, substrate: sim.o.substrate, mode: sim.o.mode, start: sim.o.start });
+  App.opts = Object.assign({}, App.opts, { genetics: sim.o.genetics, substrate: sim.o.substrate, mode: sim.o.mode, start: sim.o.start, mix: undefined });
   newPlant(sim);
   switchTab('sim');
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -5117,8 +5706,8 @@ function drawLab() {
     const pH = +$('#phSl').value, soilless = $('#phSoilless').checked;
     $('#phV').textContent = pH.toFixed(1);
     const cv = $('#phChart'), { ctx, W, H } = fitCanvas(cv);
-    const L = 76, R = W - 20, T = 24, B = H - 28, rowH = (B - T) / ELEMENTS.length;
-    const colors = { N: '#7bd88f', P: '#e8c35a', K: '#ff9f43', Ca: '#d6d6d6', Mg: '#5ad1c4', S: '#f5e663', Fe: '#c38bff' };
+    const L = 92, R = W - 20, T = 24, B = H - 28, rowH = (B - T) / ELEMENTS.length;
+    const colors = { N: '#7bd88f', P: '#e8c35a', K: '#ff9f43', Ca: '#d6d6d6', Mg: '#5ad1c4', S: '#f5e663', Fe: '#c38bff', Mn: '#e58fd8', Zn: '#8fb8ff', Cu: '#d99a6c', B: '#b6e36b', Mo: '#7fd4ff' };
     const ideal = soilless ? [5.6, 6.3] : [6.2, 6.8];
     const XP = (p) => L + ((p - 4) / 5) * (R - L);
     ctx.fillStyle = 'rgba(139,227,156,0.10)'; ctx.fillRect(XP(ideal[0]), T, XP(ideal[1]) - XP(ideal[0]), B - T);
@@ -5241,7 +5830,7 @@ function buildProducts() {
 
 /* ---------------- DIAGNÓSTICO ---------------- */
 const LEAF_ICONS = {
-  N: { base: C.yellow }, P: { base: C.bluegreen, spots: C.bronze, pet: C.purple }, K: { edge: 0.8, tip: 0.6 }, Ca: { spots: C.brown }, Mg: { inter: C.yellow }, S: { base: C.pale }, Fe: { inter: C.pale, small: true },
+  N: { base: C.yellow }, P: { base: C.bluegreen, spots: C.bronze, pet: C.purple }, K: { edge: 0.8, tip: 0.6 }, Ca: { spots: C.brown }, Mg: { inter: C.yellow }, S: { base: C.pale }, Fe: { inter: C.pale, small: true }, Mn: { inter: C.pale, spots: C.dkbrown }, Zn: { inter: C.pale, small: true, tip: 0.35 }, Cu: { base: C.bluegreen, tip: 0.5 }, B: { spots: C.brown, tip: 0.45, edge: 0.4, small: true }, Mo: { inter: C.yellow, edge: 0.6 },
   exc: { base: C.dark, claw: true }, salt: { tip: 0.9 }
 };
 function drawLeafIcon(cv, o) {
@@ -5708,7 +6297,9 @@ function init() {
     App.pane = b.dataset.p; store.set('pane', App.pane);
     for (const p of $$('.ipane')) p.classList.toggle('on', p.dataset.pane === App.pane);
     if (App.pane === 'hist') { if (!REDUCED) App.chartIntro = performance.now(); requestAnimationFrame(() => drawChart(App.sim)); }
+    if (App.pane === 'nut') requestAnimationFrame(() => drawNutChart(App.sim));
   });
+  trackHover($('#nutChart'), () => drawNutChart(App.sim));
   App.pane = 'diag';
   const savedPane = $(`#insSeg button[data-p="${store.get('pane', 'diag')}"]`);
   if (savedPane) pickPane(savedPane, false);
@@ -5771,7 +6362,7 @@ function init() {
     moveInd($('.tabs'), $('.tabs button.on'));
     for (const b of $$('.segc')) b._sync && b._sync();
     clearTimeout(rzT);
-    rzT = setTimeout(() => { if (App.tab === 'lab') drawLab(); if (App.tab === 'cosecha') drawTrichomes(); if (App.tab === 'ciclo') drawPhotoClock(); if (App.tab === 'diag') drawLeafIcons(); if (App.pane === 'hist') drawChart(App.sim); }, 120);
+    rzT = setTimeout(() => { if (App.tab === 'lab') drawLab(); if (App.tab === 'cosecha') drawTrichomes(); if (App.tab === 'ciclo') drawPhotoClock(); if (App.tab === 'diag') drawLeafIcons(); if (App.pane === 'hist') drawChart(App.sim); if (App.pane === 'nut') drawNutChart(App.sim); }, 120);
   });
   document.addEventListener('pointerup', () => (App.dragging = false));
   buildSeries();

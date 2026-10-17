@@ -43,7 +43,9 @@ La simulación corre cada hora: clima (interior o exterior con día, sol, lluvia
 latitud y fecha), fotosíntesis por capas de hojas (luz, CO₂, temperatura, estomas), respiración,
 reparto de materia seca, balance de agua de la maceta, química de la zona de raíces (sales por
 elemento, EC, pH, amortiguación del sustrato, materia orgánica y microbios), absorción de N, P, K, Ca,
-Mg, S y Fe según el pH, estreses, plagas y enfermedades (crecimiento logístico, depredadores y
+Mg, S y de los micros Fe, Mn, Zn, Cu, B y Mo según el pH (con antagonismos y toxicidad de micros),
+sustrato armado por componentes (turba, coco, perlita, compost, humus, etc.) con sus propiedades
+físicas y químicas, fertilización foliar, estreses, plagas y enfermedades (crecimiento logístico, depredadores y
 tratamientos), estructura visual de la planta (nudos, hojas, ramas, cogollos) y calidad en floración.
 
 Está calibrado para dar órdenes de magnitud razonables: **es didáctico, no predictivo**.
